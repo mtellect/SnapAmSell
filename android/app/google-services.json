@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:485808555845:android:53870214a3262cf3fae02c",
+        "mobilesdk_app_id": "1:485808555845:android:e6cd189b5d05a443fae02c",
         "android_client_info": {
-          "package_name": "com.fetish.app"
+          "package_name": "com.fetish"
         }
       },
       "oauth_client": [
         {
-          "client_id": "485808555845-0hh8sqmco5kki2oum7qts0br9ettt37c.apps.googleusercontent.com",
+          "client_id": "485808555845-ms7ktrqijj31urhgn0b7s72if9in3g32.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.fetish.app",
+            "package_name": "com.fetish",
             "certificate_hash": "2759bcadeb3d542926fda10e6e0f38380a73bf06"
           }
         },

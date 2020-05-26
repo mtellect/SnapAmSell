@@ -1,4 +1,4 @@
-package com.quickhooks;
+package com.fetish;
 
 import android.content.SharedPreferences;
 import android.media.Ringtone;

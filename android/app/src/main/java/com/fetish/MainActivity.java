@@ -1,4 +1,4 @@
-package com.quickhooks;
+package com.fetish;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -36,13 +36,13 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
-import static com.quickhooks.MyApplication.MAX_TIME;
-import static com.quickhooks.MyApplication.NORMAL_SPLIT;
-import static com.quickhooks.MyApplication.PACKAGE_NAME;
-import static com.quickhooks.MyApplication.SETTINGS_PREF;
-import static com.quickhooks.MyApplication.TIMETABLE_MUTED;
-import static com.quickhooks.MyApplication.TIMETABLE_SPLIT;
-import static com.quickhooks.MyApplication.TIME_SHARED;
+import static com.fetish.MyApplication.MAX_TIME;
+import static com.fetish.MyApplication.NORMAL_SPLIT;
+import static com.fetish.MyApplication.PACKAGE_NAME;
+import static com.fetish.MyApplication.SETTINGS_PREF;
+import static com.fetish.MyApplication.TIMETABLE_MUTED;
+import static com.fetish.MyApplication.TIMETABLE_SPLIT;
+import static com.fetish.MyApplication.TIME_SHARED;
 
 
 public class MainActivity extends FlutterActivity {
@@ -80,7 +80,7 @@ public class MainActivity extends FlutterActivity {
                     if(call.method.equals("shareApp")){
                         String msg = call.argument("message");
                         SharedPreferences shed = getSharedPreferences(SETTINGS_PREF,0);
-                        String packageName = shed.getString(PACKAGE_NAME,"com.quickhooks");
+                        String packageName = shed.getString(PACKAGE_NAME,"com.fetish");
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("text/plain");
                         String message = msg!=null?msg:String.format("Hurry! Install Strokes. It is the perfect place to find your life partner. \n\nClick on this link to install \nhttp://play.google.com/store/apps/details?id=%s",packageName);
