@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>485808555845-idjq3415sc0o6qmsniivim7q5ipmli7a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.485808555845-idjq3415sc0o6qmsniivim7q5ipmli7a</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBoYCeiD0Vu2okLqKJIJoCNfBs8dNfv21A</string>
+	<key>GCM_SENDER_ID</key>
+	<string>485808555845</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.fetish.app</string>
+	<key>PROJECT_ID</key>
+	<string>fetish-e37d6</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fetish-e37d6.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:485808555845:ios:79bbfdc2e6d0d25cfae02c</string>
+	<key>DATABASE_URL</key>
+	<string>https://fetish-e37d6.firebaseio.com</string>
+</dict>
+</plist>

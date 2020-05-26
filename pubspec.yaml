@@ -1,0 +1,236 @@
+name: Strokes
+description: Find your soul mate
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# Read more about versioning at semver.org.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.2.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  google_maps_flutter: ^0.5.27+3
+  dio: 3.0.8
+  screen: ^0.0.5
+#  flutter_ringtone_player: ^1.0.0
+  cupertino_icons: ^0.1.3
+  page_view_indicator: ^0.3.0
+  image_picker: ^0.6.5+3
+#  image_pickers: ^1.0.7+3
+  image_cropper: ^1.2.1
+#  flutter_places_dialog: ^1.0.2
+  google_places_picker: ^2.0.2+2
+  connectivity: ^0.4.6+1
+  pull_to_refresh: 1.5.8
+  device_id: ^0.2.0
+  cached_network_image: ^2.0.0
+  flutter_html: ^0.11.1
+  timeago: ^2.0.22
+  photo: ^0.5.0-dev.3
+  photo_manager: 0.5.2
+  permission_handler: ^5.0.0+hotfix.3
+  package_info: ^0.4.0+16
+  ntp: ^1.0.4
+  country_pickers: ^1.1.0
+  thumbnails: ^1.0.1
+  photo_view: 0.9.0
+  # clipboard_manager: ^0.0.4
+  flutter_staggered_grid_view: ^0.3.0
+  flutter_document_picker: 3.0.1
+  file_picker: ^1.4.3+1
+  open_file: ^2.1.1
+  flutter_spinkit: ^4.1.1+1
+  flutter_simple_video_player: 0.0.9
+  uuid: 2.0.0
+  path: any
+
+  flutter_keyboard_visibility: ^2.0.0
+  keyboard_dismisser: ^1.0.2
+  emoji_picker: 0.1.0
+  loading_indicator: ^1.1.0
+  filesize: ^1.0.4
+#  progress_hud: ^1.1.0
+  cloud_firestore: ^0.13.5
+  firebase_storage: ^3.1.5
+  firebase_auth: ^0.16.0
+  firebase_messaging: ^6.0.15
+  firebase_analytics: ^5.0.11
+  flutter_linkify: ^2.1.0
+  # assets_audio_player: ^1.4.0
+  audioplayers: ^0.15.1
+  vibration: ^1.2.2
+  dashed_circle: ^0.0.1
+  datetime_picker_formfield: ^0.4.3
+  shared_preferences: ^0.5.6+3
+  multi_image_picker: 4.6.7
+
+#  flutter_rave: ^0.0.5
+  flutter_local_notifications: ^1.4.0
+#  rxdart: ^0.23.1
+#  rave_flutter: 0.0.8-alpha+1
+
+  flutter_svg: ^0.17.4
+  dio_flutter_transformer: ^3.0.2
+  equatable: ^1.0.1
+  flushbar: ^1.9.1
+  intl: ^0.16.0
+#  crypto: ^2.1.4
+  tripledes: ^2.1.0
+  flutter_webview_plugin: ^0.3.10
+  url_launcher: 5.0.2
+  webview_flutter: ^0.3.18+1
+  android_alarm_manager: ^0.4.5+2
+  animated_text_kit: ^1.3.1
+  place_picker: ^0.9.11
+#  flutter_google_ad_manager: ^0.10.1
+  cloud_functions: ^0.5.0
+  money_field: ^1.0.1
+  csv: ^4.0.3
+  latlong: ^0.6.1
+  liquid_swipe: ^1.3.1
+  flutter_rating_bar: ^3.0.1+1
+  synchronized: ^2.2.0
+  device_info: ^0.4.2+1
+  firebase_ml_vision: ^0.9.3+8
+  flutter_image_compress: ^0.6.5+1
+  provider: ^3.1.0
+  camera: ^0.5.8+1
+  rect_getter: ^0.0.1
+  flutter_duration_picker: ^1.0.4
+  in_app_purchase: ^0.3.3+1
+  video_player: 0.10.5+2
+  sliding_up_panel: ^1.0.2
+  google_fonts:
+  google_sign_in: ^4.4.6
+  flutter_facebook_auth: ^0.2.1
+  smart_bubble: ^1.0.1
+  chat_bubble: ^0.1.1+3
+  shimmer: ^1.1.1
+  flutter_keyboard_size: ^0.1.2+2
+#  flutter_sound: 2.1.1
+  flutter_sound: ^4.0.0
+  flutter_xlider: ^3.3.0
+  scrollable_positioned_list: ^0.1.5
+
+  flutter_photo_picker:
+    git:
+      url: https://github.com/blankapp/flutter_photo_picker.git
+      ref: master
+  flutter_datetime_picker:
+    git:
+      url: https://github.com/derohimat/flutter_datetime_picker.git
+  flutter_icons: ^1.1.0
+  random_color: ^1.0.5
+  video_compress: ^0.1.3
+  masked_controller: ^1.0.1
+  flutter_masked_text:
+  font_awesome_flutter:
+  fluttery:
+     git:
+       url: git://github.com/mtellect/fluttery
+
+  great_circle_distance2: ^1.0.1+1
+#  stripe_fl: ^0.1.0
+  currency_pickers: ^1.0.6
+  stripe_payment: ^1.0.7
+  jiffy: ^3.0.1
+
+#  stripe_payment_flutter: ^1.0.9
+
+
+
+  geolocator: ^5.3.1
+  # tinder_card: ^0.1.1
+  awesome_card: ^1.1.0
+
+  # flutter_masked_text: ^0.8.0
+
+dependency_overrides:
+  rxdart: ^0.24.0
+  geoflutterfire: ^2.1.0
+  location: ^3.0.2
+  intl: ^0.15.8
+  flutter_svg: ^0.14.2
+  equatable: ^0.6.1
+  provider: ^3.1.0
+  uuid: ^2.0.4
+  camera:
+    git:
+      url: git://github.com/mtellect/flutter_camera_flash
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://www.dartlang.org/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+
+  fonts:
+       - family: Nirmala
+         fonts:
+           - asset: assets/fonts/Nirmala.ttf
+
+       - family: NirmalaB
+         fonts: 
+           - asset: assets/fonts/NirmalaB.ttf
+
+
+       - family: Av
+         fonts:
+           - asset: assets/fonts/Av.otf
+
+       - family: AvB
+         fonts:
+           - asset: assets/fonts/AvB.otf
+
+
+
+
+       - family: Futura
+         fonts:
+           - asset: assets/fonts/Futura.ttf 
+
+       - family: FuturaB
+         fonts: 
+           - asset: assets/fonts/FuturaB.ttf 
+
+       - family: Arayara
+         fonts:
+           - asset: assets/fonts/arayara demo.ttf
+
+       - family: Averta
+         fonts:
+           - asset: assets/fonts/Averta.otf
+
+       - family: AvertaB
+         fonts:
+           - asset: assets/fonts/AvertaB.ttf
+            #  weight: 700
+
+
+  uses-material-design: true
+
+  assets:
+    - assets/tinder/
+    - assets/icons/
+    - assets/sounds/
+    - assets/videos/
+    - flags/
+
+
+    

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "485808555845",
+    "firebase_url": "https://fetish-e37d6.firebaseio.com",
+    "project_id": "fetish-e37d6",
+    "storage_bucket": "fetish-e37d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485808555845:android:53870214a3262cf3fae02c",
+        "android_client_info": {
+          "package_name": "com.fetish.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "485808555845-0hh8sqmco5kki2oum7qts0br9ettt37c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fetish.app",
+            "certificate_hash": "2759bcadeb3d542926fda10e6e0f38380a73bf06"
+          }
+        },
+        {
+          "client_id": "485808555845-c138nmiprgpr2v0d9p4h2ap6bcnej4al.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8powjcU-KPsy59WNkzR70xrkrad5uFw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "485808555845-c138nmiprgpr2v0d9p4h2ap6bcnej4al.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "485808555845-idjq3415sc0o6qmsniivim7q5ipmli7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fetish.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,6 @@
+<resources>
+    <string name="title_alarm">Timetable %d</string>
+    <string name="app_name">QuickHookUps</string>
+    <string name="facebook_app_id">825620534513874</string>
+    <string name="fb_login_protocol_scheme">fb825620534513874</string>
+</resources>

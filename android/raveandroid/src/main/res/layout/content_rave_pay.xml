@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.flutterwave.raveandroid.RavePayActivity"
+    tools:showIn="@layout/activity_rave_pay"
+    android:background="@color/white"
+    >
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        style="?TabLayoutStyle"
+        app:tabMode="fixed"
+        android:background="@color/blue3"
+        app:tabTextColor="@color/white"
+        app:tabIndicatorColor="@color/blue8"
+        app:tabIndicatorHeight="8dp"
+        />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:alpha=".2"
+        android:layout_gravity="center"
+        android:background="@color/black"
+        />
+    <LinearLayout
+
+        android:background="@color/blue09"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+
+        >
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/ic_lock"
+
+            />
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:alpha=".8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="This payment is highly secure with 128 Bit Verisign SSL encryption."
+            android:layout_marginRight="10dp"
+            />
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="30dp"
+            android:alpha=".1"
+            android:layout_gravity="center"
+            android:background="@color/black"
+            />
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/verify"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:textColor="@color/red0"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="Learn More"
+            android:layout_width="80dp"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
