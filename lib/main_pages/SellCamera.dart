@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import 'SellPage.dart';
+
 enum CameraPosition { front, back }
 enum CameraFlash { flashOn, flashOff }
 
@@ -30,9 +32,11 @@ cameraFlashIcon(CameraFlash flash) {
 
 class SellCamera extends StatefulWidget {
   final bool cameraAlone;
+  final bool fromProduct;
 
   const SellCamera({
     Key key,
+    this.fromProduct = false,
     this.cameraAlone = false,
   }) : super(key: key);
   @override
@@ -196,7 +200,7 @@ class _SellCameraState extends State<SellCamera>
                                 ),
                                 child: FadeInImage(
                                   placeholder:
-                                      AssetImage("assets/images/images.png"),
+                                      AssetImage("assets/icons/images.png"),
                                   image: FileImage(File(isVideo
                                       ? photo.getString(THUMBNAIL_PATH)
                                       : photo.getString(IMAGE_PATH))),
@@ -213,8 +217,9 @@ class _SellCameraState extends State<SellCamera>
                                   color: black.withOpacity(.1),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(2),
+                                alignment: Alignment.topRight,
+                                padding: EdgeInsets.all(10),
+                                //margin: EdgeInsets.all(5),
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -252,14 +257,17 @@ class _SellCameraState extends State<SellCamera>
                     margin: EdgeInsets.only(right: 15),
                     child: FlatButton(
                       onPressed: () {
-//                        pushAndResult(
-//                            context,
-//                            PreviewPhotos(
-//                              selectedData: selectedPhotos,
-//                            ), result: (_) {
-//                          if (null == _) return;
-//                          Navigator.pop(context, _);
-//                        });
+                        if (widget.fromProduct) {
+                          Navigator.pop(context, selectedPhotos);
+                          return;
+                        }
+
+                        pushReplacementAndResult(
+                            context,
+                            SellPage(
+                              photos: selectedPhotos,
+                            ),
+                            depend: false);
                       },
                       color: AppConfig.appColor,
                       shape: CircleBorder(),
@@ -779,7 +787,7 @@ class _SellCameraState extends State<SellCamera>
         bool isVideo = a.type == AssetType.video;
         BaseModel model = BaseModel();
         model.put(OBJECT_ID, a.id);
-        model.put(IMAGE_URL, path);
+        model.put(IMAGE_PATH, path);
         model.put(IS_VIDEO, isVideo);
 //        if (isVideo) {
 //          model.put(THUMBNAIL_URL,

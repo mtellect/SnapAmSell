@@ -1428,21 +1428,6 @@ List<String> ethnicityType = [
   "Others"
 ];
 
-List planPackgees = [
-  {
-    "month": "12",
-    "fee": "1,462.17",
-  },
-  {
-    "month": "6",
-    "fee": "1,462.17",
-  },
-  {
-    "month": "1",
-    "fee": "1,462.17",
-  },
-];
-
 const String SHOW_BELL = "showBell";
 const String TYPE_COUNT = "typeCount";
 const String IS_HOOKUPS = "isHookUps";
@@ -1516,3 +1501,16 @@ const String BASE_ADS_COST = "baseAdsCost";
 const String AMOUNT_TO_PAY = "amountToPay";
 
 const String PRODUCT_BASE = "productBase";
+
+List productCategories = [
+  "Hair",
+  "Lashes",
+  "Apparels",
+  "Jewelry",
+  "Accessories",
+  "HandBags",
+  "Shoes",
+  "Sale",
+  "Clearance",
+  "Others"
+];

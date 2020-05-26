@@ -1,11 +1,8 @@
 import 'dart:async';
 
 import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/navigation.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/auth_main.dart';
-import 'package:Strokes/preinit.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,20 +45,14 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext cc) {
-    return WillPopScope(
-      onWillPop: () async {
-        pushReplacementAndResult(context, PreInit());
-        return false;
-      },
-      child: Scaffold(
-          backgroundColor: white,
-          key: _scaffoldKey,
-          resizeToAvoidBottomInset: true,
-          body: Builder(builder: (c) {
-            context = c;
-            return page();
-          })),
-    );
+    return Scaffold(
+        backgroundColor: white,
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: true,
+        body: Builder(builder: (c) {
+          context = c;
+          return page();
+        }));
   }
 
   page() {
@@ -76,7 +67,7 @@ class _SignUpState extends State<SignUp> {
                 child: CloseButton(
                   color: black,
                   onPressed: () {
-                    //pushReplacementAndResult(context, PreInit());
+                    Navigator.pop(context);
                   },
                 ),
               ),
@@ -202,7 +193,6 @@ class _SignUpState extends State<SignUp> {
     }
 
     showProgress(true, context, msg: "Signing Up");
-
     final FirebaseAuth mAuth = FirebaseAuth.instance;
     mAuth
         .createUserWithEmailAndPassword(email: email, password: password)
@@ -214,8 +204,10 @@ class _SignUpState extends State<SignUp> {
         ..put(USER_ID, value.user.uid)
         ..put(OBJECT_ID, value.user.uid)
         ..saveItem(USER_BASE, false, document: value.user.uid, onComplete: () {
+          showProgress(false, context);
           Future.delayed(Duration(seconds: 1), () {
-            popUpUntil(context, AuthMain());
+            isLoggedIn = value.user != null;
+            Navigator.pop(context);
           });
         });
     }).catchError((e) {

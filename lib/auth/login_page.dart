@@ -1,20 +1,16 @@
 import 'dart:async';
 
 import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app/navigation.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/signUp_page.dart';
 import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/preinit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'auth_main.dart';
 import 'forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
@@ -55,20 +51,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext cc) {
-    return WillPopScope(
-      onWillPop: () async {
-        pushReplacementAndResult(context, PreInit());
-        return false;
-      },
-      child: Scaffold(
-          backgroundColor: AppConfig.appColor,
-          key: _scaffoldKey,
-          resizeToAvoidBottomInset: true,
-          body: Builder(builder: (c) {
-            context = c;
-            return page();
-          })),
-    );
+    return Scaffold(
+        backgroundColor: AppConfig.appColor,
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: true,
+        body: Builder(builder: (c) {
+          context = c;
+          return page();
+        }));
   }
 
   page() {
@@ -83,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: CloseButton(
                   color: black,
                   onPressed: () {
-                    //pushReplacementAndResult(context, PreInit());
+                    Navigator.pop(context);
                   },
                 ),
               ),
@@ -142,7 +132,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   FlatButton(
                     onPressed: () {
-                      pushAndResult(context, SignUp(), depend: false);
+                      pushReplacementAndResult(context, SignUp(),
+                          depend: false);
                     },
                     child: Center(
                       child: new Text(
@@ -226,14 +217,11 @@ class _LoginPageState extends State<LoginPage> {
           .document(user.user.uid)
           .get()
           .then((shot) {
-        //showProgress(false, context);
         userModel = BaseModel(doc: shot);
-        if (!userModel.signUpCompleted) {
-          popUpUntil(context, AuthMain());
-          return;
-        }
+        showProgress(false, context);
         Future.delayed(Duration(seconds: 1), () {
-          popUpUntil(context, MainAdmin());
+          isLoggedIn = user != null;
+          Navigator.pop(context);
         });
       }).catchError((error) {
         showProgress(false, context);

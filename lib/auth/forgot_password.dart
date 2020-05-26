@@ -1,4 +1,3 @@
-
 import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/app/navigation.dart';
 import 'package:Strokes/app_config.dart';
@@ -9,8 +8,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
-
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -43,20 +40,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext cc) {
-    return WillPopScope(
-      onWillPop: () async {
-        popUpUntil(context, PreInit());
-        return false;
-      },
-      child: Scaffold(
-          backgroundColor: white,
-          key: _scaffoldKey,
-          resizeToAvoidBottomPadding: true,
-          body: Builder(builder: (c) {
-            context = c;
-            return page();
-          })),
-    );
+    return Scaffold(
+        backgroundColor: white,
+        key: _scaffoldKey,
+        resizeToAvoidBottomPadding: true,
+        body: Builder(builder: (c) {
+          context = c;
+          return page();
+        }));
   }
 
   page() {
@@ -71,11 +62,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   BackButton(
                     color: black,
                     onPressed: () {
-                      popUpUntil(context, PreInit());
+                      Navigator.pop(context);
                     },
                   ),
-                  Text("Reset Password",
-                      style: textStyle(true, 22, black)),
+                  Text("Reset Password", style: textStyle(true, 22, black)),
                 ],
               ),
             )),

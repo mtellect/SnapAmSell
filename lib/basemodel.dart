@@ -587,6 +587,7 @@ class BaseModel {
 
   List<BaseModel> get profilePhotos => getListModel(PROFILE_PHOTOS);
   List<BaseModel> get hookUpPhotos => getListModel(HOOKUP_PHOTOS);
+  List<BaseModel> get images => getListModel(IMAGES);
 
   bool get isHookUps => selectedQuickHookUp == 0;
 

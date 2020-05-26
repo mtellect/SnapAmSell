@@ -16,7 +16,7 @@ class EmailService {
 
   static send({String to}) async {
     Map body = {
-      "from": {"email": "support@sendgrid.net"},
+      "from": {"email": "Info@strock.fun"},
       "personalizations": [
         {
           "to": [

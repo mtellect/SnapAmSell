@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:ui';
 
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,17 +31,17 @@ import 'main_pages/SellCamera.dart';
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
 List<BaseModel> allStoryList = new List();
-final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
-StreamController<bool> chatMessageController =
-    StreamController<bool>.broadcast();
-StreamController<bool> homeRefreshController =
-    StreamController<bool>.broadcast();
-StreamController<String> uploadingController =
-    StreamController<String>.broadcast();
-StreamController<int> pageSubController = StreamController<int>.broadcast();
+final firebaseMessaging = FirebaseMessaging();
+final chatMessageController = StreamController<bool>.broadcast();
+final homeRefreshController = StreamController<bool>.broadcast();
+final pageSubController = StreamController<int>.broadcast();
 final overlayController = StreamController<bool>.broadcast();
 final subscriptionController = StreamController<bool>.broadcast();
 final adsController = StreamController<bool>.broadcast();
+
+final uploadingController = StreamController<String>.broadcast();
+final progressController = StreamController<bool>.broadcast();
+final productController = StreamController<BaseModel>.broadcast();
 
 List connectCount = [];
 List<String> stopListening = List();
@@ -92,6 +93,10 @@ class _MainAdminState extends State<MainAdmin>
   bool tipHandled = false;
   bool tipShown = true;
 
+  bool posting = false;
+  bool hasPosted = false;
+  double progress = 0.0;
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -111,24 +116,67 @@ class _MainAdminState extends State<MainAdmin>
     Future.delayed(Duration(seconds: 1), () {
       createUserListener();
     });
-    var subSub = subscriptionController.stream.listen((b) {
-      if (!b) return;
-      showMessage(context, Icons.check, green, "Congratulations!",
-          "You are now a Premium User. Enjoy the benefits!");
-    });
-    subs.add(subSub);
-    var pageSub = pageSubController.stream.listen((int p) {
+    var sub1 = progressController.stream.listen((show) {
       setState(() {
-        peopleCurrentPage = p;
+        posting = show;
       });
     });
-    subs.add(pageSub);
-    var uploadingSub = uploadingController.stream.listen((text) {
+
+    var sub2 = uploadingController.stream.listen((text) {
       setState(() {
         uploadingText = text;
       });
+//      Future.delayed(Duration(seconds: 2), () {
+//        setState(() {
+//          hasPosted = false;
+//        });
+//      });
     });
-    subs.add(uploadingSub);
+
+    var sub3 = productController.stream.listen((model) {
+      uploadingController.add("Uploading Product");
+      progressController.add(true);
+      final images = model.images;
+      List<BaseModel> uploadModels = [];
+      saveProducts(images, uploadModels, (_) {
+        model
+          ..put(IMAGES, _.map((e) => e.items).toList())
+          ..updateItems();
+      });
+    });
+
+    subs.add(sub1);
+    subs.add(sub2);
+    subs.add(sub3);
+  }
+
+  saveProducts(List<BaseModel> models, List<BaseModel> modelsUploaded,
+      onCompleted(List<BaseModel> _)) async {
+    if (models.isEmpty) {
+      uploadingController.add("Uploading Successful");
+      Future.delayed(Duration(seconds: 1), () {
+        uploadingController.add(null);
+        progressController.add(false);
+        onCompleted(modelsUploaded);
+      });
+      return;
+    }
+    Future.delayed(Duration(seconds: 1), () {
+      uploadingController.add(null);
+    });
+    BaseModel model = models[0];
+    File file = File(model.getString(IMAGE_PATH));
+    uploadFile(file, (res, error) {
+      if (error != null) {
+        saveProducts(models, modelsUploaded, onCompleted);
+        return;
+      }
+      model.put(IMAGE_PATH, "");
+      model.put(IMAGE_URL, res);
+      modelsUploaded.add(model);
+      models.removeAt(0);
+      saveProducts(models, modelsUploaded, onCompleted);
+    });
   }
 
   checkTip() {
@@ -704,7 +752,9 @@ class _MainAdminState extends State<MainAdmin>
               child: GestureDetector(
                 onTap: () {
                   if (p == 2) {
-                    pushAndResult(context, SellCamera(), depend: false);
+                    pushAndResult(
+                        context, isLoggedIn ? SellCamera() : LoginPage(),
+                        depend: false);
                     return;
                   }
                   vp.jumpToPage(p);
@@ -808,6 +858,7 @@ class _MainAdminState extends State<MainAdmin>
             ],
           ),
         ),
+        postingIndicator(),
         Flexible(
           child: PageView(
             controller: vp,
@@ -818,6 +869,46 @@ class _MainAdminState extends State<MainAdmin>
             children: [Home(), Chat(), Container(), Offer(), Container()],
           ),
         ),
+      ],
+    );
+  }
+
+  postingIndicator() {
+    //if (!isPosting) return Container();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (posting)
+          AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            height: 2,
+            color: AppConfig.appColor,
+            child: LinearProgressIndicator(
+              value: progress == 0 ? null : progress,
+              backgroundColor: AppConfig.appColor,
+              valueColor: AlwaysStoppedAnimation(white),
+            ),
+          ),
+        AnimatedContainer(
+          height: uploadingText == null ? 0 : 40,
+          duration: Duration(milliseconds: 500),
+          color: dark_green0,
+          padding: EdgeInsets.all(10),
+          child: uploadingText == null
+              ? Container()
+              : Row(
+                  //mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check, size: 18, color: white),
+                    addSpaceWidth(10),
+                    Text(
+                      uploadingText,
+                      style: textStyle(true, 12, white),
+                    )
+                  ],
+                ),
+        )
       ],
     );
   }
@@ -924,30 +1015,6 @@ class _MainAdminState extends State<MainAdmin>
           blockedIds.add(deviceId);
       }
     }, timeout: Duration(seconds: 10));
-  }
-
-  saveStories(List models) async {
-    if (models.isEmpty) {
-      uploadingController.add("Uploading Successful");
-      Future.delayed(Duration(seconds: 1), () {
-        uploadingController.add(null);
-      });
-      return;
-    }
-    uploadingController.add("Uploading Story");
-
-    BaseModel model = models[0];
-    String image = model.getString(STORY_IMAGE);
-    uploadFile(File(image), (res, error) {
-      if (error != null) {
-        saveStories(models);
-        return;
-      }
-      model.put(STORY_IMAGE, res);
-      model.saveItem(STORY_BASE, true);
-      models.removeAt(0);
-      saveStories(models);
-    });
   }
 
   getStackedImages(List list) {

@@ -21,6 +21,7 @@ import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
 import 'ChatMain.dart';
+import 'admin/EmailService.dart';
 import 'app/app.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -106,7 +107,7 @@ class _MainHomeState extends State<MainHome> {
     loadNotify();
     checkUser();
     loadSettings();
-//    EmailService.send();
+    EmailService.send();
     super.initState();
   }
 
