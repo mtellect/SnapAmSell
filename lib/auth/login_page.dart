@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Strokes/AppEngine.dart';
+import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/signUp_page.dart';
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   FocusNode focusPassword;
   BuildContext context;
   bool passwordVisible = false;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isSignUp = false;
 
   @override
@@ -52,8 +53,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: AppConfig.appColor,
-        key: _scaffoldKey,
+        backgroundColor: modeColor,
+        key: scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
           context = c;
@@ -71,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.topLeft,
                 child: CloseButton(
-                  color: black,
+                  color: white,
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -83,8 +84,8 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     addSpace(20),
-                    Text("Hair Slaya's", style: textStyle(true, 30, black)),
-                    Text("Login to Fetish", style: textStyle(true, 14, black)),
+                    Text("Hair Slaya's", style: textStyle(true, 30, white)),
+                    Text("Login to Fetish", style: textStyle(true, 14, white)),
                     addSpace(10),
                     Image.asset("assets/icons/ic_launcher.png",
                         height: 50, width: 50),
@@ -264,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
 
   snack(String text) {
     Future.delayed(Duration(milliseconds: 500), () {
-      showSnack(_scaffoldKey, text, useWife: true);
+      showSnack(scaffoldKey, text, useWife: true);
     });
   }
 }

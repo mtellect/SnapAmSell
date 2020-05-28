@@ -25,6 +25,7 @@ import 'ReportMain.dart';
 import 'app_config.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/Home.dart';
+import 'main_pages/MyProfile.dart';
 import 'main_pages/Offer.dart';
 import 'main_pages/SellCamera.dart';
 
@@ -42,6 +43,8 @@ final adsController = StreamController<bool>.broadcast();
 final uploadingController = StreamController<String>.broadcast();
 final progressController = StreamController<bool>.broadcast();
 final productController = StreamController<BaseModel>.broadcast();
+
+final modeController = StreamController<bool>.broadcast();
 
 List connectCount = [];
 List<String> stopListening = List();
@@ -71,7 +74,20 @@ bool adsSetup = false;
 List<BaseModel> productLists = [];
 bool productSetup = false;
 
+List<BaseModel> myProducts = [];
+bool myProductSetup = false;
+
 var notificationsPlugin = FlutterLocalNotificationsPlugin();
+
+Color themeColors(bool dark) {
+  if (dark) {
+    return Colors.grey[850];
+  } else {
+    return Colors.white;
+  }
+}
+
+Color modeColor = themeColors(true);
 
 class MainAdmin extends StatefulWidget {
   @override
@@ -145,9 +161,16 @@ class _MainAdminState extends State<MainAdmin>
       });
     });
 
+    var sub4 = modeController.stream.listen((bool) {
+      setState(() {
+        modeColor = themeColors(bool);
+      });
+    });
+
     subs.add(sub1);
     subs.add(sub2);
     subs.add(sub3);
+    subs.add(sub4);
   }
 
   saveProducts(List<BaseModel> models, List<BaseModel> modelsUploaded,
@@ -598,10 +621,10 @@ class _MainAdminState extends State<MainAdmin>
   loadProducts() async {
     Firestore.instance
         .collection(PRODUCT_BASE)
-        .where(
+        /* .where(
           STATUS,
           isEqualTo: APPROVED,
-        )
+        )*/
         .limit(30)
         .getDocuments()
         .then((shots) {
@@ -616,6 +639,31 @@ class _MainAdminState extends State<MainAdmin>
         }
       }
       productSetup = true;
+      if (mounted) setState(() {});
+    });
+
+    //my products
+    if (!isLoggedIn) return;
+    Firestore.instance
+        .collection(PRODUCT_BASE)
+        .where(
+          USER_ID,
+          isEqualTo: userModel.getUserId(),
+        )
+        .limit(30)
+        .getDocuments()
+        .then((shots) {
+      for (DocumentSnapshot doc in shots.documents) {
+        BaseModel model = BaseModel(doc: doc);
+        int p = myProducts
+            .indexWhere((e) => e.getObjectId() == model.getObjectId());
+        if (p != -1) {
+          myProducts[p] = model;
+        } else {
+          myProducts.add(model);
+        }
+      }
+      myProductSetup = true;
       if (mounted) setState(() {});
     });
   }
@@ -799,13 +847,13 @@ class _MainAdminState extends State<MainAdmin>
       children: [
         Container(
           padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: white,
+          color: modeColor,
           child: Stack(
             children: [
               Align(
                 child: Text(
                   pageResource[currentPage]["title"],
-                  style: textStyle(true, 22, black),
+                  style: textStyle(true, 22, white),
                 ),
               ),
               Row(
@@ -849,10 +897,12 @@ class _MainAdminState extends State<MainAdmin>
                             child: Icon(
                           Icons.notifications_active,
                           size: 20,
-                          color: black,
+                          color: white,
                         ))),
                   ),
-                  imageHolder(35, userModel.userImage)
+                  imageHolder(35, userModel.userImage, onImageTap: () {
+                    pushAndResult(context, MyProfile(), depend: false);
+                  }, strokeColor: white, stroke: 1)
                 ],
               )
             ],
@@ -866,7 +916,16 @@ class _MainAdminState extends State<MainAdmin>
               currentPage = p;
               setState(() {});
             },
-            children: [Home(), Chat(), Container(), Offer(), Container()],
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              Home(),
+              Chat(),
+              Container(),
+              Offer(),
+              Container(
+                color: modeColor,
+              )
+            ],
           ),
         ),
       ],

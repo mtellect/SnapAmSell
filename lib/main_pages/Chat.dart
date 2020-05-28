@@ -57,7 +57,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: modeColor,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[

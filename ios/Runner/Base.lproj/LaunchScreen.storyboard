@@ -23,7 +23,7 @@
                                 <rect key="frame" x="159.5" y="239.5" width="1" height="1"/>
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fetish_launch" translatesAutoresizingMaskIntoConstraints="NO" id="obd-rN-2ir">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_image" translatesAutoresizingMaskIntoConstraints="NO" id="obd-rN-2ir">
                                 <rect key="frame" x="10" y="90" width="300" height="300"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="obd-rN-2ir" secondAttribute="height" multiplier="1:1" id="F0j-Sn-21N"/>
@@ -32,7 +32,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.94509803921568625" green="0.93725490196078431" blue="0.93725490196078431" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
@@ -48,6 +48,6 @@
     </scenes>
     <resources>
         <image name="LaunchImage" width="0.5" height="0.5"/>
-        <image name="fetish_launch" width="500" height="346"/>
+        <image name="launch_image" width="256" height="256"/>
     </resources>
 </document>

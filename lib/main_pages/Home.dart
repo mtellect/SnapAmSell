@@ -2,7 +2,10 @@ import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/basemodel.dart';
 import 'package:flutter/material.dart';
+
+import 'MyProfile.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,7 +16,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: modeColor,
       body: page(),
     );
   }
@@ -28,10 +31,10 @@ class _HomeState extends State<Home> {
                 height: 45,
                 margin: EdgeInsets.fromLTRB(20, 15, 0, 10),
                 decoration: BoxDecoration(
-                    color: black.withOpacity(.01),
+                    color: white.withOpacity(.1),
                     borderRadius: BorderRadius.circular(25),
                     border:
-                        Border.all(color: black.withOpacity(0.2), width: 1)),
+                        Border.all(color: white.withOpacity(0.2), width: 1)),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,13 +43,13 @@ class _HomeState extends State<Home> {
                     addSpaceWidth(10),
                     Icon(
                       Icons.search,
-                      color: black.withOpacity(.5),
+                      color: white.withOpacity(.5),
                       size: 17,
                     ),
                     addSpaceWidth(10),
                     Text(
                       "Search products on Fetish",
-                      style: textStyle(false, 19, black.withOpacity(.6)),
+                      style: textStyle(false, 19, white.withOpacity(.6)),
                     )
                   ],
                 ),
@@ -57,7 +60,10 @@ class _HomeState extends State<Home> {
                 showListDialog(
                     context, ["All", "Cosmetics", "Free", "Others"], (p) {});
               },
-              icon: Icon(Icons.dashboard),
+              icon: Icon(
+                Icons.dashboard,
+                color: white,
+              ),
             )
           ],
         ),
@@ -87,8 +93,20 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 );
-              return ListView(
-                children: [],
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                    childAspectRatio: 0.65),
+                itemBuilder: (c, p) {
+                  BaseModel model = productLists[p];
+                  return shopItem(context, model);
+                },
+                itemCount: productLists.length,
+                padding: EdgeInsets.all(7),
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
               );
             },
           ),

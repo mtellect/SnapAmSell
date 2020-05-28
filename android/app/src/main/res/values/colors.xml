@@ -14,6 +14,7 @@
 
     <color name="default_white">#fff3f3f3</color>
 
+    <color name="app_color">#f1efef</color>
     <color name="app_yellow">#f7b71e</color>
     <color name="orange0">#ffa500</color>
     <color name="orange1">#e59400</color>

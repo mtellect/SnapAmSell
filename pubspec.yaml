@@ -151,7 +151,7 @@ dependencies:
   geolocator: ^5.3.1
   # tinder_card: ^0.1.1
   awesome_card: ^1.1.0
-
+  virtual_keyboard: ^0.1.4
   # flutter_masked_text: ^0.8.0
 
 dependency_overrides:

@@ -4,7 +4,6 @@ import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app/navigation.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/preinit.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -13,15 +12,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
 import 'ChatMain.dart';
-import 'admin/EmailService.dart';
 import 'app/app.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -81,9 +77,9 @@ class MyApp extends StatelessWidget {
         title: "Fetish",
         color: white,
         theme: ThemeData(
-            fontFamily: 'Averta',
-            accentColor: Colors.orange,
-            primaryColor: Colors.orange), //Futura//Nirmala
+          fontFamily: 'Averta',
+          primaryColor: modeColor,
+        ), //Futura//Nirmala
         navigatorObservers: [
           routeObserver,
           FirebaseAnalyticsObserver(analytics: analytics)
@@ -107,7 +103,7 @@ class _MainHomeState extends State<MainHome> {
     loadNotify();
     checkUser();
     loadSettings();
-    EmailService.send();
+//    EmailService.send();
     super.initState();
   }
 
@@ -149,6 +145,7 @@ class _MainHomeState extends State<MainHome> {
     if (isLoggedIn) {
       loadLocalUser(user.uid, onInComplete: () {}, onLoaded: () {});
     }
+//    popUpUntil(context, LoginPage());
     popUpUntil(context, MainAdmin());
   }
 
@@ -178,17 +175,17 @@ class _MainHomeState extends State<MainHome> {
       isAdmin = userModel.getBoolean(IS_ADMIN) ||
           userModel.getString(EMAIL) == "johnebere58@gmail.com" ||
           userModel.getString(EMAIL) == "ammaugost@gmail.com";
-      if (!userModel.signUpCompleted || !doc.exists) {
+      /* if (!userModel.signUpCompleted || !doc.exists) {
         await GoogleSignIn().signOut();
         await FacebookAuth.instance.logOut();
         await FirebaseAuth.instance.signOut();
         userModel = BaseModel();
         onInComplete();
         return;
-      }
+      }*/
       onLoaded();
     }).catchError((e) {
-      popUpUntil(context, PreInit());
+      //popUpUntil(context, PreInit());
     });
   }
 }

@@ -28,7 +28,7 @@ part 'currencyChooser.dart';
 // part 'placeChooser.dart';
 // part 'preview_image.dart';
 // part 'progressDialog.dart';
-// part 'rating.dart';
+ part 'rating.dart';
 // part 'unicons.dart';
 
 class Countries {

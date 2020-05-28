@@ -1,3 +1,4 @@
+import 'package:Strokes/MainAdmin.dart';
 import 'package:flutter/material.dart';
 
 class Offer extends StatefulWidget {
@@ -8,6 +9,8 @@ class Offer extends StatefulWidget {
 class _OfferState extends State<Offer> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      backgroundColor: modeColor,
+    );
   }
 }

@@ -44,7 +44,7 @@ class _SellPageState extends State<SellPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: white,
+      backgroundColor: modeColor,
       body: page(),
     );
   }
@@ -56,10 +56,12 @@ class _SellPageState extends State<SellPage> {
           padding: EdgeInsets.only(top: 35, right: 10, left: 10, bottom: 10),
           child: Row(
             children: [
-              BackButton(),
+              BackButton(
+                color: white,
+              ),
               Text(
                 "Sell Product",
-                style: textStyle(true, 25, black),
+                style: textStyle(true, 25, white),
               ),
               Spacer(),
               RaisedButton(
@@ -131,10 +133,13 @@ class _SellPageState extends State<SellPage> {
         maxLines: maxLines,
         //maxLengthEnforced: false,
         controller: controller,
+        cursorColor: white,
+        style: textStyle(false, 16, white),
         decoration: InputDecoration(
-            fillColor: black.withOpacity(.05),
+            fillColor: white.withOpacity(.05),
             filled: true,
             labelText: hint,
+            labelStyle: textStyle(false, 16, white.withOpacity(.4)),
             counter: Container(),
             border: InputBorder.none),
         onChanged: setState,
@@ -156,8 +161,8 @@ class _SellPageState extends State<SellPage> {
             },
             child: Container(
                 decoration: BoxDecoration(
-                    color: black.withOpacity(.05),
-                    border: Border.all(color: black.withOpacity(.05)),
+                    color: white.withOpacity(.05),
+                    border: Border.all(color: white.withOpacity(.05)),
                     borderRadius: BorderRadius.circular(5)),
                 padding: EdgeInsets.all(16),
                 alignment: Alignment.centerRight,
@@ -167,12 +172,12 @@ class _SellPageState extends State<SellPage> {
                       child: Text(
                         value ?? hint,
                         style: textStyle(false, 20,
-                            black.withOpacity(value == null ? 0.6 : 1)),
+                            white.withOpacity(value == null ? 0.6 : 1)),
                       ),
                     ),
                     Icon(
                       Icons.arrow_drop_down_circle,
-                      color: black.withOpacity(0.5),
+                      color: white.withOpacity(0.5),
                     )
                   ],
                 )),
@@ -192,7 +197,7 @@ class _SellPageState extends State<SellPage> {
             children: [
               Text(
                 "Add Images",
-                style: textStyle(true, 14, black.withOpacity(.6)),
+                style: textStyle(true, 14, white.withOpacity(.6)),
               ),
               Spacer(),
               IconButton(
@@ -205,6 +210,7 @@ class _SellPageState extends State<SellPage> {
                 },
                 icon: Icon(
                   Icons.add_a_photo,
+                  color: white,
                   //size: 18,
                 ),
               )
@@ -214,7 +220,7 @@ class _SellPageState extends State<SellPage> {
         if (photos.isNotEmpty)
           Container(
             height: 250,
-            color: black.withOpacity(0.02),
+            color: white.withOpacity(0.02),
             child: LayoutBuilder(
               builder: (ctx, b) {
                 int photoLength = photos.length;
