@@ -15,6 +15,7 @@ const String atlas = 'assets/icons/atlas.png';
 const String ic_knock = 'assets/icons/ic_knock.png';
 const String ic_team = 'assets/icons/ic_team.png';
 const String ic_plain = 'assets/icons/ic_plain.png';
+const String ic_plain1 = 'assets/icons/ic_plain1.png';
 const String map_sample = 'assets/icons/map_sample.jpg';
 const String ic_filter = 'assets/icons/ic_filter.png';
 const String back = 'assets/icons/back.jpeg';

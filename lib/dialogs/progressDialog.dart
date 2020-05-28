@@ -98,7 +98,7 @@ class _progressDialogState extends State<progressDialog> {
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            if (cancelable) Navigator.pop(context);
+//            if (cancelable) Navigator.pop(context);
           },
           child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
@@ -112,13 +112,13 @@ class _progressDialogState extends State<progressDialog> {
                 height: 120,
                 child: LoadingIndicator(
                   indicatorType: Indicator.ballScaleMultiple,
-                  color: AppConfig.appColor,
+                  color:white,
                 ))),
         Center(
           child: Opacity(
             opacity: 1,
             child: Image.asset(
-              ic_launcher,
+              ic_plain1,color: black,
               width: 60,
               height: 60,
               //color: white,

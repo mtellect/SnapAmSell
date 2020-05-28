@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Strokes/AppEngine.dart';
+import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:connectivity/connectivity.dart';
@@ -77,11 +78,10 @@ class _SignUpState extends State<SignUp> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     addSpace(20),
-                    Text("Hair Slaya's", style: textStyle(true, 30, black)),
-                    Text("SignUp to Fetish", style: textStyle(true, 14, black)),
+                    Image.asset("assets/icons/ic_plain.png",
+                        height: 80, width: 80,color: modeColor,),
                     addSpace(10),
-                    Image.asset("assets/icons/ic_launcher.png",
-                        height: 50, width: 50),
+                    Text("Create Account", style: textStyle(true, 20, modeColor)),
                   ],
                 ),
               )
@@ -97,28 +97,46 @@ class _SignUpState extends State<SignUp> {
               topRight: Radius.circular(25),
             ),
             child: Container(
-              color: white,
+              color: modeColor,
               child: Column(
                 children: [
-                  Flexible(
-                    child: ListView(
-                      //mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        textbox(nameController, "Name", focusNode: focusName),
-                        textbox(emailController, "Email Address",
-                            focusNode: focusEmail),
-                        textbox(passwordController, "Password",
-                            focusNode: focusPassword,
-                            isPass: true,
-                            refresh: () => setState(() {})),
-//                        textbox(passwordController, "Re-Password",
-//                            focusNode: focusPassword,
-//                            isPass: true,
-//                            refresh: () => setState(() {})),
-                      ],
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        //mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          addSpace(20),
+                          textbox(nameController, "Name", focusNode: focusName,darkMode: true),
+                          textbox(emailController, "Email Address",
+                              focusNode: focusEmail,darkMode: true),
+                          textbox(passwordController, "Password",
+                              focusNode: focusPassword,
+                              isPass: true,
+                              refresh: () => setState(() {}),darkMode: true),
+
+                          Container(
+//                            width: double.infinity,
+                          width: 150,
+                            height: 50,
+                            margin: EdgeInsets.fromLTRB(15,5,15,10),
+                            child: FlatButton(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25)),
+                                color: white,
+                                onPressed: () {
+                                  signUp();
+                                },
+                                child: Text(
+                                  "SIGN UP",
+                                  style: textStyle(true, 16, black),
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Container(
+                 /* Container(
                     width: double.infinity,
                     height: 60,
                     margin: EdgeInsets.all(15),
@@ -134,7 +152,7 @@ class _SignUpState extends State<SignUp> {
                           "CREATE ACCOUNT",
                           style: textStyle(true, 16, white),
                         )),
-                  )
+                  )*/
                 ],
               ),
             ),
@@ -172,13 +190,14 @@ class _SignUpState extends State<SignUp> {
       passwordInvalid = false;
       FocusScope.of(context).requestFocus(focusPassword);
       setState(() {});
+      snack("Enter your password");
       return;
     }
 
     if (passwordInvalid) {
       FocusScope.of(context).requestFocus(focusPassword);
       setState(() {});
-      snack("Enter your password");
+      snack("Password should be a minimum of 6 characters");
       return;
     }
 

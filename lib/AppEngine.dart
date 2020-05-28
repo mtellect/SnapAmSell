@@ -4695,7 +4695,7 @@ SnackBar getSnack(context, String text, {bool useWife = false}) {
       style: textStyle(true, 16, white),
       textAlign: TextAlign.center,
     ),
-    backgroundColor: !useWife ? black : isWife ? pink6 : blue6,
+    backgroundColor: black,
     duration: Duration(seconds: 2),
   );
 }
@@ -4767,70 +4767,48 @@ groupedButtons(
 }
 
 bool passwordVisible = false;
-textbox(TextEditingController controller, String hint,
-    {int lines = 1,
-    bool isName = false,
-    focusNode,
-    bool isPass = false,
-    refresh,
-    maxLength,
-    bool center = true,
-    onChanged,
-    String validator(String value)}) {
-  final borderDeco = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(5),
-      borderSide: BorderSide(color: black.withOpacity(.1), width: 1));
-
+textbox(TextEditingController controller,String hint,{int lines=1,
+  bool isName=false,focusNode,bool isPass=false,refresh,maxLength,bool center=true,onChanged,
+  bool dontPad=false,
+  bool isNum=false,bool darkMode =false}){
   return Container(
-    margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
-    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-    //height: lines>1?null:50,
-    // decoration: BoxDecoration(
-    //     border: Border.all(color: black.withOpacity(.1), width: 1),
-    //     borderRadius: BorderRadius.circular(5),
-    //     color: blue09),
-    child: new TextFormField(
-      controller: controller,
-      validator: validator,
-      textInputAction:
-          lines > 1 ? TextInputAction.newline : TextInputAction.done,
-      focusNode: focusNode,
+    margin: EdgeInsets.fromLTRB(dontPad?0:15, 0, dontPad?0:15, dontPad?0:15),
+    padding: EdgeInsets.fromLTRB(isPass?40:10, 0, 10, 0),
+//    height: lines>1?null:50,
+    decoration: BoxDecoration(
+        border: Border.all(color: darkMode?(white):black.withOpacity(.1), width: darkMode?2:1),
+        borderRadius: BorderRadius.circular(25),color: darkMode?(transparent):blue09),
+    child: new TextField(
+      controller: controller,keyboardType: isNum?TextInputType.number:TextInputType.text,
+      textCapitalization: isPass?TextCapitalization.none:TextCapitalization.sentences,
+      textInputAction: lines>1?TextInputAction.newline:TextInputAction.done,focusNode: focusNode,
       decoration: InputDecoration(
-          enabledBorder: borderDeco,
-          focusedBorder: borderDeco,
-          border: borderDeco,
-          hintText: hint,
-          isDense: true,
-          fillColor: blue09,
-          filled: true,
-          suffix: !isPass
-              ? null
-              : GestureDetector(
-                  onTap: () {
-                    passwordVisible = !passwordVisible;
-                    if (refresh != null) refresh();
-                  },
-                  child: Text(
-                    passwordVisible ? "HIDE" : "SHOW",
-                    style: textStyle(false, 12, black.withOpacity(.5)),
-                  )),
+          hintText: hint,isDense: true,suffix: !isPass?null:GestureDetector(
+          onTap: () {
+            passwordVisible = !passwordVisible;
+            if(refresh!=null)refresh();
+          },
+          child: Text(
+            passwordVisible ? "HIDE" : "SHOW",
+            style: textStyle(false, 12,  darkMode?(white.withOpacity(.5)):black.withOpacity(.5)),
+          )),
           hintStyle: textStyle(
             false,
             22,
-            black.withOpacity(.35),
-          )),
-      textAlign: center ? TextAlign.center : TextAlign.left,
+            darkMode?(white.withOpacity(.5)):black.withOpacity(.35),
+          ),
+          border: InputBorder.none),
+      textAlign: center?TextAlign.center:TextAlign.left,
       style: textStyle(
         false,
         22,
-        black,
-      ),
-      maxLength: isName ? 30 : null,
-      cursorColor: black, obscureText: isPass && !passwordVisible,
+        darkMode?(white):black,
+      ),maxLength: isName?30:null,
+      cursorColor: black,obscureText: isPass && !passwordVisible,
       onChanged: onChanged,
       //maxLength: 200,
       cursorWidth: 1,
-      minLines: lines, maxLines: lines,
+      minLines: lines,maxLines: lines,
     ),
   );
 }

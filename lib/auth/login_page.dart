@@ -9,6 +9,7 @@ import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -83,12 +84,13 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Image.asset("assets/icons/ic_plain.png",
+                        height: 80, width: 80),
                     addSpace(20),
-                    Text("Hair Slaya's", style: textStyle(true, 30, white)),
-                    Text("Login to Fetish", style: textStyle(true, 14, white)),
+                    Text("Login to Fetish", style: textStyle(true, 20, white)),
+//                    Text("Login", style: textStyle(true, 14, white.withOpacity(.5))),
                     addSpace(10),
-                    Image.asset("assets/icons/ic_launcher.png",
-                        height: 50, width: 50),
+
                   ],
                 ),
               )
@@ -107,59 +109,89 @@ class _LoginPageState extends State<LoginPage> {
               color: white,
               child: Column(
                 children: [
-                  Flexible(
-                    child: ListView(
-                      //mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        textbox(emailController, "Email Address",
-                            focusNode: focusEmail),
-                        textbox(passwordController, "Password",
-                            focusNode: focusPassword,
-                            isPass: true,
-                            refresh: () => setState(() {})),
-                        GestureDetector(
-                          onTap: () {
-                            pushAndResult(context, ForgotPassword(),
-                                depend: false);
-                          },
-                          child: new Text(
-                            "FORGOT PASSWORD?",
-                            textAlign: TextAlign.center,
-                            style: textStyle(true, 17, black),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        //mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          addSpace(20),
+                          textbox(emailController, "Email Address",
+                              focusNode: focusEmail),
+                          textbox(passwordController, "Password",
+                              focusNode: focusPassword,
+                              isPass: true,
+                              refresh: () => setState(() {})),
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            margin: EdgeInsets.fromLTRB(15,5,15,10),
+                            child: FlatButton(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25)),
+                                color: modeColor,
+                                onPressed: () {
+                                  login();
+                                },
+                                child: Text(
+                                  "SIGN IN",
+                                  style: textStyle(true, 16, white),
+                                )),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  FlatButton(
-                    onPressed: () {
-                      pushReplacementAndResult(context, SignUp(),
-                          depend: false);
-                    },
-                    child: Center(
-                      child: new Text(
-                        "CREATE ACCOUNT",
-                        style: textStyle(true, 17, black),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20,10,20,20),
+                            child: RichText(text: TextSpan(children:
+                            [ TextSpan(text: "Don't have an account? ",style: textStyle(false, 14, black)),
+                              TextSpan(text: "Signup",style: textStyle(true, 15, blue0),
+                                recognizer: new TapGestureRecognizer()
+                                  ..onTap = () {
+                                    pushReplacementAndResult(context, SignUp(),
+                              depend: false);
+                                  },),
+
+                            ]),textAlign: TextAlign.center,),
+                          ),
+                          Container(
+                      height: 30,
+                            child: FlatButton(
+                              onPressed: (){
+                                pushAndResult(context, ForgotPassword(), depend: false);
+                              },
+                              color: default_white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(25)),
+                                // side: BorderSide(color: app_green,width: 2)
+                              ),
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              child: new Text(
+                                "Forgot Password",
+                                style: textStyle(true, 13, red0),
+                              ),
+                            ),
+                          ),
+
+                        ],
                       ),
                     ),
                   ),
-                  Container(
-                    width: double.infinity,
-                    height: 60,
-                    margin: EdgeInsets.all(15),
-                    child: FlatButton(
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        color: AppConfig.appColor,
-                        onPressed: () {
-                          login();
-                        },
-                        child: Text(
-                          "SIGN IN",
-                          style: textStyle(true, 16, white),
-                        )),
-                  )
+
+
+//                  Container(
+//                    child: FlatButton(
+//                      onPressed: () {
+//                        pushReplacementAndResult(context, SignUp(),
+//                            depend: false);
+//                      },
+//                      padding: EdgeInsets.all(0),
+//                      child: Center(
+//                        child: new Text(
+//                          "CREATE ACCOUNT",
+//                          style: textStyle(true, 13, black),
+//                        ),
+//                      ),
+//                    ),
+//                  ),
                 ],
               ),
             ),
@@ -186,6 +218,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!emailInvalid && password.isEmpty) {
       passwordInvalid = false;
       FocusScope.of(context).requestFocus(focusPassword);
+      snack("Enter your password");
       setState(() {});
       return;
     }
@@ -193,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
     if (passwordInvalid) {
       FocusScope.of(context).requestFocus(focusPassword);
       setState(() {});
-      snack("Enter your password");
+      snack("Password should be a minimum of 6 characters");
       return;
     }
 
@@ -209,6 +242,7 @@ class _LoginPageState extends State<LoginPage> {
 
     showProgress(true, context, msg: "Signing in");
 
+    return;
     final FirebaseAuth mAuth = FirebaseAuth.instance;
     mAuth
         .signInWithEmailAndPassword(email: email, password: password)
