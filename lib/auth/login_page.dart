@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: modeColor,
+        backgroundColor: white,
         key: scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25)),
-                                color: modeColor,
+                                color: white,
                                 onPressed: () {
                                   login();
                                 },

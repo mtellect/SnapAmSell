@@ -55,7 +55,7 @@ class _ShowStoreState extends State<ShowStore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }

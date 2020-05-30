@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
     // TODO: implement initState
     super.initState();
     Future.delayed(Duration(seconds: 1), () {
-      loadProducts(false);
+      loadProducts(true);
     });
   }
 
@@ -78,7 +78,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }
@@ -91,12 +91,12 @@ class _HomeState extends State<Home> {
             Flexible(
               child: Container(
                 height: 45,
-                margin: EdgeInsets.fromLTRB(20, 15, 0, 10),
+                margin: EdgeInsets.fromLTRB(10, 5, 0, 10),
                 decoration: BoxDecoration(
-                    color: white.withOpacity(.1),
+                    color: default_white,//black.withOpacity(.1),
                     borderRadius: BorderRadius.circular(25),
                     border:
-                        Border.all(color: white.withOpacity(0.2), width: 1)),
+                        Border.all(color: black.withOpacity(.1), width: 1)),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,13 +105,13 @@ class _HomeState extends State<Home> {
                     addSpaceWidth(10),
                     Icon(
                       Icons.search,
-                      color: white.withOpacity(.5),
+                      color: black.withOpacity(.5),
                       size: 17,
                     ),
                     addSpaceWidth(10),
                     Text(
                       "Search products on Fetish",
-                      style: textStyle(false, 19, white.withOpacity(.6)),
+                      style: textStyle(false, 16, black.withOpacity(.6)),
                     )
                   ],
                 ),
@@ -124,7 +124,7 @@ class _HomeState extends State<Home> {
               },
               icon: Icon(
                 Icons.dashboard,
-                color: white,
+                color: black,
               ),
             )
           ],
@@ -201,8 +201,8 @@ class _HomeState extends State<Home> {
         return GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 5,
-              mainAxisSpacing: 5,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
               childAspectRatio: 0.65),
           itemBuilder: (c, p) {
             BaseModel model = productLists[p];

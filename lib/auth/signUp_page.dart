@@ -79,9 +79,9 @@ class _SignUpState extends State<SignUp> {
                   children: [
                     addSpace(20),
                     Image.asset("assets/icons/ic_plain.png",
-                        height: 80, width: 80,color: modeColor,),
+                        height: 80, width: 80,color: white,),
                     addSpace(10),
-                    Text("Create Account", style: textStyle(true, 20, modeColor)),
+                    Text("Create Account", style: textStyle(true, 20, white)),
                   ],
                 ),
               )
@@ -97,7 +97,7 @@ class _SignUpState extends State<SignUp> {
               topRight: Radius.circular(25),
             ),
             child: Container(
-              color: modeColor,
+              color: white,
               child: Column(
                 children: [
                   Expanded(

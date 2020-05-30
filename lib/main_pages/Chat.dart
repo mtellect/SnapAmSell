@@ -6,6 +6,7 @@ import 'package:Strokes/ChatMain.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:Strokes/dialogs/listDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,7 +55,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -75,6 +76,11 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
   }
 
   page() {
+    if(!isLoggedIn)return emptyLayout(Icons.chat, "Sign in to view messages", "",
+    clickText: "Sign in",click: (){
+          pushAndResult(context, LoginPage(), depend: false);
+        });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

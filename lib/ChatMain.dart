@@ -452,7 +452,7 @@ class _ChatMainState extends State<ChatMain>
             return Scaffold(
                 resizeToAvoidBottomInset: true,
                 key: scaffoldKey,
-                backgroundColor: modeColor,
+                backgroundColor: white,
                 body: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -627,7 +627,7 @@ class _ChatMainState extends State<ChatMain>
       children: <Widget>[
         Container(
           padding: EdgeInsets.fromLTRB(0, 40, 0, 10),
-          color: modeColor,
+          color: white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -702,7 +702,7 @@ class _ChatMainState extends State<ChatMain>
 
               if (chatList.isEmpty) return Container();
               return Container(
-                color: modeColor,
+                color: white,
                 child: ScrollablePositionedList.builder(
                   itemScrollController: messageListController,
                   itemPositionsListener: itemPositionsListener,

@@ -33,7 +33,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }

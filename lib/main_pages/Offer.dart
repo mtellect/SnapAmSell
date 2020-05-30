@@ -82,7 +82,7 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }
@@ -92,15 +92,18 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
+
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
           color: white,
           child: Card(
-            color: black.withOpacity(0.2),
+            color: black.withOpacity(.2),
+    elevation: 0,
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25))),
             child: Row(
               children: List.generate(2, (p) {
-                String title = p == 0 ? "Sent Offers" : "Recieved Offers";
+                String title = p == 0 ? "Sent" : "Recieved";
                 bool selected = p == currentPage;
                 return Flexible(
                   child: GestureDetector(
@@ -110,7 +113,7 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
                           curve: Curves.ease);
                     },
                     child: Container(
-                        margin: EdgeInsets.all(4),
+                        margin: EdgeInsets.all(1.5),
                         height: 30,
                         decoration: !selected
                             ? null

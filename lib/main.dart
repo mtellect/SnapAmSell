@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
         color: white,
         theme: ThemeData(
           fontFamily: 'Averta',
-          primaryColor: modeColor,
+          primaryColor: white,
         ), //Futura//Nirmala
         navigatorObservers: [
           routeObserver,

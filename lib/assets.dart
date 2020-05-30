@@ -178,10 +178,16 @@ const Color blue07 = Color(0xffcdc5ff);
 const Color blue08 = Color(0xff08534949);
 const Color blue09 = Color(0xff0f534949);
 
-const Color black = Color(0xff000000);
-const Color white = Color(0xffffffff);
+bool darkMode = false;
+Color black = darkMode?white_color:gray;
+Color white = darkMode?gray:white_color;
 const Color transparent = Color(0xff00000000);
-const Color default_white = Color(0xfffff3f3f3);
+
+Color default_white = darkMode?gray:default_white_color;
+
+const Color black_color = Color(0xff000000);
+const Color white_color = Color(0xffffffff);
+const Color default_white_color = Color(0xfffff3f3f3);
 
 const Color tang0 = Color(0xffffa500);
 

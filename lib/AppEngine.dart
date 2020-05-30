@@ -642,7 +642,7 @@ emptyLayout(icon, String title, String text,
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                        color: red0.withOpacity(.5), shape: BoxShape.circle),
+                        color: black, shape: BoxShape.circle),
                   ),
                   new Center(
                       child: !(icon is String)
@@ -689,8 +689,8 @@ emptyLayout(icon, String title, String text,
               style: textStyle(true, 16, trans ? white : black),
               textAlign: TextAlign.center,
             ),
-            addSpace(5),
-            Text(
+            if(text.isNotEmpty)addSpace(5),
+            if(text.isNotEmpty)Text(
               text,
               style: textStyle(false, 14,
                   trans ? (white.withOpacity(.5)) : black.withOpacity(.5)),
@@ -701,12 +701,15 @@ emptyLayout(icon, String title, String text,
                 ? new Container()
                 : FlatButton(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25)),
-                    color: blue3,
+                        borderRadius: BorderRadius.circular(25),
+                    side: BorderSide(
+                      color: black,width: 2
+                    )),
+//                    color: blue3,
                     onPressed: click,
                     child: Text(
                       clickText,
-                      style: textStyle(true, 14, white),
+                      style: textStyle(true, 16, black),
                     ))
           ],
         ),
@@ -1393,7 +1396,7 @@ class ReadMoreText extends StatefulWidget {
     this.minLength = 150,
     this.fontSize = 14,
     this.toggle,
-    this.textColor = black,
+    this.textColor,
     this.moreColor = blue0,
     this.center = false,
     this.canExpand = true,
@@ -1428,7 +1431,7 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                   : expanded
                       ? widget.text
                       : (widget.text.substring(0, widget.minLength)),
-              style: textStyle(false, widget.fontSize, widget.textColor)),
+              style: textStyle(false, widget.fontSize, widget.textColor??black)),
           TextSpan(
               text: widget.text.length < widget.minLength || expanded
                   ? ""
@@ -2880,7 +2883,7 @@ SmartRefresher refreshList(refreshController,bool up,bool down){
 imageHolder(
   double size,
   imageUrl, {
-  double stroke = 0,
+  double stroke = .5,
   strokeColor = blue0,
   bool local = false,
   iconHolder = Icons.person,
@@ -2907,14 +2910,14 @@ imageHolder(
               shape: CircleBorder(
                   side: BorderSide(color: strokeColor, width: stroke)),
               clipBehavior: Clip.antiAlias,
-              color: black.withOpacity(.1),
+              color: black.withOpacity(.05),
               elevation: .5,
               child: Stack(
                 children: <Widget>[
                   Center(
                     child: Icon(
                       iconHolder,
-                      color: white,
+                      color: black,
                       size: iconHolderSize,
                     ),
                   ),
@@ -4428,7 +4431,8 @@ shareButton(color, String text, icon, onTap, {width}) {
   );
 }
 
-nameItem(String title, String text, {color: black, bool center = false}) {
+nameItem(String title, String text, {color, bool center = false}) {
+  color = color??black;
   return Container(
     margin: EdgeInsets.only(bottom: 10),
     child: RichText(
@@ -5437,12 +5441,14 @@ shopItem(BuildContext context, BaseModel model, setState) {
       pushAndResult(context, ShowProduct(model), depend: false);
     },
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(5),clipBehavior: Clip.antiAlias,
       child: Container(
         decoration: BoxDecoration(
-            border: Border.all(color: white.withOpacity(0.1), width: 2)),
+          color: black.withOpacity(.1)
+//            border: Border.all(color: white.withOpacity(0.1), width: 2)
+        ),
         child: Stack(
-          //fit: StackFit.expand,
+          fit: StackFit.expand,
           children: [
             CachedNetworkImage(
               imageUrl: image,
@@ -5453,35 +5459,45 @@ shopItem(BuildContext context, BaseModel model, setState) {
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.all(8),
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), color: white),
+                margin: EdgeInsets.fromLTRB(8,8,8,8),
+//                decoration: BoxDecoration(
+//                    borderRadius: BorderRadius.circular(5), color: white),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,color: white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: "Category ",
-                            style: textStyle(false, 12, black.withOpacity(.5))),
-                        TextSpan(
-                            text: category, style: textStyle(false, 12, black)),
-                      ])),
-                      addSpace(2),
-                      Text(
-                        title,
-                        style: textStyle(false, 16, black),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+//                            Text.rich(TextSpan(children: [
+//                              TextSpan(
+//                                  text: "Category ",
+//                                  style: textStyle(false, 12, black.withOpacity(.5))),
+//                              TextSpan(
+//                                  text: category, style: textStyle(false, 12, black)),
+//                            ])),
+//                            addSpace(2),
+                            Text(
+                              title,
+                              style: textStyle(false, 14, black),textAlign: TextAlign.center,
+                              maxLines: 2,
+                            ),
+                            addSpace(2),
+                          ],
+                        ),
                       ),
-                      addSpace(2),
-                      FlatButton(
+                      FlatButton(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onPressed: () {
                           cartController.add(model);
                         },
                         color: isInCart ? red : AppConfig.appColor,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: white)),
+                            borderRadius: BorderRadius.circular(0),
+//                            side: BorderSide(color: white)
+                        ),
                         child: Center(
                           child: Text.rich(TextSpan(children: [
                             TextSpan(

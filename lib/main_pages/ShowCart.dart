@@ -21,7 +21,7 @@ class _ShowCartState extends State<ShowCart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }

@@ -44,7 +44,7 @@ class _SellPageState extends State<SellPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }

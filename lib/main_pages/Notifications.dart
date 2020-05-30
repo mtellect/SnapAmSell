@@ -78,7 +78,7 @@ class _NotificationsState extends State<Notifications>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }

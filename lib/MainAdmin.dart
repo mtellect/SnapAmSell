@@ -93,15 +93,17 @@ bool cartSetup = false;
 
 var notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-Color themeColors(bool dark) {
-  if (dark) {
-    return Colors.grey[850];
-  } else {
-    return Colors.white;
-  }
-}
+//Color themeColors(bool dark) {
+//  if (dark) {
+//    return Colors.grey[850];
+//  } else {
+//    return Colors.white;
+//  }
+//}
+//Color white = darkMode?Colors.grey[850]:white;
+//Color white_widget_color = darkMode?white:Colors.grey[850];
+//Color white_reverse = darkMode?Colors.grey[850]:white;//themeColors(false);
 
-Color modeColor = themeColors(true);
 
 class MainAdmin extends StatefulWidget {
   @override
@@ -176,8 +178,9 @@ class _MainAdminState extends State<MainAdmin>
     });
 
     var sub4 = modeController.stream.listen((bool) {
+      darkMode=bool;
       setState(() {
-        modeColor = themeColors(bool);
+//        white = themeColors(bool);
       });
     });
 
@@ -208,6 +211,7 @@ class _MainAdminState extends State<MainAdmin>
     });
 
     var sub7 = FirebaseAuth.instance.onAuthStateChanged.listen((event) {
+      if(event==null)return;
       if (event.uid == null) {
         cartLists.clear();
         lastMessages.clear();
@@ -897,11 +901,11 @@ class _MainAdminState extends State<MainAdmin>
                         decoration: BoxDecoration(
                             color: red,
                             shape: BoxShape.circle,
-                            border: Border.all(color: white, width: 1.5)),
+                            border: Border.all(color: white_color, width: 1.5)),
                         padding: EdgeInsets.all(10),
                         child: Text(
                           cartLists.length.toString(),
-                          style: textStyle(false, 12, white),
+                          style: textStyle(false, 12, white_color),
                         ),
                       )
                   ],
@@ -983,13 +987,13 @@ class _MainAdminState extends State<MainAdmin>
       children: [
         Container(
           padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: modeColor,
+          color: white,
           child: Stack(
             children: [
               Align(
                 child: Text(
                   pageResource[currentPage]["title"],
-                  style: textStyle(true, 22, white),
+                  style: textStyle(true, 22, black),
                 ),
               ),
               Row(
@@ -1036,12 +1040,12 @@ class _MainAdminState extends State<MainAdmin>
                             child: Icon(
                           Icons.notifications_active,
                           size: 20,
-                          color: white,
+                          color: black,
                         ))),
                   ),
                   imageHolder(35, userModel.userImage, onImageTap: () {
                     pushAndResult(context, ShowStore(userModel), depend: false);
-                  }, strokeColor: white, stroke: 1)
+                  }, strokeColor: black, stroke: .5,)
                 ],
               )
             ],

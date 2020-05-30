@@ -81,7 +81,7 @@ class _OfferItemState extends State<OfferItem>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: modeColor,
+      backgroundColor: white,
       body: page(),
     );
   }
