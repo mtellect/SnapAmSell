@@ -710,7 +710,8 @@ emptyLayout(icon, String title, String text,
                     child: Text(
                       clickText,
                       style: textStyle(true, 16, black),
-                    ))
+                    )),
+            addSpace(40)
           ],
         ),
       ),
@@ -2910,14 +2911,14 @@ imageHolder(
               shape: CircleBorder(
                   side: BorderSide(color: strokeColor, width: stroke)),
               clipBehavior: Clip.antiAlias,
-              color: black.withOpacity(.05),
+              color: default_white_color,
               elevation: .5,
               child: Stack(
                 children: <Widget>[
                   Center(
                     child: Icon(
                       iconHolder,
-                      color: black,
+                      color: black_color,
                       size: iconHolderSize,
                     ),
                   ),
@@ -4782,18 +4783,20 @@ textbox(TextEditingController controller, String hint,
     onChanged,
     bool dontPad = false,
     bool isNum = false,
-    bool darkMode = false,double rad=25}) {
+    double rad=25}) {
   return Container(
+    constraints: BoxConstraints(minHeight: 45),
     margin: EdgeInsets.fromLTRB(
         dontPad ? 0 : 15, 0, dontPad ? 0 : 15, dontPad ? 0 : 15),
     padding: EdgeInsets.fromLTRB(isPass ? 40 : 10, 0, 10, 0),
 //    height: lines>1?null:50,
     decoration: BoxDecoration(
         border: Border.all(
-            color: darkMode ? (white) : black.withOpacity(.1),
-            width: darkMode ? 2 : 1),
+            color: black.withOpacity(.5),
+            width: 2),
         borderRadius: BorderRadius.circular(rad),
-        color: darkMode ? (transparent) : blue09),
+//        color: blue09
+    ),
     child: new TextField(
       controller: controller,
       keyboardType: isNum ? TextInputType.number : TextInputType.text,
@@ -4817,21 +4820,19 @@ textbox(TextEditingController controller, String hint,
                     style: textStyle(
                         false,
                         12,
-                        darkMode
-                            ? (white.withOpacity(.5))
-                            : black.withOpacity(.5)),
+                        black.withOpacity(.5)),
                   )),
           hintStyle: textStyle(
             false,
-            22,
-            darkMode ? (white.withOpacity(.5)) : black.withOpacity(.35),
+            18,
+           black.withOpacity(.35),
           ),
           border: InputBorder.none),
       textAlign: center ? TextAlign.center : TextAlign.left,
       style: textStyle(
         false,
-        22,
-        darkMode ? (white) : black,
+        18,
+        black,
       ),
       maxLength: isName ? 30 : null,
       cursorColor: black, obscureText: isPass && !passwordVisible,

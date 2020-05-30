@@ -1045,7 +1045,7 @@ class _MainAdminState extends State<MainAdmin>
                   ),
                   imageHolder(35, userModel.userImage, onImageTap: () {
                     pushAndResult(context, ShowStore(userModel), depend: false);
-                  }, strokeColor: black, stroke: .5,)
+                  }, strokeColor: black, stroke: 2,)
                 ],
               )
             ],

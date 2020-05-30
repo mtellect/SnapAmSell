@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: white,
+        backgroundColor: black,
         key: scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
@@ -85,10 +85,10 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset("assets/icons/ic_plain.png",
-                        height: 80, width: 80),
+                        height: 80, width: 80,color: white,),
                     addSpace(20),
                     Text("Login to Fetish", style: textStyle(true, 20, white)),
-//                    Text("Login", style: textStyle(true, 14, white.withOpacity(.5))),
+//                    Text("Login", style: textStyle(true, 14, black.withOpacity(.5))),
                     addSpace(10),
 
                   ],
@@ -122,14 +122,14 @@ class _LoginPageState extends State<LoginPage> {
                               isPass: true,
                               refresh: () => setState(() {})),
                           Container(
-                            width: double.infinity,
+                            width: 150,
                             height: 50,
                             margin: EdgeInsets.fromLTRB(15,5,15,10),
                             child: FlatButton(
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25)),
-                                color: white,
+                                color: black,
                                 onPressed: () {
                                   login();
                                 },
@@ -137,6 +137,25 @@ class _LoginPageState extends State<LoginPage> {
                                   "SIGN IN",
                                   style: textStyle(true, 16, white),
                                 )),
+                          ),
+                          Container(
+                            height: 30,
+                            child: FlatButton(
+                              onPressed: (){
+                                pushAndResult(context, ForgotPassword(), depend: false);
+                              },
+                              color: black.withOpacity(.05),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(25)),
+                                // side: BorderSide(color: app_green,width: 2)
+                              ),
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              child: new Text(
+                                "Forgot Password",
+                                style: textStyle(true, 13, red0),
+                              ),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20,10,20,20),
@@ -151,25 +170,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             ]),textAlign: TextAlign.center,),
                           ),
-                          Container(
-                      height: 30,
-                            child: FlatButton(
-                              onPressed: (){
-                                pushAndResult(context, ForgotPassword(), depend: false);
-                              },
-                              color: default_white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(25)),
-                                // side: BorderSide(color: app_green,width: 2)
-                              ),
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                              child: new Text(
-                                "Forgot Password",
-                                style: textStyle(true, 13, red0),
-                              ),
-                            ),
-                          ),
+
 
                         ],
                       ),

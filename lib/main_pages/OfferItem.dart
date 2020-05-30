@@ -2,6 +2,7 @@ import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -87,6 +88,10 @@ class _OfferItemState extends State<OfferItem>
   }
 
   page() {
+    if(!isLoggedIn)return emptyLayout(Icons.local_offer, "Sign in to view offers", "",
+        clickText: "Sign in",click: (){
+          pushAndResult(context, LoginPage(), depend: false);
+        });
     return refresher();
   }
 
@@ -120,6 +125,7 @@ class _OfferItemState extends State<OfferItem>
   }
 
   body() {
+
     return Builder(
       builder: (ctx) {
         if (!offerSetup)

@@ -47,7 +47,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: white,
+        backgroundColor: black,
         key: _scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
@@ -66,7 +66,7 @@ class _SignUpState extends State<SignUp> {
               Align(
                 alignment: Alignment.topLeft,
                 child: CloseButton(
-                  color: black,
+                  color: white,
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -106,13 +106,13 @@ class _SignUpState extends State<SignUp> {
                         //mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           addSpace(20),
-                          textbox(nameController, "Name", focusNode: focusName,darkMode: true),
+                          textbox(nameController, "Name", focusNode: focusName),
                           textbox(emailController, "Email Address",
-                              focusNode: focusEmail,darkMode: true),
+                              focusNode: focusEmail,),
                           textbox(passwordController, "Password",
                               focusNode: focusPassword,
                               isPass: true,
-                              refresh: () => setState(() {}),darkMode: true),
+                              refresh: () => setState(() {})),
 
                           Container(
 //                            width: double.infinity,
@@ -123,13 +123,13 @@ class _SignUpState extends State<SignUp> {
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25)),
-                                color: white,
+                                color: black,
                                 onPressed: () {
                                   signUp();
                                 },
                                 child: Text(
                                   "SIGN UP",
-                                  style: textStyle(true, 16, black),
+                                  style: textStyle(true, 16, white),
                                 )),
                           ),
                         ],
@@ -150,7 +150,7 @@ class _SignUpState extends State<SignUp> {
                         },
                         child: Text(
                           "CREATE ACCOUNT",
-                          style: textStyle(true, 16, white),
+                          style: textStyle(true, 16, black),
                         )),
                   )*/
                 ],

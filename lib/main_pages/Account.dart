@@ -3,6 +3,8 @@ import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app/app.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/auth/login_page.dart';
+import 'package:Strokes/auth/signUp_page.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +49,7 @@ class _AccountState extends State<Account> {
                       )),
 //                    color: blue3,
                   onPressed: (){
-
+                    pushAndResult(context, LoginPage(), depend: false);
                   },
                   child: Text(
                     "Login",
@@ -62,7 +64,7 @@ class _AccountState extends State<Account> {
                       )),
 //                    color: blue3,
                   onPressed: (){
-
+                    pushAndResult(context, SignUp(), depend: false);
                   },
                   child: Text(
                     "Signup",
@@ -217,7 +219,7 @@ class _AccountState extends State<Account> {
         Container(
           color: black.withOpacity(.05),
           padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(top: 10, bottom: 10),
+          margin: EdgeInsets.only(top: 0, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -232,7 +234,7 @@ class _AccountState extends State<Account> {
         if(isLoggedIn)Container(
           color: black.withOpacity(.05),
           padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(top: 10, bottom: 10),
+          margin: EdgeInsets.only(top: 0, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -267,7 +269,7 @@ class _AccountState extends State<Account> {
                     ),
                     child: Icon(
                       icon,
-                      color: white,
+                      color: white_color,
                       size: 18,
                     )),
                 addSpaceWidth(10),

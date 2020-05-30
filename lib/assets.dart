@@ -178,7 +178,7 @@ const Color blue07 = Color(0xffcdc5ff);
 const Color blue08 = Color(0xff08534949);
 const Color blue09 = Color(0xff0f534949);
 
-bool darkMode = false;
+bool darkMode = true;
 Color black = darkMode?white_color:gray;
 Color white = darkMode?gray:white_color;
 const Color transparent = Color(0xff00000000);

@@ -92,7 +92,7 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-
+          width: double.infinity,
           margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
           color: white,
           child: Card(
@@ -101,7 +101,7 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(25))),
-            child: Row(
+            child: Row(mainAxisSize: MainAxisSize.max,
               children: List.generate(2, (p) {
                 String title = p == 0 ? "Sent" : "Recieved";
                 bool selected = p == currentPage;
@@ -114,10 +114,8 @@ class _OfferState extends State<Offer> with AutomaticKeepAliveClientMixin {
                     },
                     child: Container(
                         margin: EdgeInsets.all(1.5),
-                        height: 30,
-                        decoration: !selected
-                            ? null
-                            : BoxDecoration(
+                        height: 30,width: double.infinity,
+                        decoration: BoxDecoration(
                                 color: selected ? white : transparent,
 //                      border: Border.all(color: black.withOpacity(.1),width: 3),
                                 borderRadius: BorderRadius.circular(25)),
