@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 class NotificationService {
   static final Client client = Client();
 
   static const String serverKey =
-    "AAAAmi9ZGYY:APA91bGQutZqAX4fYexnXjoKXJ85znM9LivPkdP2FlmMNLU_6lOFSMT4fo2sauVEOgDnssGov8dc-oWU6keeNfyaSDYb0IBUzWorxxsM7T0l0VTbFF6y1OKjykYxR1C3IyDXgWi18v7E";
+      "AAAAcRxyR0U:APA91bGFclir9ZA2djETfX2jFEcgFPCSbIcasQ5I-hdoQvnpPS0SVq0QUPBLT4okNQf2JB6ozEWIXC7pmUsLvzoxBRE_B6W3M5t7R3s3lv9hhQ-cYXRdLQWkA_n7Fouu97_nqBMV5PG4";
+
   static sendPush({
     String topic,
     String token,

@@ -62,6 +62,7 @@ const String ic_chat = 'assets/icons/ic_chat.png';
 const String ic_offer = 'assets/icons/ic_offer.png';
 const String ic_product = 'assets/icons/ic_product.png';
 const String ic_chat1 = 'assets/icons/ic_chat1.png';
+const String ic_cart = 'assets/icons/cart.png';
 const String ic_chat2 = 'assets/icons/ic_chat2.png';
 const String ic_coin = 'assets/icons/ic_coin.png';
 const String sample = 'assets/icons/sample.jpg';
@@ -1501,7 +1502,11 @@ const String LOCAL_ADS_COST = "localAdsCost";
 const String BASE_ADS_COST = "baseAdsCost";
 const String AMOUNT_TO_PAY = "amountToPay";
 
+const String PRODUCT_ID = "productId";
 const String PRODUCT_BASE = "productBase";
+const String OFFER_BASE = "offerBase";
+const String QUANTITY = "quantity";
+const String SELLER_ID = "seller";
 
 List productCategories = [
   "Hair",

@@ -277,6 +277,8 @@ class BaseModel {
     return value == null || !(value is int) ? 0 : value;
   }
 
+  int get createdAt => getInt(CREATED_AT);
+
   /*int getLong(String key) {
     Object value = items[key];
     return value == null || !(value is int) ? 0 : value;

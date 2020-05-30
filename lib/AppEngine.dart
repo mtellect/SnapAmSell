@@ -11,8 +11,6 @@ import 'package:Strokes/dialogs/inputDialog.dart';
 import 'package:Strokes/dialogs/listDialog.dart';
 import 'package:Strokes/dialogs/messageDialog.dart';
 import 'package:Strokes/dialogs/progressDialog.dart';
-import 'package:Strokes/main_pages/Account.dart';
-import 'package:Strokes/main_pages/show_profile.dart';
 import 'package:Strokes/preinit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,6 +47,8 @@ import 'SimpleVideoPlayer.dart';
 import 'app/navigation.dart';
 import 'app_config.dart';
 import 'main_pages/Chat.dart';
+import 'main_pages/ShowProduct.dart';
+import 'main_pages/ShowStore.dart';
 import 'notificationService.dart';
 
 final formatter = NumberFormat("#,###");
@@ -4767,48 +4767,74 @@ groupedButtons(
 }
 
 bool passwordVisible = false;
-textbox(TextEditingController controller,String hint,{int lines=1,
-  bool isName=false,focusNode,bool isPass=false,refresh,maxLength,bool center=true,onChanged,
-  bool dontPad=false,
-  bool isNum=false,bool darkMode =false}){
+textbox(TextEditingController controller, String hint,
+    {int lines = 1,
+    bool isName = false,
+    focusNode,
+    bool isPass = false,
+    refresh,
+    maxLength,
+    bool center = true,
+    onChanged,
+    bool dontPad = false,
+    bool isNum = false,
+    bool darkMode = false,double rad=25}) {
   return Container(
-    margin: EdgeInsets.fromLTRB(dontPad?0:15, 0, dontPad?0:15, dontPad?0:15),
-    padding: EdgeInsets.fromLTRB(isPass?40:10, 0, 10, 0),
+    margin: EdgeInsets.fromLTRB(
+        dontPad ? 0 : 15, 0, dontPad ? 0 : 15, dontPad ? 0 : 15),
+    padding: EdgeInsets.fromLTRB(isPass ? 40 : 10, 0, 10, 0),
 //    height: lines>1?null:50,
     decoration: BoxDecoration(
-        border: Border.all(color: darkMode?(white):black.withOpacity(.1), width: darkMode?2:1),
-        borderRadius: BorderRadius.circular(25),color: darkMode?(transparent):blue09),
+        border: Border.all(
+            color: darkMode ? (white) : black.withOpacity(.1),
+            width: darkMode ? 2 : 1),
+        borderRadius: BorderRadius.circular(rad),
+        color: darkMode ? (transparent) : blue09),
     child: new TextField(
-      controller: controller,keyboardType: isNum?TextInputType.number:TextInputType.text,
-      textCapitalization: isPass?TextCapitalization.none:TextCapitalization.sentences,
-      textInputAction: lines>1?TextInputAction.newline:TextInputAction.done,focusNode: focusNode,
+      controller: controller,
+      keyboardType: isNum ? TextInputType.number : TextInputType.text,
+      textCapitalization:
+          isPass ? TextCapitalization.none : TextCapitalization.sentences,
+      textInputAction:
+          lines > 1 ? TextInputAction.newline : TextInputAction.done,
+      focusNode: focusNode,
       decoration: InputDecoration(
-          hintText: hint,isDense: true,suffix: !isPass?null:GestureDetector(
-          onTap: () {
-            passwordVisible = !passwordVisible;
-            if(refresh!=null)refresh();
-          },
-          child: Text(
-            passwordVisible ? "HIDE" : "SHOW",
-            style: textStyle(false, 12,  darkMode?(white.withOpacity(.5)):black.withOpacity(.5)),
-          )),
+          hintText: hint,
+          isDense: true,
+          suffix: !isPass
+              ? null
+              : GestureDetector(
+                  onTap: () {
+                    passwordVisible = !passwordVisible;
+                    if (refresh != null) refresh();
+                  },
+                  child: Text(
+                    passwordVisible ? "HIDE" : "SHOW",
+                    style: textStyle(
+                        false,
+                        12,
+                        darkMode
+                            ? (white.withOpacity(.5))
+                            : black.withOpacity(.5)),
+                  )),
           hintStyle: textStyle(
             false,
             22,
-            darkMode?(white.withOpacity(.5)):black.withOpacity(.35),
+            darkMode ? (white.withOpacity(.5)) : black.withOpacity(.35),
           ),
           border: InputBorder.none),
-      textAlign: center?TextAlign.center:TextAlign.left,
+      textAlign: center ? TextAlign.center : TextAlign.left,
       style: textStyle(
         false,
         22,
-        darkMode?(white):black,
-      ),maxLength: isName?30:null,
-      cursorColor: black,obscureText: isPass && !passwordVisible,
+        darkMode ? (white) : black,
+      ),
+      maxLength: isName ? 30 : null,
+      cursorColor: black, obscureText: isPass && !passwordVisible,
       onChanged: onChanged,
       //maxLength: 200,
       cursorWidth: 1,
-      minLines: lines,maxLines: lines,
+      minLines: lines, maxLines: lines,
     ),
   );
 }
@@ -5286,19 +5312,20 @@ String getChatTime(int milli) {
   return formatter.format(date);
 }
 
-userImageItem(context, BaseModel model,
-    {double size = 40, double strokeSize = 4, bool padLeft = true}) {
+userImageItem(
+  context,
+  BaseModel model, {
+  double size = 40,
+  double strokeSize = 4,
+  bool padLeft = true,
+}) {
   return new GestureDetector(
     onTap: () {
       pushAndResult(
           context,
-          model.myItem()
-              ? Account(
-//             model,
-                  )
-              : ShowProfile(
-                  theUser: model,
-                ),
+          ShowStore(
+            model,
+          ),
           depend: false);
     },
     child: new AnimatedContainer(
@@ -5312,7 +5339,7 @@ userImageItem(context, BaseModel model,
       height: size,
       child: Stack(
         children: <Widget>[
-          Card(
+          /* Card(
             margin: EdgeInsets.all(0),
             shape: CircleBorder(),
             clipBehavior: Clip.antiAlias,
@@ -5334,10 +5361,36 @@ userImageItem(context, BaseModel model,
                 CachedNetworkImage(
                   width: size,
                   height: size,
-                  imageUrl: getFirstPhoto(model.getList(PROFILE_PHOTOS)),
+                  imageUrl: model.userImage,
                   fit: BoxFit.cover,
                 ),
               ],
+            ),
+          ),*/
+
+          ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Container(
+//                width: size,
+              height: size,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppConfig.appColor,
+                  gradient: LinearGradient(colors: [
+                    orange01,
+                    orange04,
+                  ])),
+              child: model.userImage.isEmpty
+                  ? Center(
+                      child: Text(
+                        getInitials(model.getString(NAME)),
+                        style: textStyle(true, 14, white),
+                      ),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: model.userImage,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           if (isOnline(model) && !model.myItem())
@@ -5351,6 +5404,116 @@ userImageItem(context, BaseModel model,
               ),
             ),
         ],
+      ),
+    ),
+  );
+}
+
+getInitials(String name) {
+  if (name.isEmpty) return "";
+  if (name.trim().contains(" ")) {
+    var parts = name.split(" ");
+    return ("${parts[0].substring(0, 1)}${parts[1].substring(0, 1)}")
+        .toUpperCase();
+  }
+  if (name.length >= 2) {
+    return (name.substring(0, 2)).toUpperCase();
+  }
+  return name.substring(0, 1).toUpperCase();
+}
+
+shopItem(BuildContext context, BaseModel model, setState) {
+  String id = model.getObjectId();
+  String image = getFirstPhoto(model.images);
+  String category = model.getString(CATEGORY);
+  String title = model.getString(TITLE);
+  double price = model.getDouble(PRICE);
+  int p = cartLists.indexWhere((e) => e.getObjectId() == id);
+  bool isInCart = p != -1;
+//  bool isInCart = cartLists.contains(model.getObjectId());
+
+  return GestureDetector(
+    onTap: () {
+      pushAndResult(context, ShowProduct(model), depend: false);
+    },
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: white.withOpacity(0.1), width: 2)),
+        child: Stack(
+          //fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: image,
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15), color: white),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text.rich(TextSpan(children: [
+                        TextSpan(
+                            text: "Category ",
+                            style: textStyle(false, 12, black.withOpacity(.5))),
+                        TextSpan(
+                            text: category, style: textStyle(false, 12, black)),
+                      ])),
+                      addSpace(2),
+                      Text(
+                        title,
+                        style: textStyle(false, 16, black),
+                      ),
+                      addSpace(2),
+                      FlatButton(
+                        onPressed: () {
+                          cartController.add(model);
+                        },
+                        color: isInCart ? red : AppConfig.appColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: white)),
+                        child: Center(
+                          child: Text.rich(TextSpan(children: [
+                            TextSpan(
+                                text: isInCart ? "REMOVE " : "SHOP ",
+                                style: textStyle(
+                                    false, 12, white.withOpacity(.5))),
+                            TextSpan(
+                                text: "\$$price",
+                                style: textStyle(true, 14, white)),
+                          ])),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                decoration: BoxDecoration(color: white, shape: BoxShape.circle),
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.favorite,
+                  size: 17,
+                  color: black.withOpacity(.7),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     ),
   );

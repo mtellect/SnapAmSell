@@ -23,14 +23,20 @@ import 'AppEngine.dart';
 import 'ChatMain.dart';
 import 'ReportMain.dart';
 import 'app_config.dart';
+import 'main_pages/Account.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/Home.dart';
-import 'main_pages/MyProfile.dart';
+import 'main_pages/Notifications.dart';
 import 'main_pages/Offer.dart';
 import 'main_pages/SellCamera.dart';
+import 'main_pages/ShowCart.dart';
+import 'main_pages/ShowStore.dart';
 
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
+
+Map otherProductInfo = Map();
+
 List<BaseModel> allStoryList = new List();
 final firebaseMessaging = FirebaseMessaging();
 final chatMessageController = StreamController<bool>.broadcast();
@@ -43,6 +49,8 @@ final adsController = StreamController<bool>.broadcast();
 final uploadingController = StreamController<String>.broadcast();
 final progressController = StreamController<bool>.broadcast();
 final productController = StreamController<BaseModel>.broadcast();
+final cartController = StreamController<BaseModel>.broadcast();
+final offerController = StreamController<BaseModel>.broadcast();
 
 final modeController = StreamController<bool>.broadcast();
 
@@ -74,8 +82,14 @@ bool adsSetup = false;
 List<BaseModel> productLists = [];
 bool productSetup = false;
 
+List<BaseModel> offerLists = [];
+bool offerSetup = false;
+
 List<BaseModel> myProducts = [];
 bool myProductSetup = false;
+
+List<BaseModel> cartLists = [];
+bool cartSetup = false;
 
 var notificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -167,10 +181,49 @@ class _MainAdminState extends State<MainAdmin>
       });
     });
 
+    var sub5 = cartController.stream.listen((model) {
+      String id = model.getObjectId();
+      int p = cartLists.indexWhere((e) => e.getObjectId() == id);
+      model.put(QUANTITY, 1);
+      bool exists = p != -1;
+      if (exists) {
+        cartLists.removeAt(p);
+      } else {
+        cartLists.add(model);
+      }
+      setState(() {});
+    });
+
+    var sub6 = cartController.stream.listen((model) {
+      String id = model.getObjectId();
+      int p = offerLists.indexWhere((e) => e.getObjectId() == id);
+      model.put(QUANTITY, 1);
+      bool exists = p != -1;
+      if (exists) {
+        offerLists.removeAt(p);
+      } else {
+        offerLists.add(model);
+      }
+      setState(() {});
+    });
+
+    var sub7 = FirebaseAuth.instance.onAuthStateChanged.listen((event) {
+      if (event.uid == null) {
+        cartLists.clear();
+        lastMessages.clear();
+        offerLists.clear();
+        return;
+      }
+      loadMessages();
+    });
+
     subs.add(sub1);
     subs.add(sub2);
     subs.add(sub3);
     subs.add(sub4);
+    subs.add(sub5);
+    subs.add(sub6);
+    subs.add(sub7);
   }
 
   saveProducts(List<BaseModel> models, List<BaseModel> modelsUploaded,
@@ -310,10 +363,9 @@ class _MainAdminState extends State<MainAdmin>
           loadNotification();
           loadMessages();
           loadProducts();
+          loadOffers();
           setupPush();
-
           loadBlocked();
-          loadStory();
           updatePackage();
           chkUpdate();
           setUpLocation();
@@ -365,6 +417,7 @@ class _MainAdminState extends State<MainAdmin>
   }
 
   setUpLocation() async {
+//    return;
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
@@ -601,6 +654,7 @@ class _MainAdminState extends State<MainAdmin>
             }
 
             String otherPersonId = getOtherPersonId(chatIdModel);
+            print(otherPersonId);
             loadOtherPerson(otherPersonId);
 
             try {
@@ -668,13 +722,59 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
+  loadOffers() async {
+    var lock = Lock();
+    await lock.synchronized(
+      () async {
+        Firestore.instance
+            .collection(OFFER_BASE)
+            .where(
+              USER_ID,
+              isEqualTo: userModel.getUserId(),
+            )
+            .limit(30)
+            .getDocuments()
+            .then((shots) {
+          for (DocumentSnapshot doc in shots.documents) {
+            BaseModel model = BaseModel(doc: doc);
+            int p = offerLists
+                .indexWhere((e) => e.getObjectId() == model.getObjectId());
+            if (p != -1) {
+              offerLists[p] = model;
+            } else {
+              offerLists.add(model);
+            }
+          }
+          offerSetup = true;
+          if (mounted) setState(() {});
+        });
+      },
+    );
+  }
+
+  loadProductAt(String pID, {int delay = 0}) async {
+    var lock = Lock();
+    await lock.synchronized(() async {
+      Future.delayed(Duration(seconds: delay), () async {
+        DocumentSnapshot doc = await Firestore.instance
+            .collection(PRODUCT_BASE)
+            .document(pID)
+            .get();
+        if (doc == null) return;
+        if (!doc.exists) return;
+        BaseModel product = BaseModel(doc: doc);
+        otherProductInfo[pID] = product;
+        if (mounted) setState(() {});
+      });
+    }, timeout: Duration(seconds: 10));
+  }
+
   loadOtherPerson(String uId, {int delay = 0}) async {
     var lock = Lock();
     await lock.synchronized(() async {
       Future.delayed(Duration(seconds: delay), () async {
         DocumentSnapshot doc =
             await Firestore.instance.collection(USER_BASE).document(uId).get();
-
         if (doc == null) return;
         if (!doc.exists) return;
 
@@ -746,7 +846,7 @@ class _MainAdminState extends State<MainAdmin>
     {"title": "Home", "image": Icons.home, "asset": false},
     {"title": "Chat", "image": ic_chat2, "asset": true},
     {"title": "Sell", "image": Icons.camera_alt, "asset": false},
-    {"title": "Offer", "image": ic_offer, "asset": true},
+    {"title": "Offers", "image": ic_offer, "asset": true},
     {"title": "Account", "image": Icons.person, "asset": false},
   ];
 
@@ -766,12 +866,48 @@ class _MainAdminState extends State<MainAdmin>
         //backgroundColor: AppConfig.appColor,
         body: Stack(
           children: [
-//            Container(
-//              color: AppConfig.appColor,
-//              height: MediaQuery.of(context).size.height * .3,
-//            ),
             page(),
-            bottomTab()
+            bottomTab(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 100, right: 10),
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    MaterialButton(
+                      onPressed: () {
+                        pushAndResult(context, ShowCart(), depend: false);
+                      },
+                      color: black,
+                      padding: EdgeInsets.all(24),
+                      elevation: 12,
+                      shape: CircleBorder(
+                          //borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: black.withOpacity(.7))),
+                      child: Image.asset(
+                        ic_cart,
+                        height: 20,
+                        width: 20,
+                        color: white,
+                      ),
+                    ),
+                    if (cartLists.length > 0)
+                      Container(
+                        decoration: BoxDecoration(
+                            color: red,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: white, width: 1.5)),
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          cartLists.length.toString(),
+                          style: textStyle(false, 12, white),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -892,7 +1028,10 @@ class _MainAdminState extends State<MainAdmin>
                     child: new FlatButton(
                         padding: EdgeInsets.all(0),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {},
+                        onPressed: () {
+                          pushAndResult(context, Notifications(),
+                              depend: false);
+                        },
                         child: Center(
                             child: Icon(
                           Icons.notifications_active,
@@ -901,7 +1040,7 @@ class _MainAdminState extends State<MainAdmin>
                         ))),
                   ),
                   imageHolder(35, userModel.userImage, onImageTap: () {
-                    pushAndResult(context, MyProfile(), depend: false);
+                    pushAndResult(context, ShowStore(userModel), depend: false);
                   }, strokeColor: white, stroke: 1)
                 ],
               )
@@ -917,15 +1056,7 @@ class _MainAdminState extends State<MainAdmin>
               setState(() {});
             },
             physics: NeverScrollableScrollPhysics(),
-            children: [
-              Home(),
-              Chat(),
-              Container(),
-              Offer(),
-              Container(
-                color: modeColor,
-              )
-            ],
+            children: [Home(), Chat(), Container(), Offer(), Account()],
           ),
         ),
       ],
@@ -1000,61 +1131,6 @@ class _MainAdminState extends State<MainAdmin>
     Future.delayed(Duration(seconds: 1), () {
       io.exit(0);
     });
-  }
-
-  loadStory() async {
-    var storySub = Firestore.instance
-        .collection(STORY_BASE)
-        .where(GENDER, isEqualTo: userModel.isMale() ? FEMALE : MALE)
-        .where(TIME,
-            isGreaterThan: (DateTime.now().millisecondsSinceEpoch -
-                (Duration.millisecondsPerDay * 2)))
-        .snapshots()
-        .listen((shots) {
-      bool added = false;
-      for (DocumentSnapshot shot in shots.documents) {
-        if (!shot.exists) continue;
-        BaseModel model = BaseModel(doc: shot);
-        if (isBlocked(model)) continue;
-        int index = allStoryList
-            .indexWhere(((bm) => bm.getObjectId() == model.getObjectId()));
-        if (index == -1) {
-          allStoryList.add(model);
-          added = true;
-          if (!model.myItem() &&
-              !model.getList(SHOWN).contains(userModel.getObjectId())) {
-            if (!newStoryIds.contains(model.getObjectId()))
-              newStoryIds.add(model.getObjectId());
-          }
-        } else {
-          allStoryList[index] = model;
-        }
-      }
-      homeRefreshController.add(true);
-    });
-    var myStorySub = Firestore.instance
-        .collection(STORY_BASE)
-        .where(USER_ID, isEqualTo: userModel.getObjectId())
-        .snapshots()
-        .listen((shots) {
-      bool added = false;
-      for (DocumentSnapshot shot in shots.documents) {
-        if (!shot.exists) continue;
-        BaseModel model = BaseModel(doc: shot);
-        if (isBlocked(model)) continue;
-        int index = allStoryList
-            .indexWhere(((bm) => bm.getObjectId() == model.getObjectId()));
-        if (index == -1) {
-          allStoryList.add(model);
-          added = true;
-        } else {
-          allStoryList[index] = model;
-        }
-      }
-      homeRefreshController.add(true);
-    });
-    subs.add(storySub);
-    subs.add(myStorySub);
   }
 
   loadBlocked() async {

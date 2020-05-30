@@ -5,8 +5,10 @@ import 'package:Strokes/app/app.dart';
 import 'package:Strokes/app/dotsIndicator.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ShowProduct extends StatefulWidget {
@@ -21,12 +23,29 @@ class _ShowProductState extends State<ShowProduct> {
   BaseModel model;
   final vp = PageController();
   int currentPage = 0;
+  BaseModel theUser;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     model = widget.model;
+    loadUser();
+  }
+
+  loadUser() {
+    if (widget.model.getUserId().isEmpty) return;
+    Firestore.instance
+        .collection(USER_BASE)
+        .document(widget.model.getUserId())
+        .get()
+        .then((value) {
+      theUser = BaseModel(doc: value);
+      model.put(NAME, theUser.getString(NAME));
+      model.put(USER_IMAGE, theUser.getString(USER_IMAGE));
+//      model.put(NAME, theUser.getString(NAME));
+      setState(() {});
+    });
   }
 
   @override
@@ -38,6 +57,9 @@ class _ShowProductState extends State<ShowProduct> {
   }
 
   page() {
+    int p = cartLists.indexWhere((e) => e.getObjectId() == model.getObjectId());
+    bool isInCart = p != -1;
+
     return Column(
       children: [
         Container(
@@ -46,6 +68,9 @@ class _ShowProductState extends State<ShowProduct> {
             children: [
               BackButton(
                 color: white,
+                onPressed: () {
+                  Navigator.pop(context, "");
+                },
               ),
               Text(
                 "Product",
@@ -80,13 +105,23 @@ class _ShowProductState extends State<ShowProduct> {
                     itemCount: model.images.length,
                     itemBuilder: (c, p) {
                       final image = model.images[p];
-                      return CachedNetworkImage(
-                        imageUrl: image.imageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (c, s) {
-                          return placeHolder(getScreenHeight(context) * .4,
-                              width: double.infinity);
+                      return GestureDetector(
+                        onTap: () {
+                          pushAndResult(
+                              context,
+                              ViewImage(
+                                  model.images.map((e) => e.imageUrl).toList(),
+                                  p),
+                              depend: false);
                         },
+                        child: CachedNetworkImage(
+                          imageUrl: image.imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (c, s) {
+                            return placeHolder(getScreenHeight(context) * .4,
+                                width: double.infinity);
+                          },
+                        ),
                       );
                     },
                   ),
@@ -218,8 +253,8 @@ class _ShowProductState extends State<ShowProduct> {
                 children: [
                   Column(
                     children: [
-                      imageHolder(60, model.imageUrl,
-                          stroke: 1, strokeColor: white),
+                      userImageItem(context, theUser ?? model,
+                          size: 60, strokeSize: 1),
                       Text(
                         model.getString(NAME),
                         style: textStyle(false, 16, white),
@@ -323,141 +358,85 @@ class _ShowProductState extends State<ShowProduct> {
             addSpace(20),
           ],
         )),
-        Container(
-          padding: EdgeInsets.all(15),
-          child: Row(
-            children: [
-              FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                color: white,
-                padding: EdgeInsets.all(20),
-                shape: CircleBorder(
-                    //borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: black.withOpacity(.7))),
-                child: Image.asset(
-                  ic_chat1,
-                  height: 20,
-                  width: 20,
-                ),
-              ),
-              Flexible(
-                child: FlatButton(
+        if (!model.myItem())
+          Container(
+            padding: EdgeInsets.all(15),
+            child: Row(
+              children: [
+                FlatButton(
                   onPressed: () {
-                    pushAndResult(context, OfferDialog(model), depend: false);
+                    if (!isLoggedIn) {
+                      pushAndResult(context, LoginPage(), depend: false);
+                      return;
+                    }
+                    if (null == theUser) return;
+                    clickChat(context, theUser, false);
                   },
-                  color: AppConfig.appColor,
+                  color: white,
                   padding: EdgeInsets.all(20),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: white)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        ic_offer,
-                        height: 22,
-                        width: 22,
-                        color: white,
-                      ),
-                      addSpaceWidth(10),
-                      Text(
-                        "Make Offer",
-                        style: textStyle(true, 18, white),
-                      )
-                    ],
+                  shape: CircleBorder(
+                      //borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: black.withOpacity(.7))),
+                  child: Image.asset(
+                    ic_chat1,
+                    height: 20,
+                    width: 20,
                   ),
                 ),
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
+                Flexible(
+                  child: FlatButton(
+                    onPressed: () {
+                      if (!isLoggedIn) {
+                        pushAndResult(context, LoginPage(), depend: false);
+                        return;
+                      }
 
-  shopItem(BuildContext context, BaseModel model) {
-    String image = getFirstPhoto(model.images);
-    String category = model.getString(CATEGORY);
-    String title = model.getString(TITLE);
-    double price = model.getDouble(PRICE);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: white.withOpacity(0.1), width: 2)),
-        child: Stack(
-          //fit: StackFit.expand,
-          children: [
-            CachedNetworkImage(
-              imageUrl: image,
-              fit: BoxFit.cover,
-              height: double.infinity,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), color: white),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: "Category ",
-                            style: textStyle(false, 12, black.withOpacity(.5))),
-                        TextSpan(
-                            text: category, style: textStyle(false, 12, black)),
-                      ])),
-                      addSpace(2),
-                      Text(
-                        title,
-                        style: textStyle(false, 16, black),
-                      ),
-                      addSpace(2),
-                      FlatButton(
-                        onPressed: () {},
-                        color: AppConfig.appColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: white)),
-                        child: Center(
-                          child: Text.rich(TextSpan(children: [
-                            TextSpan(
-                                text: "SHOP ",
-                                style: textStyle(
-                                    false, 12, white.withOpacity(.5))),
-                            TextSpan(
-                                text: "\$$price",
-                                style: textStyle(true, 14, white)),
-                          ])),
+                      pushAndResult(context, OfferDialog(model), depend: false);
+                    },
+                    color: AppConfig.appColor,
+                    padding: EdgeInsets.all(20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: white)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          ic_offer,
+                          height: 22,
+                          width: 22,
+                          color: white,
                         ),
-                      )
-                    ],
+                        addSpaceWidth(10),
+                        Text(
+                          "Make Offer",
+                          style: textStyle(true, 18, white),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                decoration: BoxDecoration(color: white, shape: BoxShape.circle),
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.all(8),
-                child: Icon(
-                  Icons.favorite,
-                  size: 17,
-                  color: black.withOpacity(.7),
+                FlatButton(
+                  onPressed: () {
+                    cartController.add(model);
+                    setState(() {});
+                  },
+                  color: isInCart ? red : green,
+                  padding: EdgeInsets.all(20),
+                  shape: CircleBorder(
+                      //borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: black.withOpacity(.7))),
+                  child: Image.asset(
+                    ic_cart,
+                    height: 20,
+                    width: 20,
+                    color: white,
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
-      ),
+              ],
+            ),
+          )
+      ],
     );
   }
 }

@@ -146,6 +146,7 @@ class _MainHomeState extends State<MainHome> {
       loadLocalUser(user.uid, onInComplete: () {}, onLoaded: () {});
     }
 //    popUpUntil(context, LoginPage());
+//    return;
     popUpUntil(context, MainAdmin());
   }
 

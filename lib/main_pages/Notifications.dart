@@ -7,37 +7,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class Home extends StatefulWidget {
+class Notifications extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _NotificationsState createState() => _NotificationsState();
 }
 
-class _HomeState extends State<Home> {
+class _NotificationsState extends State<Notifications>
+    with AutomaticKeepAliveClientMixin {
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 1), () {
-      loadProducts(false);
-    });
+    loadNotifications(false);
   }
 
-  loadProducts(bool isNew) async {
+  loadNotifications(bool isNew) async {
     final startFeedAt = [
       !isNew
-          ? (productLists.isEmpty
+          ? (offerLists.isEmpty
               ? DateTime.now().millisecondsSinceEpoch
-              : productLists[productLists.length - 1].createdAt)
-          : (productLists.isEmpty ? 0 : productLists[0].createdAt)
+              : offerLists[offerLists.length - 1].createdAt)
+          : (offerLists.isEmpty ? 0 : offerLists[0].createdAt)
     ];
 
     List local = [];
     Firestore.instance
-        .collection(PRODUCT_BASE)
-        //.where(PARTIES, arrayContains: userModel.getUserId())
-        .limit(6)
+        .collection(NOTIFY_BASE)
+        .where(PARTIES, arrayContains: userModel.getUserId())
+        .limit(10)
         .orderBy(CREATED_AT, descending: !isNew)
         .startAt(startFeedAt)
         .getDocuments()
@@ -46,19 +45,19 @@ class _HomeState extends State<Home> {
       for (var doc in value.documents) {
         BaseModel model = BaseModel(doc: doc);
         //if (userModel.isMuted(model.getObjectId())) continue;
-        int p = productLists
+        int p = offerLists
             .indexWhere((e) => e.getObjectId() == model.getObjectId());
         if (p != -1) {
-          productLists[p] = model;
+          offerLists[p] = model;
         } else {
-          productLists.add(model);
+          offerLists.add(model);
         }
       }
 
       if (isNew) {
         refreshController.refreshCompleted();
       } else {
-        int oldLength = productLists.length;
+        int oldLength = offerLists.length;
         int newLength = local.length;
         if (newLength <= oldLength) {
           refreshController.loadNoData();
@@ -67,7 +66,7 @@ class _HomeState extends State<Home> {
           refreshController.loadComplete();
         }
       }
-      productSetup = true;
+      offerSetup = true;
       if (mounted)
         setState(() {
           //myNotifications.sort((a, b) => b.time.compareTo(a.time));
@@ -77,6 +76,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: modeColor,
       body: page(),
@@ -86,50 +86,25 @@ class _HomeState extends State<Home> {
   page() {
     return Column(
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Container(
-                height: 45,
-                margin: EdgeInsets.fromLTRB(20, 15, 0, 10),
-                decoration: BoxDecoration(
-                    color: white.withOpacity(.1),
-                    borderRadius: BorderRadius.circular(25),
-                    border:
-                        Border.all(color: white.withOpacity(0.2), width: 1)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    addSpaceWidth(10),
-                    Icon(
-                      Icons.search,
-                      color: white.withOpacity(.5),
-                      size: 17,
-                    ),
-                    addSpaceWidth(10),
-                    Text(
-                      "Search products on Fetish",
-                      style: textStyle(false, 19, white.withOpacity(.6)),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                showListDialog(
-                    context, ["All", "Cosmetics", "Free", "Others"], (p) {});
-              },
-              icon: Icon(
-                Icons.dashboard,
+        Container(
+          padding: EdgeInsets.only(top: 35, right: 10, left: 10, bottom: 10),
+          child: Row(
+            children: [
+              BackButton(
                 color: white,
+                onPressed: () {
+                  Navigator.pop(context, "");
+                },
               ),
-            )
-          ],
+              Text(
+                "Notifications",
+                style: textStyle(true, 25, white),
+              ),
+              Spacer(),
+            ],
+          ),
         ),
-        refresher()
+        refresher(),
       ],
     );
   }
@@ -139,17 +114,17 @@ class _HomeState extends State<Home> {
       child: SmartRefresher(
         controller: refreshController,
         enablePullDown: true,
-        enablePullUp: productLists.length > 6,
+        enablePullUp: offerLists.length > 10,
         header: WaterDropHeader(),
         footer: ClassicFooter(
           noDataText: "Nothing more for now, check later...",
-          textStyle: textStyle(false, 12, black.withOpacity(.7)),
+          textStyle: textStyle(false, 12, white.withOpacity(.7)),
         ),
         onLoading: () {
-          loadProducts(false);
+          loadNotifications(false);
         },
         onRefresh: () {
-          loadProducts(true);
+          loadNotifications(true);
         },
         child: ListView(
           //controller: scrollControllers[1],
@@ -170,26 +145,25 @@ class _HomeState extends State<Home> {
       builder: (ctx) {
         if (!productSetup)
           return Container(
-            height: getScreenHeight(context) / 1.5,
+            height: getScreenHeight(context) * .9,
             child: loadingLayout(trans: true),
           );
-        if (productLists.isEmpty)
+        if (offerLists.isEmpty)
           return Container(
-            height: getScreenHeight(context) / 1.5,
+            height: getScreenHeight(context) * .9,
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Image.asset(
-                      ic_product,
-                      width: 50,
-                      height: 50,
+                    Icon(
+                      Icons.notifications_active,
                       color: AppConfig.appColor,
+                      size: 50,
                     ),
                     Text(
-                      "No Product Yet",
+                      "No Notifications Yet",
                       style: textStyle(true, 20, black),
                       textAlign: TextAlign.center,
                     ),
@@ -205,12 +179,12 @@ class _HomeState extends State<Home> {
               mainAxisSpacing: 5,
               childAspectRatio: 0.65),
           itemBuilder: (c, p) {
-            BaseModel model = productLists[p];
+            BaseModel model = offerLists[p];
             return shopItem(context, model, () {
               setState(() {});
             });
           },
-          itemCount: productLists.length,
+          itemCount: offerLists.length,
           padding: EdgeInsets.all(0),
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -218,4 +192,8 @@ class _HomeState extends State<Home> {
       },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

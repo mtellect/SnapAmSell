@@ -242,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
 
     showProgress(true, context, msg: "Signing in");
 
-    return;
+//    return;
     final FirebaseAuth mAuth = FirebaseAuth.instance;
     mAuth
         .signInWithEmailAndPassword(email: email, password: password)

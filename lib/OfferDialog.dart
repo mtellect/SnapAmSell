@@ -98,7 +98,7 @@ class _OfferDialogState extends State<OfferDialog> {
                         Flexible(
                           child: FlatButton(
                             onPressed: () {
-                              //pushAndResult(context, OfferDialog(model), depend: false);
+                              sendOffer();
                             },
                             color: AppConfig.appColor,
                             padding: EdgeInsets.all(20),
@@ -162,5 +162,21 @@ class _OfferDialogState extends State<OfferDialog> {
     }
     // Update the screen
     setState(() {});
+  }
+
+  void sendOffer() {
+    String offerId = getRandomId();
+    BaseModel model = BaseModel();
+    model.put(OBJECT_ID, offerId);
+    model.put(PRODUCT_ID, widget.model.getObjectId());
+    model.put(PRICE, double.parse(text));
+    model.put(IMAGES, model.getList(IMAGES));
+    model.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
+
+    showMessage(context, Icons.check, green, "Offer sent",
+        "Your Price offer of \$$text has been sent to the seller",
+        cancellable: false, onClicked: (_) {
+      Navigator.pop(context);
+    });
   }
 }

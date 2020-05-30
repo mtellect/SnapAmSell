@@ -3,12 +3,12 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Strokes/AppEngine.dart';
+import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/PreSendVideo.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:Strokes/dialogs/listDialog.dart';
-import 'package:Strokes/main_pages/show_profile.dart';
 import 'package:Strokes/notificationService.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -452,7 +452,7 @@ class _ChatMainState extends State<ChatMain>
             return Scaffold(
                 resizeToAvoidBottomInset: true,
                 key: scaffoldKey,
-                backgroundColor: white,
+                backgroundColor: modeColor,
                 body: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -627,7 +627,7 @@ class _ChatMainState extends State<ChatMain>
       children: <Widget>[
         Container(
           padding: EdgeInsets.fromLTRB(0, 40, 0, 10),
-          color: white,
+          color: modeColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -642,7 +642,7 @@ class _ChatMainState extends State<ChatMain>
                     child: Center(
                         child: Icon(
                       Icons.arrow_back_ios,
-                      color: black,
+                      color: white,
                       size: 20,
                     )),
                   )),
@@ -654,13 +654,13 @@ class _ChatMainState extends State<ChatMain>
                       children: [
                         Text(
                           otherPerson.getString(NAME),
-                          style: textStyle(true, 18, black),
+                          style: textStyle(true, 18, white),
                           maxLines: 1,
                         ),
                         if (getLastSeen(otherPerson) != null)
                           Text(
                             getLastSeen(otherPerson),
-                            style: textStyle(false, 12, black.withOpacity(.3)),
+                            style: textStyle(false, 12, white.withOpacity(.3)),
                             maxLines: 1,
                           ),
                       ],
@@ -688,85 +688,13 @@ class _ChatMainState extends State<ChatMain>
                           : Icons.notifications_active,
                       size: 20,
                       color: mutedList.contains(chatId)
-                          ? black.withOpacity(.7)
-                          : black,
+                          ? white.withOpacity(.7)
+                          : white,
                     ))),
               ),
             ],
           ),
         ),
-        /*new Container(
-          width: double.infinity,
-          child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: GestureDetector(
-                  onTap: () {
-//                     pushAndResult(context, MyProfile1(otherPerson,fromChat: true,),
-//                         opaque: false);
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                        width: 70,
-                        height: 70,
-                        child: Card(
-                          color: blue09,
-                          elevation: 0,
-                          clipBehavior: Clip.antiAlias,
-                          shape: CircleBorder(
-                              //borderRadius: BorderRadius.all(Radius.circular(10)),
-                              side: BorderSide(
-                                  color: black.withOpacity(.1), width: .5)),
-                          child: CachedNetworkImage(
-                            imageUrl: otherPerson.getString(USER_IMAGE),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      addSpaceWidth(10),
-                      Flexible(
-                        child: new Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "${otherPerson.getString(NAME)}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textStyle(true, 18, black),
-                            ),
-//                              if (getLastSeen(otherPerson) != null)
-                            new Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                              child: Text(
-                                isTyping
-                                    ? "Typing"
-                                    : isOnline
-                                        ? "Online"
-                                        : getLastSeen(otherPerson),
-                                maxLines: 1,
-                                style:
-                                    textStyle(false, 14, black.withOpacity(.7)),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              addSpaceWidth(10),
-            ],
-          ),
-        ),
-        addLine(3, black.withOpacity(.1), 0, 0, 0, 0),*/
         new Expanded(
             flex: 1,
             child: Builder(builder: (ctx) {
@@ -774,7 +702,7 @@ class _ChatMainState extends State<ChatMain>
 
               if (chatList.isEmpty) return Container();
               return Container(
-                color: chat_back,
+                color: modeColor,
                 child: ScrollablePositionedList.builder(
                   itemScrollController: messageListController,
                   itemPositionsListener: itemPositionsListener,
@@ -988,25 +916,26 @@ class _ChatMainState extends State<ChatMain>
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-//                   if(!hasMessage)Container(
-//                     height: 60,
-//                     width: 50,
-//                     child: FlatButton(
-//                         materialTapTargetSize:
-//                         MaterialTapTargetSize.shrinkWrap,
-//                         padding: EdgeInsets.all(0),
-//                         onPressed: () {
-//                           showListDialog(context,  ["Photo", "Video"], (p){
-//                             if (p == 0) postChatImage();
-//                             if (p == 1) postChatVideo(false);
-//                           },images: [Icons.image, Icons.videocam]);
-//                         },
-//                         child: Icon(
-//                           Icons.camera_alt,
-//                           color: black.withOpacity(.5),
-//                           size: 20,
-//                         )),
-//                   ),
+                  if (!hasMessage)
+                    Container(
+                      height: 60,
+                      width: 50,
+                      child: FlatButton(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          padding: EdgeInsets.all(0),
+                          onPressed: () {
+                            showListDialog(context, ["Photo", "Video"], (p) {
+                              if (p == 0) postChatImage();
+                              if (p == 1) postChatVideo(false);
+                            }, images: [Icons.image, Icons.videocam]);
+                          },
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: black.withOpacity(.5),
+                            size: 20,
+                          )),
+                    ),
                   Flexible(
                     flex: 1,
                     child: AnimatedContainer(
@@ -1108,7 +1037,6 @@ class _ChatMainState extends State<ChatMain>
                       ),
                     ),
                   ),
-
                   AnimatedContainer(
                     duration: Duration(milliseconds: 200),
                     height: 45,
@@ -1664,7 +1592,7 @@ class _ChatMainState extends State<ChatMain>
                     ),
                   Card(
                     clipBehavior: Clip.antiAlias,
-                    color: default_white,
+                    color: black.withOpacity(.2),
                     elevation: 5,
                     /*shadowColor: black.withOpacity(.3),*/
                     shape: RoundedRectangleBorder(
@@ -1685,7 +1613,7 @@ class _ChatMainState extends State<ChatMain>
                         children: <Widget>[
                           Text(
                             message,
-                            style: textStyle(false, 17, black),
+                            style: textStyle(false, 17, white),
                           ),
                           addSpace(3),
                           Text(
@@ -1694,7 +1622,7 @@ class _ChatMainState extends State<ChatMain>
                                 chat.getTime()),
                             locale: "en_short")*/
                             getChatTime(chat.getInt(TIME)),
-                            style: textStyle(false, 12, black.withOpacity(.3)),
+                            style: textStyle(false, 12, white.withOpacity(.3)),
                           ),
                         ],
                       ),
@@ -2551,7 +2479,7 @@ class _ChatMainState extends State<ChatMain>
                     ),
                   new Card(
                     clipBehavior: Clip.antiAlias,
-                    color: default_white,
+                    color: black,
                     elevation: 5,
                     /*shadowColor: black.withOpacity(.3),*/
                     shape: RoundedRectangleBorder(
@@ -2591,7 +2519,7 @@ class _ChatMainState extends State<ChatMain>
                                         width: 40,
                                         height: 40,
                                         decoration: BoxDecoration(
-                                            color: black.withOpacity(.9),
+                                            color: white.withOpacity(.9),
                                             border: Border.all(
                                                 color: white, width: 1),
                                             shape: BoxShape.circle),
@@ -2869,68 +2797,15 @@ class _ChatMainState extends State<ChatMain>
   }
 
   otherPersonImage(context) {
-    return new GestureDetector(
+    return GestureDetector(
       onTap: () {
-        pushAndResult(
-            context,
-            ShowProfile(
-              theUser: otherPerson,
-            ));
+//        pushAndResult(
+//            context,
+//            ShowStore(
+//              theUser: otherPerson,
+//            ),depend: false);
       },
-      child: new Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 2, color: white),
-          shape: BoxShape.circle,
-        ),
-        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-        width: 40,
-        height: 40,
-        child: Stack(
-          children: <Widget>[
-            Card(
-              margin: EdgeInsets.all(0),
-              shape: CircleBorder(),
-              clipBehavior: Clip.antiAlias,
-              color: transparent,
-              elevation: .5,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    width: 40,
-                    height: 40,
-                    color: AppConfig.appColor,
-                    child: Center(
-                        child: Icon(
-                      Icons.person,
-                      color: white,
-                      size: 15,
-                    )),
-                  ),
-                  CachedNetworkImage(
-                    width: 40,
-                    height: 40,
-                    imageUrl: otherPerson.profilePhotos[0].imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ],
-              ),
-            ),
-            if (isOnline)
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: white, width: 2),
-                    color: red0,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
+      child: userImageItem(context, otherPerson, size: 40, strokeSize: 1),
     );
   }
 
@@ -3501,3 +3376,7 @@ class _ChatMainState extends State<ChatMain>
     );
   }
 }
+
+//keytool -list -v \-alias androiddebugkey -keystore ~/.android/debug.keystore
+//keytool -exportcert -list -v \-alias key -keystore /Users/bappstack/RemoteJobs/strock/key.jsk
+//keytool -exportcert -alias androiddebugkey -keystore ~/ -list -v

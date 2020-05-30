@@ -8,7 +8,6 @@ import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/basemodel.dart';
 import 'package:Strokes/dialogs/listDialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,14 +31,12 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     sub = chatMessageController.stream.listen((_) {
-//      toastInAndroid("New Chat");
       if (mounted) setState(() {});
     });
   }
 
   @override
   void dispose() {
-//    chatMessageController.close();
     sub.cancel();
     super.dispose();
   }
@@ -84,6 +81,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
         Expanded(
             flex: 1,
             child: Builder(builder: (ctx) {
+              if (!chatSetup) return loadingLayout(trans: true);
               if (lastMessages.isEmpty)
                 return Center(
                   child: Padding(
@@ -106,31 +104,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                     ),
                   ),
                 );
-
-//              if (!chatSetup) return loadingLayout();
-//              if (lastMessages.isEmpty)
-//                return Center(
-//                  child: Padding(
-//                    padding: const EdgeInsets.all(10),
-//                    child: Column(
-//                      mainAxisSize: MainAxisSize.min,
-//                      children: <Widget>[
-//                        Image.asset(
-//                          ic_chat1,
-//                          width: 50,
-//                          height: 50,
-//                          color: AppConfig.appColor,
-//                        ),
-//                        Text(
-//                          "No Chat Yet",
-//                          style: textStyle(true, 20, black),
-//                          textAlign: TextAlign.center,
-//                        ),
-//                      ],
-//                    ),
-//                  ),
-//                );
-
+              print(lastMessages.length);
               return Container(
                   child: ListView.builder(
                 itemBuilder: (c, p) {
@@ -142,7 +116,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                   if (otherPerson == null) return Container();
 
                   String name = getFullName(otherPerson);
-                  String image = otherPerson.profilePhotos[0].imageUrl;
+                  String image = otherPerson.userImage;
 
                   return chatItem(image, name, model,
                       p == lastMessages.length - 1, otherPerson);
@@ -153,56 +127,6 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
               ));
             }))
       ],
-    );
-  }
-
-  dummyChatItem(String image, String name, String message) {
-    return Container(
-      child: Card(
-        elevation: 5,
-        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-        shadowColor: black.withOpacity(.3),
-        child: Container(
-          padding: EdgeInsets.all(12),
-          child: Row(
-            children: [
-              imageHolder(60, image, stroke: 0, strokeColor: black),
-              addSpaceWidth(10),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: Text(
-                            name,
-                            style: textStyle(true, 16, black),
-                          ),
-                        ),
-                        addSpaceWidth(10),
-                        Icon(
-                          Icons.access_time,
-                          size: 16,
-                          color: black.withOpacity(.3),
-                        ),
-                        addSpaceWidth(10),
-                      ],
-                    ),
-                    addSpace(3),
-                    Text(
-                      message,
-                      //style: textStyle(false, 13, black.withOpacity(.6)),
-                      style: textStyle(false, 14, black.withOpacity(.7)),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -267,7 +191,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
       //margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Container(
         decoration: BoxDecoration(
-            color: white,
+            color: white.withOpacity(0.05),
             boxShadow: [BoxShadow(color: black.withOpacity(.1), blurRadius: 5)],
             borderRadius: BorderRadius.circular(5)),
         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
@@ -279,7 +203,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Container(
+                /* Container(
 //                  margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                   width: 80,
                   height: 80,
@@ -300,7 +224,8 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                       fit: BoxFit.cover,
                     ),
                   ),
-                ),
+                ),*/
+                userImageItem(context, otherPerson, size: 70, strokeSize: 1),
                 addSpaceWidth(10),
                 Flexible(
                   flex: 1,
@@ -320,7 +245,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                               //"Emeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                               name,
                               maxLines: 1, overflow: TextOverflow.ellipsis,
-                              style: textStyle(true, 20, black),
+                              style: textStyle(true, 20, white),
                             ),
                           ),
                           addSpaceWidth(5),
@@ -349,7 +274,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                           addSpaceWidth(5),
                           Text(
                             getChatTime(chatModel.getTime()),
-                            style: textStyle(false, 12, black.withOpacity(.8)),
+                            style: textStyle(false, 12, white.withOpacity(.8)),
                             textAlign: TextAlign.end,
                           ),
 
@@ -387,7 +312,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                                                     : type == CHAT_TYPE_REC
                                                         ? Icons.mic
                                                         : Icons.library_books,
-                                        color: black.withOpacity(.8),
+                                        color: white.withOpacity(.8),
                                         size: 12,
                                       ),
                                       addSpaceWidth(5),
@@ -409,7 +334,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: textStyle(
-                                              false, 14, black.withOpacity(.8)),
+                                              false, 14, white.withOpacity(.8)),
                                         ),
                                       ),
                                     ],
@@ -433,7 +358,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
               ],
             ),
             addSpace(5),
-            addLine(.5, white.withOpacity(.3), 0, 0, 0, 0)
+            addLine(.1, white.withOpacity(.3), 0, 0, 0, 0)
           ],
         ),
       ),

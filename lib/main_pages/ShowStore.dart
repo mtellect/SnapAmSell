@@ -4,17 +4,54 @@ import 'package:Strokes/app/app.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/basemodel.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'ShowProduct.dart';
-
-class MyProfile extends StatefulWidget {
+class ShowStore extends StatefulWidget {
+  final BaseModel model;
+  ShowStore(this.model);
   @override
-  _MyProfileState createState() => _MyProfileState();
+  _ShowStoreState createState() => _ShowStoreState();
 }
 
-class _MyProfileState extends State<MyProfile> {
+class _ShowStoreState extends State<ShowStore> {
+  List<BaseModel> productLists = [];
+  bool hasSetup = false;
+
+  @override
+  initState() {
+    super.initState();
+    if (widget.model.myItem()) productLists = myProducts;
+    hasSetup = productLists.isNotEmpty;
+    loadProducts(false);
+  }
+
+  loadProducts(bool isNew) async {
+    Firestore.instance
+        .collection(PRODUCT_BASE)
+        .where(
+          USER_ID,
+          isEqualTo: widget.model.getUserId(),
+        )
+        //.limit(30)
+        .getDocuments()
+        .then((shots) {
+      for (DocumentSnapshot doc in shots.documents) {
+        BaseModel model = BaseModel(doc: doc);
+        int p = productLists
+            .indexWhere((e) => e.getObjectId() == model.getObjectId());
+        if (p != -1) {
+          productLists[p] = model;
+        } else {
+          productLists.add(model);
+        }
+      }
+      hasSetup = true;
+      if (widget.model.myItem()) myProducts = productLists;
+      if (mounted) setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +71,7 @@ class _MyProfileState extends State<MyProfile> {
                 color: white,
               ),
               Text(
-                "My Profile",
+                widget.model.myItem() ? "My Store" : "Store",
                 style: textStyle(true, 25, white),
               ),
               Spacer(),
@@ -56,10 +93,10 @@ class _MyProfileState extends State<MyProfile> {
                 children: [
                   Column(
                     children: [
-                      imageHolder(60, userModel.imageUrl,
+                      imageHolder(60, widget.model.imageUrl,
                           stroke: 1, strokeColor: white),
                       Text(
-                        userModel.getString(NAME),
+                        widget.model.getString(NAME),
                         style: textStyle(false, 16, white),
                       ),
                       StarRating(
@@ -171,8 +208,12 @@ class _MyProfileState extends State<MyProfile> {
             ),
             Builder(
               builder: (ctx) {
-                if (!myProductSetup) loadingLayout();
-                if (myProducts.isEmpty)
+                if (!hasSetup)
+                  return Container(
+                    height: getScreenHeight(context) * .5,
+                    child: loadingLayout(trans: true),
+                  );
+                if (productLists.isEmpty)
                   return Container(
                     height: getScreenHeight(context) * .5,
                     child: Center(
@@ -205,10 +246,12 @@ class _MyProfileState extends State<MyProfile> {
                       mainAxisSpacing: 5,
                       childAspectRatio: 0.65),
                   itemBuilder: (c, p) {
-                    BaseModel model = myProducts[p];
-                    return shopItem(context, model);
+                    BaseModel model = productLists[p];
+                    return shopItem(context, model, () {
+                      setState(() {});
+                    });
                   },
-                  itemCount: myProducts.length,
+                  itemCount: productLists.length,
                   padding: EdgeInsets.all(7),
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -220,93 +263,4 @@ class _MyProfileState extends State<MyProfile> {
       ],
     );
   }
-}
-
-shopItem(BuildContext context, BaseModel model) {
-  String image = getFirstPhoto(model.images);
-  String category = model.getString(CATEGORY);
-  String title = model.getString(TITLE);
-  double price = model.getDouble(PRICE);
-  return GestureDetector(
-    onTap: () {
-      pushAndResult(context, ShowProduct(model), depend: false);
-    },
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: white.withOpacity(0.1), width: 2)),
-        child: Stack(
-          //fit: StackFit.expand,
-          children: [
-            CachedNetworkImage(
-              imageUrl: image,
-              fit: BoxFit.cover,
-              height: double.infinity,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), color: white),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: "Category ",
-                            style: textStyle(false, 12, black.withOpacity(.5))),
-                        TextSpan(
-                            text: category, style: textStyle(false, 12, black)),
-                      ])),
-                      addSpace(2),
-                      Text(
-                        title,
-                        style: textStyle(false, 16, black),
-                      ),
-                      addSpace(2),
-                      FlatButton(
-                        onPressed: () {},
-                        color: AppConfig.appColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: white)),
-                        child: Center(
-                          child: Text.rich(TextSpan(children: [
-                            TextSpan(
-                                text: "SHOP ",
-                                style: textStyle(
-                                    false, 12, white.withOpacity(.5))),
-                            TextSpan(
-                                text: "\$$price",
-                                style: textStyle(true, 14, white)),
-                          ])),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                decoration: BoxDecoration(color: white, shape: BoxShape.circle),
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.all(8),
-                child: Icon(
-                  Icons.favorite,
-                  size: 17,
-                  color: black.withOpacity(.7),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ),
-  );
 }
