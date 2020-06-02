@@ -1,6 +1,7 @@
 import 'package:Strokes/basemodel.dart';
 import 'package:flutter/material.dart';
 
+const String ic_bid = 'assets/icons/ic_bid.png';
 const String love_back = 'assets/icons/love_back.jpg';
 const String ic_edit_profile = 'assets/icons/ic_edit_profile.png';
 const String ic_low_ba = 'assets/icons/ic_low_ba.png';
@@ -178,7 +179,7 @@ const Color blue07 = Color(0xffcdc5ff);
 const Color blue08 = Color(0xff08534949);
 const Color blue09 = Color(0xff0f534949);
 
-bool darkMode = true;
+bool darkMode = false;
 Color black = darkMode?white_color:gray;
 Color white = darkMode?gray:white_color;
 const Color transparent = Color(0xff00000000);
@@ -483,6 +484,7 @@ const text2 = [
   "Your timetable rings automatically, when you have a lecture or event",
   "Automatically sum your GPA with ease",
 ];
+
 
 const String CURRENCY_BASE = "currencyBase"; //db
 const String CONNECTS_BASE = "connectsBase"; //db
@@ -919,6 +921,7 @@ const String DAYS = "days";
 const String SHORT_DESCRIPTION = "shortDescription";
 const String DESCRIPTION = "description";
 const String PRICE = "price";
+const String MY_BID = "myBid";
 const String SELL_PRICE = "sellPrice";
 const String IMAGES = "images";
 const String VIDEO_LENGTH = "videoLength";
@@ -1511,6 +1514,8 @@ const String AMOUNT_TO_PAY = "amountToPay";
 const String PRODUCT_ID = "productId";
 const String PRODUCT_BASE = "productBase";
 const String OFFER_BASE = "offerBase";
+const String OFFER_ID = "offerId";
+const String OFFER_IDS_BASE = "offerIdsBase";
 const String QUANTITY = "quantity";
 const String SELLER_ID = "seller";
 

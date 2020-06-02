@@ -195,7 +195,7 @@ class _AccountState extends State<Account> {
             ],
           ),
         ),
-        Container(
+        if(isLoggedIn)Container(
           color: black.withOpacity(.05),
           padding: EdgeInsets.all(10),
           margin: EdgeInsets.only(top: 10, bottom: 10),

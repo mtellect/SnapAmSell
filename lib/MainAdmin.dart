@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
+import 'package:Strokes/main_pages/OfferItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -27,7 +28,6 @@ import 'main_pages/Account.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/Home.dart';
 import 'main_pages/Notifications.dart';
-import 'main_pages/Offer.dart';
 import 'main_pages/SellCamera.dart';
 import 'main_pages/ShowCart.dart';
 import 'main_pages/ShowStore.dart';
@@ -35,6 +35,7 @@ import 'main_pages/ShowStore.dart';
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
 
+Map offerInfo = Map();
 Map otherProductInfo = Map();
 
 List<BaseModel> allStoryList = new List();
@@ -50,15 +51,18 @@ final uploadingController = StreamController<String>.broadcast();
 final progressController = StreamController<bool>.broadcast();
 final productController = StreamController<BaseModel>.broadcast();
 final cartController = StreamController<BaseModel>.broadcast();
-final offerController = StreamController<BaseModel>.broadcast();
+final offerController = StreamController<bool>.broadcast();
 
 final modeController = StreamController<bool>.broadcast();
 
 List connectCount = [];
 List<String> stopListening = List();
 List<BaseModel> lastMessages = List();
+List<BaseModel> lastOffers = List();
 bool chatSetup = false;
+bool offerSetup = false;
 List showNewMessageDot = [];
+List showNewMessageOffer = [];
 bool showNewNotifyDot = false;
 List newStoryIds = [];
 String visibleChatId;
@@ -82,8 +86,7 @@ bool adsSetup = false;
 List<BaseModel> productLists = [];
 bool productSetup = false;
 
-List<BaseModel> offerLists = [];
-bool offerSetup = false;
+//List<BaseModel> offerLists = [];
 
 List<BaseModel> myProducts = [];
 bool myProductSetup = false;
@@ -197,7 +200,7 @@ class _MainAdminState extends State<MainAdmin>
       setState(() {});
     });
 
-    var sub6 = cartController.stream.listen((model) {
+   /* var sub6 = cartController.stream.listen((model) {
       String id = model.getObjectId();
       int p = offerLists.indexWhere((e) => e.getObjectId() == id);
       model.put(QUANTITY, 1);
@@ -208,14 +211,14 @@ class _MainAdminState extends State<MainAdmin>
         offerLists.add(model);
       }
       setState(() {});
-    });
+    });*/
 
     var sub7 = FirebaseAuth.instance.onAuthStateChanged.listen((event) {
       if(event==null)return;
       if (event.uid == null) {
         cartLists.clear();
         lastMessages.clear();
-        offerLists.clear();
+//        offerLists.clear();
         return;
       }
       loadMessages();
@@ -226,7 +229,7 @@ class _MainAdminState extends State<MainAdmin>
     subs.add(sub3);
     subs.add(sub4);
     subs.add(sub5);
-    subs.add(sub6);
+//    subs.add(sub6);
     subs.add(sub7);
   }
 
@@ -367,7 +370,7 @@ class _MainAdminState extends State<MainAdmin>
           loadNotification();
           loadMessages();
           loadProducts();
-          loadOffers();
+          loadBids();
           setupPush();
           loadBlocked();
           updatePackage();
@@ -676,6 +679,79 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
+  loadBids() async {
+    var lock = Lock();
+    await lock.synchronized(() async {
+//      List<Map> myChats = List.from(userModel.getList(MY_CHATS));
+      var sub = Firestore.instance
+          .collection(OFFER_IDS_BASE)
+          .where(PARTIES, arrayContains: userModel.getObjectId())
+          .snapshots()
+          .listen((shots) {
+        for (DocumentSnapshot doc in shots.documents) {
+          BaseModel offerModel = BaseModel(doc: doc);
+          String offerId = offerModel.getObjectId();
+          offerInfo[offerId] = offerModel;
+          if (loadedIds.contains(offerModel)) {
+            continue;
+          }
+          loadedIds.add(offerModel);
+
+          var sub = Firestore.instance
+              .collection(OFFER_BASE)
+              .where(PARTIES, arrayContains: userModel.getUserId())
+              .where(OFFER_ID, isEqualTo: offerId)
+              .orderBy(TIME, descending: true)
+              .limit(1)
+              .snapshots()
+              .listen((shots) async {
+
+            /*if (shots.documents.isNotEmpty) {
+              BaseModel cModel = BaseModel(doc: (shots.documents[0]));
+              if (isBlocked(null, userId: getOtherPersonId(cModel))) {
+                lastMessages.removeWhere(
+                    (bm) => bm.getString(CHAT_ID) == cModel.getString(CHAT_ID));
+                offerController.add(true);
+                return;
+              }
+            }*/
+            if (stopListening.contains(offerId)) return;
+            for (DocumentSnapshot doc in shots.documents) {
+              BaseModel model = BaseModel(doc: doc);
+              int index = lastOffers.indexWhere(
+                  (bm) => bm.getString(OFFER_ID) == model.getString(OFFER_ID));
+              if (index == -1) {
+                lastOffers.add(model);
+              } else {
+                lastOffers[index] = model;
+              }
+
+              if (!model.getList(READ_BY).contains(userModel.getObjectId()) &&
+                  !model.myItem() &&
+                  visibleChatId != offerId) {
+                if (!showNewMessageOffer.contains(offerId)) showNewMessageOffer.add(offerId);
+                  if(mounted)setState(() {});
+//                countUnread(chatId);
+              }
+            }
+
+            try {
+              lastOffers
+                  .sort((bm1, bm2) => bm2.getTime().compareTo(bm1.getTime()));
+            } catch (E) {}
+          });
+
+          subs.add(sub);
+        }
+        offerSetup = true;
+        if (mounted) setState(() {});
+      });
+      subs.add(sub);
+    });
+  }
+
+
+
   loadProducts() async {
     Firestore.instance
         .collection(PRODUCT_BASE)
@@ -726,7 +802,7 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
-  loadOffers() async {
+  /*loadOffers() async {
     var lock = Lock();
     await lock.synchronized(
       () async {
@@ -754,7 +830,7 @@ class _MainAdminState extends State<MainAdmin>
         });
       },
     );
-  }
+  }*/
 
   loadProductAt(String pID, {int delay = 0}) async {
     var lock = Lock();
@@ -1021,7 +1097,7 @@ class _MainAdminState extends State<MainAdmin>
                               color: black,
                             ),
                             addSpaceWidth(5),
-                            Text("Wallet")
+                            Text("Wallet",style: textStyle(true,13,black),)
                           ],
                         ))),
                   ),
@@ -1043,7 +1119,7 @@ class _MainAdminState extends State<MainAdmin>
                           color: black,
                         ))),
                   ),
-                  imageHolder(35, userModel.userImage, onImageTap: () {
+                  if(isLoggedIn)imageHolder(35, userModel.userImage, onImageTap: () {
                     pushAndResult(context, ShowStore(userModel), depend: false);
                   }, strokeColor: black, stroke: 2,)
                 ],
@@ -1060,7 +1136,7 @@ class _MainAdminState extends State<MainAdmin>
               setState(() {});
             },
             physics: NeverScrollableScrollPhysics(),
-            children: [Home(), Chat(), Container(), Offer(), Account()],
+            children: [Home(), Chat(), Container(), OfferItem(), Account()],
           ),
         ),
       ],

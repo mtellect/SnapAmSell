@@ -14,10 +14,12 @@ class OfferDialog extends StatefulWidget {
 }
 
 class _OfferDialogState extends State<OfferDialog> {
+  BaseModel model;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    model= widget.model;
   }
 
   @override
@@ -165,13 +167,25 @@ class _OfferDialogState extends State<OfferDialog> {
   }
 
   void sendOffer() {
-    String offerId = getRandomId();
-    BaseModel model = BaseModel();
-    model.put(OBJECT_ID, offerId);
-    model.put(PRODUCT_ID, widget.model.getObjectId());
-    model.put(PRICE, double.parse(text));
-    model.put(IMAGES, model.getList(IMAGES));
-    model.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
+    String offerId = "${model.getObjectId()}${userModel.getObjectId()}";
+    BaseModel offer = BaseModel();
+    offer.put(OBJECT_ID, offerId);
+    offer.put(SELLER_ID, model.getString(USER_ID));
+    offer.put(PRODUCT_ID, model.getObjectId());
+    offer.put(MY_BID, double.parse(text));
+    offer.put(PRICE,model.getDouble(PRICE));
+    offer.put(TITLE,model.getString(TITLE));
+    offer.put(DESCRIPTION,model.getString(DESCRIPTION));
+    offer.put(IMAGES, model.getList(IMAGES));
+    offer.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
+    offer.saveItem(OFFER_IDS_BASE, true,document: offerId);
+
+    BaseModel offerItem = BaseModel();
+    offerItem.put(OFFER_ID, offerId);
+    offerItem.put(MY_BID, double.parse(text));
+    offerItem.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
+    offerItem.saveItem(OFFER_BASE, true);
+
 
     showMessage(context, Icons.check, green, "Offer sent",
         "Your Price offer of \$$text has been sent to the seller",

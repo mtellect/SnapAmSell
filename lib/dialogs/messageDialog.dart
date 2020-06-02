@@ -99,25 +99,26 @@ class messageDialog extends StatelessWidget {
                     ),
                     Center(
                       child: Container(
-                          width: 35,
-                          height: 35,
+                          width: 55,
+                          height: 55,
                           padding: EdgeInsets.all(
                               iconPadding == null ? 0 : iconPadding),
                           decoration: BoxDecoration(
-                            color: iconColor,
+//                            color: iconColor,
                             shape: BoxShape.circle,
+                            border: Border.all(color: iconColor,width: 4)
                           ),
                           child: (icon is String)
                               ? (Image.asset(
                                   icon,
-                                  color: white,
-                                  width: 15,
-                                  height: 15,
+                                  color: iconColor,
+                                  width: 35,
+                                  height: 35,
                                 ))
                               : Icon(
                                   icon,
-                                  color: white,
-                                  size: 15,
+                                  color: iconColor,
+                                  size: 35,
                                 )),
                     ),
                   ],
@@ -150,27 +151,21 @@ class messageDialog extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         addSpace(15),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Flexible(
-                              flex: 1,
-                              fit: FlexFit.tight,
-                              child: FlatButton(
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25)),
-                                  color: blue3,
-                                  onPressed: () {
-                                    Navigator.pop(context, true);
-                                  },
-                                  child: Text(
-                                    yesText,
-                                    style: textStyle(true, 14, white),
-                                  )),
-                            )
-                          ],
+                        Container(
+                          height: 40,
+                          child: FlatButton(
+                              materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25)),
+                              color: blue3,
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                              },
+                              child: Text(
+                                yesText,
+                                style: textStyle(true, 16, white),
+                              )),
                         ),
                         noText == null
                             ? new Container()

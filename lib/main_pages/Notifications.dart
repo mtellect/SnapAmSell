@@ -16,6 +16,7 @@ class _NotificationsState extends State<Notifications>
     with AutomaticKeepAliveClientMixin {
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
+  List listItems = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -26,10 +27,10 @@ class _NotificationsState extends State<Notifications>
   loadNotifications(bool isNew) async {
     final startFeedAt = [
       !isNew
-          ? (offerLists.isEmpty
+          ? (listItems.isEmpty
               ? DateTime.now().millisecondsSinceEpoch
-              : offerLists[offerLists.length - 1].createdAt)
-          : (offerLists.isEmpty ? 0 : offerLists[0].createdAt)
+              : listItems[listItems.length - 1].createdAt)
+          : (listItems.isEmpty ? 0 : listItems[0].createdAt)
     ];
 
     List local = [];
@@ -45,19 +46,19 @@ class _NotificationsState extends State<Notifications>
       for (var doc in value.documents) {
         BaseModel model = BaseModel(doc: doc);
         //if (userModel.isMuted(model.getObjectId())) continue;
-        int p = offerLists
+        int p = listItems
             .indexWhere((e) => e.getObjectId() == model.getObjectId());
         if (p != -1) {
-          offerLists[p] = model;
+          listItems[p] = model;
         } else {
-          offerLists.add(model);
+          listItems.add(model);
         }
       }
 
       if (isNew) {
         refreshController.refreshCompleted();
       } else {
-        int oldLength = offerLists.length;
+        int oldLength = listItems.length;
         int newLength = local.length;
         if (newLength <= oldLength) {
           refreshController.loadNoData();
@@ -114,7 +115,7 @@ class _NotificationsState extends State<Notifications>
       child: SmartRefresher(
         controller: refreshController,
         enablePullDown: true,
-        enablePullUp: offerLists.length > 10,
+        enablePullUp: listItems.length > 10,
         header: WaterDropHeader(),
         footer: ClassicFooter(
           noDataText: "Nothing more for now, check later...",
@@ -148,7 +149,7 @@ class _NotificationsState extends State<Notifications>
             height: getScreenHeight(context) * .9,
             child: loadingLayout(trans: true),
           );
-        if (offerLists.isEmpty)
+        if (listItems.isEmpty)
           return Container(
             height: getScreenHeight(context) * .9,
             child: Center(
@@ -179,12 +180,12 @@ class _NotificationsState extends State<Notifications>
               mainAxisSpacing: 5,
               childAspectRatio: 0.65),
           itemBuilder: (c, p) {
-            BaseModel model = offerLists[p];
+            BaseModel model = listItems[p];
             return shopItem(context, model, () {
               setState(() {});
             });
           },
-          itemCount: offerLists.length,
+          itemCount: listItems.length,
           padding: EdgeInsets.all(0),
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
