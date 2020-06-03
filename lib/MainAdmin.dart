@@ -743,6 +743,7 @@ class _MainAdminState extends State<MainAdmin>
 
           subs.add(sub);
         }
+        offerController.add(true);
         offerSetup = true;
         if (mounted) setState(() {});
       });

@@ -46,11 +46,11 @@ class _EditProfileState extends State<EditProfile> {
           child: Row(
             children: [
               BackButton(
-                color: white,
+                color: black,
               ),
               Text(
                 "${widget.modeEdit ? "Edit" : "Create"} Profile",
-                style: textStyle(true, 25, white),
+                style: textStyle(true, 25, black),
               ),
               Spacer(),
             ],
@@ -73,7 +73,7 @@ class _EditProfileState extends State<EditProfile> {
                     decoration: BoxDecoration(
                       //shape: BoxShape.circle,
 
-                      color: white.withOpacity(.05),
+                      color: black.withOpacity(.05),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -82,11 +82,11 @@ class _EditProfileState extends State<EditProfile> {
                         Icon(
                           Icons.person,
                           size: 100,
-                          color: white.withOpacity(.3),
+                          color: black.withOpacity(.3),
                         ),
                         Text(
                           "Add Image",
-                          style: textStyle(false, 16, white),
+                          style: textStyle(false, 16, black),
                         ),
                       ],
                     ),
@@ -95,7 +95,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
             ),
             Container(
-              color: white.withOpacity(.05),
+              color: black.withOpacity(.05),
               padding: EdgeInsets.all(15),
               margin: EdgeInsets.only(top: 10, bottom: 10),
               child: Column(
@@ -103,17 +103,17 @@ class _EditProfileState extends State<EditProfile> {
                 children: [
                   Text(
                     "Account Information",
-                    style: textStyle(false, 16, white),
+                    style: textStyle(false, 16, black),
                   ),
                   addSpace(10),
-                  textField(fullName, "First Name"),
+                  textField(fullName, "First Name",),
                   addSpace(10),
                   textField(userName, "UserName")
                 ],
               ),
             ),
             Container(
-              color: white.withOpacity(.05),
+              color: black.withOpacity(.05),
               padding: EdgeInsets.all(15),
               margin: EdgeInsets.only(top: 10, bottom: 10),
               child: Column(
@@ -121,7 +121,7 @@ class _EditProfileState extends State<EditProfile> {
                 children: [
                   Text(
                     "Contact Information",
-                    style: textStyle(false, 16, white),
+                    style: textStyle(false, 16, black),
                   ),
                   addSpace(10),
                   textField(fullName, "Residential Address"),
@@ -140,11 +140,11 @@ class _EditProfileState extends State<EditProfile> {
             padding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: white.withOpacity(.3))),
+                side: BorderSide(color: black.withOpacity(.3))),
             child: Center(
               child: Text(
                 "SAVE",
-                style: textStyle(true, 16, white),
+                style: textStyle(true, 16, black),
               ),
             ),
           ),
@@ -157,14 +157,14 @@ class _EditProfileState extends State<EditProfile> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: black.withOpacity(.1))),
+          border: Border.all(color: black.withOpacity(.05))),
       child: TextField(
         controller: controller,
         maxLines: max,
         decoration: InputDecoration(
-            labelText: hint,
+            labelText: hint,labelStyle: textStyle(true,12,black),
             border: InputBorder.none,
-            fillColor: white.withOpacity(.3),
+            fillColor: black.withOpacity(.05),
             filled: true),
       ),
     );

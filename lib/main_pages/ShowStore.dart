@@ -68,11 +68,11 @@ class _ShowStoreState extends State<ShowStore> {
           child: Row(
             children: [
               BackButton(
-                  //color: white,
-                  ),
+                color: black,
+              ),
               Text(
                 widget.model.myItem() ? "My Store" : "Store",
-                style: textStyle(true, 25, textColor),
+                style: textStyle(true, 25, black),
               ),
               Spacer(),
             ],
@@ -82,119 +82,6 @@ class _ShowStoreState extends State<ShowStore> {
             child: ListView(
           padding: EdgeInsets.all(0),
           children: [
-//            Container(
-//              margin: EdgeInsets.all(15),
-//              padding: EdgeInsets.all(10),
-//              decoration: BoxDecoration(
-//                  color: white.withOpacity(.05),
-//                  border: Border.all(color: black.withOpacity(.09)),
-//                  borderRadius: BorderRadius.circular(10)),
-//              child: Row(
-//                children: [
-//                  Column(
-//                    children: [
-//                      imageHolder(60, widget.model.imageUrl,
-//                          stroke: 1, strokeColor: textColor),
-//                      Text(
-//                        widget.model.getString(NAME),
-//                        style: textStyle(false, 16, textColor),
-//                      ),
-//                      StarRating(
-//                        rating: 5,
-//                        size: 16,
-//                        color: AppConfig.appColor,
-//                        borderColor: white,
-//                      ),
-//                      addSpace(5),
-//                      Row(
-//                        children: [
-//                          Row(
-//                            mainAxisSize: MainAxisSize.min,
-//                            children: [
-//                              Icon(
-//                                Icons.camera_alt,
-//                                size: 15,
-//                                color: white,
-//                              ),
-//                              addSpaceWidth(2),
-//                              Text(
-//                                "Buyer",
-//                                style: textStyle(false, 13, textColor),
-//                              ),
-//                            ],
-//                          ),
-//                          addSpaceWidth(10),
-//                          Row(
-//                            mainAxisSize: MainAxisSize.min,
-//                            children: [
-//                              Container(
-//                                height: 10,
-//                                width: 10,
-//                                decoration: BoxDecoration(
-//                                    color: dark_green0, shape: BoxShape.circle),
-//                              ),
-//                              addSpaceWidth(2),
-//                              Text(
-//                                "Active",
-//                                style: textStyle(false, 13, textColor),
-//                              ),
-//                            ],
-//                          ),
-//                        ],
-//                      )
-//                    ],
-//                  ),
-//                  Spacer(),
-//                  Container(
-//                    decoration: BoxDecoration(
-//                        border: Border.all(color: white, width: 2),
-//                        color: black.withOpacity(.9),
-//                        borderRadius: BorderRadius.circular(15)
-//                        //shape: BoxShape.circle
-//                        ),
-//                    padding: EdgeInsets.all(5),
-//                    //height: 70,
-//                    //width: 70,
-//                    alignment: Alignment.center,
-//                    child: Row(
-//                        children: List.generate(3, (p) {
-//                      String title = "likes";
-//                      var icon = Icons.favorite;
-//
-//                      if (p == 1) {
-//                        title = "Views";
-//                        icon = Icons.visibility;
-//                      }
-//
-//                      if (p == 2) {
-//                        title = "Stars";
-//                        icon = Icons.star;
-//                      }
-//
-//                      return Container(
-//                        padding: EdgeInsets.all(10),
-//                        child: Column(
-//                          mainAxisSize: MainAxisSize.min,
-//                          children: [
-//                            Icon(
-//                              icon,
-//                              size: 18,
-//                              color: white,
-//                            ),
-//                            addSpace(5),
-//                            Text(
-//                              "15 $title",
-//                              style: textStyle(false, 13, white),
-//                            ),
-//                          ],
-//                        ),
-//                      );
-//                    })),
-//                  ),
-//                  addSpaceWidth(10),
-//                ],
-//              ),
-//            ),
             Container(
               width: double.infinity,
               margin: EdgeInsets.all(10),
@@ -206,10 +93,10 @@ class _ShowStoreState extends State<ShowStore> {
               child: Column(
 //                    crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  userImageItem(context, widget.model ?? widget.model,
-                      size: 60, strokeSize: 1, padLeft: false),
+                  userImageItem(context, userModel,
+                      size: 60, strokeSize: 1,padLeft: false),
                   Text(
-                    widget.model.getString(NAME),
+                    userModel.getString(NAME),
                     style: textStyle(true, 20, black),
                   ),
                   StarRating(
@@ -290,11 +177,11 @@ class _ShowStoreState extends State<ShowStore> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 40,height: 40,
                                   decoration: BoxDecoration(
                                       color: AppConfig.appColor,
-                                      shape: BoxShape.circle),
+                                      shape: BoxShape.circle
+                                  ),
                                   child: Center(
                                     child: Icon(
                                       icon,
@@ -317,16 +204,16 @@ class _ShowStoreState extends State<ShowStore> {
               ),
             ),
             addSpace(10),
-            Container(
+           /* Container(
               //height: 40,
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
-              color: white.withOpacity(.02),
+              color: black.withOpacity(.02),
               child: Text(
                 "Products",
-                style: textStyle(true, 20, textColor),
+                style: textStyle(true, 20, black),
               ),
-            ),
+            ),*/
             Builder(
               builder: (ctx) {
                 if (!hasSetup)
@@ -351,7 +238,7 @@ class _ShowStoreState extends State<ShowStore> {
                             ),
                             Text(
                               "No Product Yet",
-                              style: textStyle(true, 20, textColor),
+                              style: textStyle(true, 20, black),
                               textAlign: TextAlign.center,
                             ),
                           ],
