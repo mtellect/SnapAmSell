@@ -1,6 +1,8 @@
 import 'package:Strokes/basemodel.dart';
 import 'package:flutter/material.dart';
 
+const String bid_hand = 'assets/icons/bid_hand.png';
+const String bid_hand1 = 'assets/icons/bid_hand1.png';
 const String ic_bid = 'assets/icons/ic_bid.png';
 const String love_back = 'assets/icons/love_back.jpg';
 const String ic_edit_profile = 'assets/icons/ic_edit_profile.png';
@@ -1117,6 +1119,7 @@ const String RANKING = "ranking";
 const String REC_ID = "recId";
 const String TYPING_ID = "typingId";
 const String TYPING_BY = "typingBy";
+const String TYPING_USER = "typingUser";
 
 const String CHAT_ID = "chatId";
 //const String MY_CHATS = "myChatsList13";

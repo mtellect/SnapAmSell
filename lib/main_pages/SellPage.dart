@@ -57,11 +57,11 @@ class _SellPageState extends State<SellPage> {
           child: Row(
             children: [
               BackButton(
-                color: white,
+                color: black,
               ),
               Text(
                 "Sell Product",
-                style: textStyle(true, 25, white),
+                style: textStyle(true, 25, black),
               ),
               Spacer(),
               RaisedButton(
@@ -70,7 +70,7 @@ class _SellPageState extends State<SellPage> {
                     borderRadius: BorderRadius.circular(25)),
                 child: Text(
                   "Publish",
-                  style: textStyle(true, 16, white),
+                  style: textStyle(true, 16, black),
                 ),
                 onPressed: validateFields,
               )
@@ -103,13 +103,13 @@ class _SellPageState extends State<SellPage> {
                   children: [
                     Icon(
                       Icons.info,
-                      color: white,
+                      color: white_color,
                     ),
                     addSpaceWidth(10),
                     Flexible(
                       child: Text(
                         "Note: This Products would be verified by our support team before they would appear and approved if it passes our community guidelines.",
-                        style: textStyle(false, 14, white),
+                        style: textStyle(false, 14, white_color),
                       ),
                     ),
                   ],
@@ -133,13 +133,13 @@ class _SellPageState extends State<SellPage> {
         maxLines: maxLines,
         //maxLengthEnforced: false,
         controller: controller,
-        cursorColor: white,
-        style: textStyle(false, 16, white),
+        cursorColor: black,
+        style: textStyle(false, 16, black),
         decoration: InputDecoration(
-            fillColor: white.withOpacity(.05),
+            fillColor: black.withOpacity(.05),
             filled: true,
             labelText: hint,
-            labelStyle: textStyle(false, 16, white.withOpacity(.4)),
+            labelStyle: textStyle(false, 16, black.withOpacity(.4)),
             counter: Container(),
             border: InputBorder.none),
         onChanged: setState,
@@ -161,8 +161,8 @@ class _SellPageState extends State<SellPage> {
             },
             child: Container(
                 decoration: BoxDecoration(
-                    color: white.withOpacity(.05),
-                    border: Border.all(color: white.withOpacity(.05)),
+                    color: black.withOpacity(.05),
+                    border: Border.all(color: black.withOpacity(.05)),
                     borderRadius: BorderRadius.circular(5)),
                 padding: EdgeInsets.all(16),
                 alignment: Alignment.centerRight,
@@ -172,12 +172,12 @@ class _SellPageState extends State<SellPage> {
                       child: Text(
                         value ?? hint,
                         style: textStyle(false, 20,
-                            white.withOpacity(value == null ? 0.6 : 1)),
+                            black.withOpacity(value == null ? 0.6 : 1)),
                       ),
                     ),
                     Icon(
                       Icons.arrow_drop_down_circle,
-                      color: white.withOpacity(0.5),
+                      color: black.withOpacity(0.5),
                     )
                   ],
                 )),
@@ -197,7 +197,7 @@ class _SellPageState extends State<SellPage> {
             children: [
               Text(
                 "Add Images",
-                style: textStyle(true, 14, white.withOpacity(.6)),
+                style: textStyle(true, 14, black.withOpacity(.6)),
               ),
               Spacer(),
               IconButton(
@@ -210,7 +210,7 @@ class _SellPageState extends State<SellPage> {
                 },
                 icon: Icon(
                   Icons.add_a_photo,
-                  color: white,
+                  color: black,
                   //size: 18,
                 ),
               )
@@ -220,7 +220,7 @@ class _SellPageState extends State<SellPage> {
         if (photos.isNotEmpty)
           Container(
             height: 250,
-            color: white.withOpacity(0.02),
+            color: black.withOpacity(0.02),
             child: LayoutBuilder(
               builder: (ctx, b) {
                 int photoLength = photos.length;
@@ -274,12 +274,12 @@ class _SellPageState extends State<SellPage> {
                                       width: 50,
                                       child: Icon(
                                         Icons.play_arrow,
-                                        color: Colors.white,
+                                        color: Colors.black,
                                       ),
                                       decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.8),
                                           border: Border.all(
-                                              color: Colors.white, width: 1.5),
+                                              color: Colors.black, width: 1.5),
                                           shape: BoxShape.circle),
                                     ),
                                   ),
@@ -301,7 +301,7 @@ class _SellPageState extends State<SellPage> {
                                           color: red0,
                                           child: Icon(
                                             Icons.close,
-                                            color: white,
+                                            color: white_color,
                                             size: 13,
                                           ),
                                           onPressed: () {

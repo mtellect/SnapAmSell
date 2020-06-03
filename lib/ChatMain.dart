@@ -84,6 +84,7 @@ class _ChatMainState extends State<ChatMain>
   bool hasMessage = false;
 
   bool canSound = true;
+
   @override
   void initState() {
     // TODO: implement initState

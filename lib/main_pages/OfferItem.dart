@@ -1,5 +1,6 @@
 import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
+import 'package:Strokes/OfferMain.dart';
 import 'package:Strokes/TrianglePainter.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
@@ -22,11 +23,25 @@ class _OfferItemState extends State<OfferItem>
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
 //  List lastOffers = [];
+  var subs = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     //loadOffers(false);
+    var sub  = offerController.stream.listen((event) {
+      setState(() {
+
+      });
+    });
+    subs.add(sub);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    for(var sub in subs)sub.cancel();
   }
 
   loadOffersx(bool isNew) async {
@@ -200,9 +215,11 @@ class _OfferItemState extends State<OfferItem>
       type = "Seller";
       typeColor=light_green3;
     }
+
     return GestureDetector(
       onTap: () {
 //        pushAndResult(context, ShowProduct(model), depend: false);
+      pushAndResult(context,OfferMain(offerId,offerModel: offer,));
       },
       child: Column(
         children: [
@@ -252,7 +269,7 @@ class _OfferItemState extends State<OfferItem>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(ic_bid,height: 17,color: black.withOpacity(.5),),
+                          Image.asset(ic_bid,height: 17,color: black,),
                           addSpaceWidth(8),
                           Text("\$$myBid",style: textStyle(true,20,black),)
                         ],
