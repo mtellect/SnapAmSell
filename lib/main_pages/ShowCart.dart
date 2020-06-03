@@ -34,11 +34,11 @@ class _ShowCartState extends State<ShowCart> {
           child: Row(
             children: [
               BackButton(
-                color: white,
-              ),
+                  //color: white,
+                  ),
               Text(
                 "My Cart",
-                style: textStyle(true, 25, white),
+                style: textStyle(true, 25, textColor),
               ),
               Spacer(),
             ],
@@ -61,7 +61,7 @@ class _ShowCartState extends State<ShowCart> {
                       ),
                       Text(
                         "Nothing in Cart Yet",
-                        style: textStyle(true, 20, white),
+                        style: textStyle(true, 20, black),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -139,49 +139,58 @@ class _ShowCartState extends State<ShowCart> {
           children: [
             Row(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: image,
-                    height: 120,
-                    width: 120,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                addSpaceWidth(15),
                 Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: "Category ",
-                            style: textStyle(false, 12, white.withOpacity(.5))),
-                        TextSpan(
-                            text: category, style: textStyle(false, 12, white)),
-                      ])),
-                      addSpace(2),
-                      Text(
-                        title,
-                        style: textStyle(true, 18, white),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                          imageUrl: image,
+                          height: 120,
+                          width: 120,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      addSpace(2),
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: black.withOpacity(.09), width: 1),
-                            color: AppConfig.appColor,
-                            borderRadius: BorderRadius.circular(8)),
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          "\$$price",
-                          style: textStyle(true, 16, white),
+                      addSpaceWidth(15),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text.rich(TextSpan(children: [
+                              TextSpan(
+                                  text: "Category ",
+                                  style: textStyle(
+                                      false, 12, black.withOpacity(.5))),
+                              TextSpan(
+                                  text: category,
+                                  style: textStyle(false, 12, black)),
+                            ])),
+                            addSpace(2),
+                            Text(
+                              title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: textStyle(true, 18, black),
+                            ),
+                            addSpace(2),
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: black.withOpacity(.09), width: 1),
+                                  color: AppConfig.appColor,
+                                  borderRadius: BorderRadius.circular(8)),
+                              padding: EdgeInsets.all(8),
+                              child: Text(
+                                "\$$price",
+                                style: textStyle(true, 16, black),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                Spacer(),
                 Container(
                   decoration: BoxDecoration(
                       color: black, borderRadius: BorderRadius.circular(18)),
@@ -196,7 +205,8 @@ class _ShowCartState extends State<ShowCart> {
                         },
                         child: Container(
                           height: 20,
-                          width: 30,
+                          width: 40,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
                           alignment: Alignment.center,
                           child: Text(
                             "-",
@@ -206,7 +216,7 @@ class _ShowCartState extends State<ShowCart> {
                       ),
                       Text(
                         "$quantity",
-                        style: textStyle(true, 16, white),
+                        style: textStyle(true, 15, white),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -215,7 +225,8 @@ class _ShowCartState extends State<ShowCart> {
                         },
                         child: Container(
                           height: 20,
-                          width: 30,
+                          width: 40,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
                           alignment: Alignment.center,
                           child: Text(
                             "+",

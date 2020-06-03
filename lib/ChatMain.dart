@@ -642,7 +642,7 @@ class _ChatMainState extends State<ChatMain>
                     child: Center(
                         child: Icon(
                       Icons.arrow_back_ios,
-                      color: white,
+                      //color: white,
                       size: 20,
                     )),
                   )),
@@ -654,13 +654,13 @@ class _ChatMainState extends State<ChatMain>
                       children: [
                         Text(
                           otherPerson.getString(NAME),
-                          style: textStyle(true, 18, white),
+                          style: textStyle(true, 18, black),
                           maxLines: 1,
                         ),
                         if (getLastSeen(otherPerson) != null)
                           Text(
                             getLastSeen(otherPerson),
-                            style: textStyle(false, 12, white.withOpacity(.3)),
+                            style: textStyle(false, 12, textColor.withOpacity(.3)),
                             maxLines: 1,
                           ),
                       ],
@@ -688,8 +688,8 @@ class _ChatMainState extends State<ChatMain>
                           : Icons.notifications_active,
                       size: 20,
                       color: mutedList.contains(chatId)
-                          ? white.withOpacity(.7)
-                          : white,
+                          ? black.withOpacity(.7)
+                          : black,
                     ))),
               ),
             ],

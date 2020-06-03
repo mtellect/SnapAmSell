@@ -76,10 +76,11 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
   }
 
   page() {
-    if(!isLoggedIn)return emptyLayout(Icons.chat, "Sign in to view messages", "",
-    clickText: "Sign in",click: (){
-          pushAndResult(context, LoginPage(), depend: false);
-        });
+    if (!isLoggedIn)
+      return emptyLayout(Icons.chat, "Sign in to view messages", "",
+          clickText: "Sign in", click: () {
+        pushAndResult(context, LoginPage(), depend: false);
+      });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,8 +198,9 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
       //margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Container(
         decoration: BoxDecoration(
-            color: white.withOpacity(0.05),
-            boxShadow: [BoxShadow(color: black.withOpacity(.1), blurRadius: 5)],
+            //color: default_white.withOpacity(0.05),
+            color: default_white,
+            //boxShadow: [BoxShadow(color: black.withOpacity(.1), blurRadius: 5)],
             borderRadius: BorderRadius.circular(5)),
         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -251,7 +253,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                               //"Emeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                               name,
                               maxLines: 1, overflow: TextOverflow.ellipsis,
-                              style: textStyle(true, 20, white),
+                              style: textStyle(true, 20, textColor),
                             ),
                           ),
                           addSpaceWidth(5),
@@ -280,7 +282,8 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                           addSpaceWidth(5),
                           Text(
                             getChatTime(chatModel.getTime()),
-                            style: textStyle(false, 12, white.withOpacity(.8)),
+                            style:
+                                textStyle(false, 12, textColor.withOpacity(.8)),
                             textAlign: TextAlign.end,
                           ),
 
@@ -318,7 +321,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                                                     : type == CHAT_TYPE_REC
                                                         ? Icons.mic
                                                         : Icons.library_books,
-                                        color: white.withOpacity(.8),
+                                        color: textColor.withOpacity(.8),
                                         size: 12,
                                       ),
                                       addSpaceWidth(5),
@@ -339,8 +342,8 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                                                               : "Document",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: textStyle(
-                                              false, 14, white.withOpacity(.8)),
+                                          style: textStyle(false, 14,
+                                              textColor.withOpacity(.8)),
                                         ),
                                       ),
                                     ],
@@ -354,7 +357,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
                               ic_mute,
                               width: 18,
                               height: 18,
-                              color: white.withOpacity(.5),
+                              color: textColor.withOpacity(.5),
                             )
                         ],
                       )

@@ -180,11 +180,12 @@ const Color blue08 = Color(0xff08534949);
 const Color blue09 = Color(0xff0f534949);
 
 bool darkMode = false;
-Color black = darkMode?white_color:gray;
-Color white = darkMode?gray:white_color;
+Color black = darkMode ? white_color : gray;
+Color white = darkMode ? black : white_color;
+Color textColor = darkMode ? white : black;
 const Color transparent = Color(0xff00000000);
 
-Color default_white = darkMode?gray:default_white_color;
+Color default_white = darkMode ? gray : default_white_color;
 
 const Color black_color = Color(0xff000000);
 const Color white_color = Color(0xffffffff);
@@ -484,7 +485,6 @@ const text2 = [
   "Your timetable rings automatically, when you have a lecture or event",
   "Automatically sum your GPA with ease",
 ];
-
 
 const String CURRENCY_BASE = "currencyBase"; //db
 const String CONNECTS_BASE = "connectsBase"; //db
