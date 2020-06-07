@@ -29,10 +29,8 @@ class _OfferItemState extends State<OfferItem>
     // TODO: implement initState
     super.initState();
     //loadOffers(false);
-    var sub  = offerController.stream.listen((event) {
-      setState(() {
-
-      });
+    var sub = offerController.stream.listen((event) {
+      setState(() {});
     });
     subs.add(sub);
   }
@@ -41,7 +39,7 @@ class _OfferItemState extends State<OfferItem>
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    for(var sub in subs)sub.cancel();
+    for (var sub in subs) sub.cancel();
   }
 
   loadOffersx(bool isNew) async {
@@ -53,7 +51,6 @@ class _OfferItemState extends State<OfferItem>
           : (lastOffers.isEmpty ? 0 : lastOffers[0].createdAt)
     ];
 
-
     QuerySnapshot shots = await Firestore.instance
         .collection(OFFER_IDS_BASE)
         .where(PARTIES, arrayContains: userModel.getUserId())
@@ -62,37 +59,35 @@ class _OfferItemState extends State<OfferItem>
         .startAt(startFeedAt)
         .getDocuments();
 
-
-      for (var doc in shots.documents) {
-        BaseModel model = BaseModel(doc: doc);
-        //if (userModel.isMuted(model.getObjectId())) continue;
-        int p = lastOffers
-            .indexWhere((e) => e.getObjectId() == model.getObjectId());
-        if (p != -1) {
-          lastOffers[p] = model;
-        } else {
-          lastOffers.add(model);
-        }
-      }
-
-      if (isNew) {
-        refreshController.refreshCompleted();
+    for (var doc in shots.documents) {
+      BaseModel model = BaseModel(doc: doc);
+      //if (userModel.isMuted(model.getObjectId())) continue;
+      int p =
+          lastOffers.indexWhere((e) => e.getObjectId() == model.getObjectId());
+      if (p != -1) {
+        lastOffers[p] = model;
       } else {
-        int oldLength = lastOffers.length;
-        int newLength = shots.documents.length;
-        if (newLength <= oldLength) {
-          refreshController.loadNoData();
-          canRefresh = false;
-        } else {
-          refreshController.loadComplete();
-        }
+        lastOffers.add(model);
       }
-      offerSetup = true;
-      if (mounted)
-        setState(() {
-          //myNotifications.sort((a, b) => b.time.compareTo(a.time));
-        });
+    }
 
+    if (isNew) {
+      refreshController.refreshCompleted();
+    } else {
+      int oldLength = lastOffers.length;
+      int newLength = shots.documents.length;
+      if (newLength <= oldLength) {
+        refreshController.loadNoData();
+        canRefresh = false;
+      } else {
+        refreshController.loadComplete();
+      }
+    }
+    offerSetup = true;
+    if (mounted)
+      setState(() {
+        //myNotifications.sort((a, b) => b.time.compareTo(a.time));
+      });
   }
 
   @override
@@ -105,10 +100,11 @@ class _OfferItemState extends State<OfferItem>
   }
 
   page() {
-    if(!isLoggedIn)return emptyLayout(Icons.local_offer, "Sign in to view offers", "",
-        clickText: "Sign in",click: (){
-          pushAndResult(context, LoginPage(), depend: false);
-        });
+    if (!isLoggedIn)
+      return emptyLayout(Icons.local_offer, "Sign in to view offers", "",
+          clickText: "Sign in", click: () {
+        pushAndResult(context, LoginPage(), depend: false);
+      });
     return body();
   }
 
@@ -142,7 +138,6 @@ class _OfferItemState extends State<OfferItem>
   }*/
 
   body() {
-
     return Builder(
       builder: (ctx) {
         if (!offerSetup)
@@ -191,8 +186,11 @@ class _OfferItemState extends State<OfferItem>
     );
   }
 
-  offerItem(BuildContext context, BaseModel model, setState,) {
-
+  offerItem(
+    BuildContext context,
+    BaseModel model,
+    setState,
+  ) {
     double myBid = model.getDouble(MY_BID);
     String offerId = model.getString(OFFER_ID);
 
@@ -202,35 +200,41 @@ class _OfferItemState extends State<OfferItem>
     String desc = offer.getString(DESCRIPTION);
     double price = offer.getDouble(PRICE);
 
-    var types = ["You","Buyer","Seller"];
+    var types = ["You", "Buyer", "Seller"];
     String type;
     var typeColor;
-    if(model.myItem()){
+    if (model.myItem()) {
       type = "You";
-      typeColor=red0;
-    }else if(offer.getString(SELLER_ID)==userModel.getObjectId()){
+      typeColor = red0;
+    } else if (offer.getString(SELLER_ID) == userModel.getObjectId()) {
       type = "Buyer";
-      typeColor=blue0;
-    }else{
+      typeColor = blue0;
+    } else {
       type = "Seller";
-      typeColor=light_green3;
+      typeColor = light_green3;
     }
 
     return GestureDetector(
       onTap: () {
 //        pushAndResult(context, ShowProduct(model), depend: false);
-      pushAndResult(context,OfferMain(offerId,offerModel: offer,));
+        pushAndResult(
+            context,
+            OfferMain(
+              offerId,
+              offerModel: offer,
+            ),
+            depend: false);
       },
       child: Column(
         children: [
           Container(
             margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            height: 120,width: double.infinity,
-            decoration: BoxDecoration(
-                color: white
+            height: 120,
+            width: double.infinity,
+            decoration: BoxDecoration(color: white
 //            border: Border.all(color: white.withOpacity(0.1), width: 2)
-            ),
-            child:Stack(
+                ),
+            child: Stack(
               children: [
                 Row(
                   children: [
@@ -240,62 +244,86 @@ class _OfferItemState extends State<OfferItem>
                       child: Card(
                         clipBehavior: Clip.antiAlias,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5))
-                        ),
+                            borderRadius: BorderRadius.all(Radius.circular(5))),
                         child: CachedNetworkImage(
-                          imageUrl: image,fit: BoxFit.cover,
+                          imageUrl: image,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     addSpaceWidth(10),
-                    Flexible(fit: FlexFit.tight,child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(title,style: textStyle(true, 16, black),),
-                        addSpace(5),
-                        Text(desc,style: textStyle(false, 12, black),maxLines: 1,overflow: TextOverflow.ellipsis,),
-                        addSpace(5),
-                        Text("\$$price",style: textStyle(true, 12, black.withOpacity(.5)),),
-                      ],
-                    )),
+                    Flexible(
+                        fit: FlexFit.tight,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              title,
+                              style: textStyle(true, 16, black),
+                            ),
+                            addSpace(5),
+                            Text(
+                              desc,
+                              style: textStyle(false, 12, black),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            addSpace(5),
+                            Text(
+                              "\$$price",
+                              style: textStyle(true, 12, black.withOpacity(.5)),
+                            ),
+                          ],
+                        )),
                     addSpaceWidth(10),
                     Container(
                       padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
                       decoration: BoxDecoration(
                           color: AppConfig.appColor,
-                          borderRadius: BorderRadius.all(Radius.circular(25))
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(25))),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(ic_bid,height: 17,color: black,),
+                          Image.asset(
+                            ic_bid,
+                            height: 17,
+                            color: black,
+                          ),
                           addSpaceWidth(8),
-                          Text("\$$myBid",style: textStyle(true,20,black),)
+                          Text(
+                            "\$$myBid",
+                            style: textStyle(true, 20, black),
+                          )
                         ],
                       ),
                     ),
                     addSpaceWidth(10),
                   ],
                 ),
-                Align(alignment: Alignment.bottomRight,
-                child: CustomPaint(
-                  painter: TrianglePainter(
-                    strokeColor: typeColor,
-                    strokeWidth: 10,
-                    paintingStyle: PaintingStyle.fill,
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: CustomPaint(
+                    painter: TrianglePainter(
+                      strokeColor: typeColor,
+                      strokeWidth: 10,
+                      paintingStyle: PaintingStyle.fill,
+                    ),
+                    child: Container(
+                      height: 25,
+                      padding: EdgeInsets.all(2),
+                      width: 70,
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        type,
+                        style: textStyle(true, 10, white_color),
+                      ),
+                    ),
                   ),
-                  child: Container(
-                    height: 25,
-                    padding: EdgeInsets.all(2),
-                    width: 70,alignment: Alignment.bottomRight,
-                    child: Text(type,style: textStyle(true,10,white_color),),
-                  ),
-                ),)
+                )
               ],
             ),
           ),
-
           addLine(.5, black.withOpacity(.1), 0, 0, 0, 10)
         ],
       ),

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-
-import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/ChatOfferDialog.dart';
 import 'package:Strokes/MainAdmin.dart';
@@ -17,8 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:video_player/video_player.dart';
-
 
 class OfferMain extends StatefulWidget {
   String offerId;
@@ -31,14 +29,14 @@ class OfferMain extends StatefulWidget {
 
 class _OfferMainState extends State<OfferMain>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-
   final ItemScrollController messageListController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
   List<BaseModel> offerList = List();
 
   String offerId;
   BaseModel offerModel;
-  BaseModel otherPerson=BaseModel();
+  BaseModel otherPerson = BaseModel();
   bool setup = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,7 +47,7 @@ class _OfferMainState extends State<OfferMain>
   int blinkPosition = -1;
   bool canSound = true;
   double bestOffer = 0;
-  
+
   @override
   void initState() {
     // TODO: implement initState
@@ -169,17 +167,15 @@ class _OfferMainState extends State<OfferMain>
   BaseModel yourNewestOffer = BaseModel();
 
   void addOfferToList(BaseModel chat) async {
-
     var lock = Lock();
     await lock.synchronized(() {
-
-      if(chat.myItem()){
-        if(chat.getTime()>myNewestOffer.getTime()){
-          myNewestOffer=chat;
+      if (chat.myItem()) {
+        if (chat.getTime() > myNewestOffer.getTime()) {
+          myNewestOffer = chat;
         }
-      }else{
-        if(chat.getTime()>yourNewestOffer.getTime()){
-          yourNewestOffer=chat;
+      } else {
+        if (chat.getTime() > yourNewestOffer.getTime()) {
+          yourNewestOffer = chat;
         }
       }
 
@@ -194,7 +190,7 @@ class _OfferMainState extends State<OfferMain>
         if (!loadedChatIds.contains(chat.getObjectId()))
           loadedChatIds.add(chat.getObjectId());
       }
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
@@ -368,8 +364,12 @@ class _OfferMainState extends State<OfferMain>
                       size: 20,
                     )),
                   )),
-              Flexible(fit: FlexFit.tight,
-                  child: Text("Bidding Room",style: textStyle(true,16,black),)),
+              Flexible(
+                  fit: FlexFit.tight,
+                  child: Text(
+                    "Bidding Room",
+                    style: textStyle(true, 16, black),
+                  )),
               new Container(
                 height: 30,
                 width: 50,
@@ -386,15 +386,15 @@ class _OfferMainState extends State<OfferMain>
                     child: Center(
                         child:
 //                        Icon(Icons.settings,color: white,)
-                        Icon(
-                          mutedList.contains(offerId)
-                              ? Icons.notifications_off
-                              : Icons.notifications_active,
-                          size: 20,
-                          color: mutedList.contains(offerId)
-                              ? black.withOpacity(.7)
-                              : black,
-                        ))),
+                            Icon(
+                      mutedList.contains(offerId)
+                          ? Icons.notifications_off
+                          : Icons.notifications_active,
+                      size: 20,
+                      color: mutedList.contains(offerId)
+                          ? black.withOpacity(.7)
+                          : black,
+                    ))),
               ),
             ],
           ),
@@ -403,25 +403,40 @@ class _OfferMainState extends State<OfferMain>
           clipBehavior: Clip.antiAlias,
           color: default_white,
           elevation: .5,
-          margin: EdgeInsets.fromLTRB(20,0,20,10),
+          margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
           child: Row(
             children: [
               CachedNetworkImage(
-                imageUrl: image,fit: BoxFit.cover,
-                width: 100,height: 100,
+                imageUrl: image,
+                fit: BoxFit.cover,
+                width: 100,
+                height: 100,
               ),
               addSpaceWidth(10),
-              Flexible(fit: FlexFit.tight,child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(title,style: textStyle(true, 18, black),),
-                  addSpace(5),
-                  Text(desc,style: textStyle(false, 14, black),maxLines: 1,overflow: TextOverflow.ellipsis,),
-                  addSpace(5),
-                  Text("\$$price",style: textStyle(true, 14, black.withOpacity(.5)),),
-                ],
-              )),
+              Flexible(
+                  fit: FlexFit.tight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: textStyle(true, 18, black),
+                      ),
+                      addSpace(5),
+                      Text(
+                        desc,
+                        style: textStyle(false, 14, black),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      addSpace(5),
+                      Text(
+                        "\$$price",
+                        style: textStyle(true, 14, black.withOpacity(.5)),
+                      ),
+                    ],
+                  )),
               addSpaceWidth(10),
             ],
           ),
@@ -436,7 +451,8 @@ class _OfferMainState extends State<OfferMain>
 //                color: black,
                 child: ScrollablePositionedList.builder(
                   itemScrollController: messageListController,
-                  itemPositionsListener: itemPositionsListener,physics: BouncingScrollPhysics(),
+                  itemPositionsListener: itemPositionsListener,
+                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.all(0),
                   reverse: true,
                   itemBuilder: (c, p) {
@@ -495,7 +511,7 @@ class _OfferMainState extends State<OfferMain>
                                       ),
                                     ),
                             ),
-                           /* if (showDate)
+                            /* if (showDate)
                               new Center(
                                   child: Container(
                                 margin: EdgeInsets.fromLTRB(0,
@@ -525,11 +541,8 @@ class _OfferMainState extends State<OfferMain>
                                       : CrossAxisAlignment.start,
                                   children: [
                                     myItem
-                                        ? outgoingChatBid(
-                                        context, chat, p == 0)
-                                        : incomingChatBid(
-                                        context, chat),
-
+                                        ? outgoingChatBid(context, chat, p == 0)
+                                        : incomingChatBid(context, chat),
                                   ],
                                 ),
                               ),
@@ -550,65 +563,70 @@ class _OfferMainState extends State<OfferMain>
                 ),
               );
             })),
-
         Center(
           child: Container(
             margin: EdgeInsets.all(15),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if(yourNewestOffer.getDouble(MY_BID)>0)Flexible(fit: FlexFit.loose,
-                  child: Container(
-                    height: 40,
-                    margin: EdgeInsets.fromLTRB(0,0,5,0),
-                    child: RaisedButton(
-                      onPressed: () {
-
-
-                      },
-                      color: black,
+                if (yourNewestOffer.getDouble(MY_BID) > 0)
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Container(
+                      height: 40,
+                      margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                      child: RaisedButton(
+                        onPressed: () {},
+                        color: black,
 //            padding: EdgeInsets.all(0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
 //                          side: BorderSide(color: black)
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.check_circle,size: 16,color: white,),
-                          addSpaceWidth(5),
-                          Flexible(
-                            child: Text(
-                              "Accept \$${yourNewestOffer.getDouble(MY_BID)}",
-                              style: textStyle(true, 14, white),maxLines: 1,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: white,
                             ),
-                          )
-                        ],
+                            addSpaceWidth(5),
+                            Flexible(
+                              child: Text(
+                                "Accept \$${yourNewestOffer.getDouble(MY_BID)}",
+                                style: textStyle(true, 14, white),
+                                maxLines: 1,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
                 Flexible(
                   fit: FlexFit.loose,
                   child: Container(
                     height: 40,
-                    margin: EdgeInsets.fromLTRB(5,0,0,0),
+                    margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                     child: RaisedButton(
                       onPressed: () {
-                        pushAndResult(context,ChatOfferDialog(bestOffer,true),result:(_){
+                        pushAndResult(context, ChatOfferDialog(bestOffer, true),
+                            result: (_) {
                           String id = getRandomId();
                           BaseModel offerItem = BaseModel();
                           offerItem.put(OBJECT_ID, id);
                           offerItem.put(OFFER_ID, offerId);
                           offerItem.put(MY_BID, double.parse(_));
-                          offerItem.put(PARTIES, [userModel.getUserId(), otherPerson.getUserId()]);
-                          offerItem.saveItem(OFFER_BASE, true,document: id);
+                          offerItem.put(PARTIES,
+                              [userModel.getUserId(), otherPerson.getUserId()]);
+                          offerItem.saveItem(OFFER_BASE, true, document: id);
                           addOfferToList(offerItem);
                           setState(() {});
                           scrollToBottom();
                           updateTyping(false);
-                        });
+                        }, depend: false);
                       },
                       color: AppConfig.appColor,
 //            padding: EdgeInsets.all(0),
@@ -630,7 +648,8 @@ class _OfferMainState extends State<OfferMain>
                           Flexible(
                             child: Text(
                               "Make New Offer",
-                              style: textStyle(true, 14, black),maxLines: 1,
+                              style: textStyle(true, 14, black),
+                              maxLines: 1,
                             ),
                           )
                         ],
@@ -638,7 +657,6 @@ class _OfferMainState extends State<OfferMain>
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -665,8 +683,8 @@ class _OfferMainState extends State<OfferMain>
 
     bool sDate = showDate();
     //toastInAndroid(sDate.toString());
-    model.put(
-        PARTIES, [userModel.getObjectId(), offerModel.getString(USER_ID)]);
+    model
+        .put(PARTIES, [userModel.getObjectId(), offerModel.getString(USER_ID)]);
     model.put(SHOW_DATE, sDate);
     model.put(MESSAGE, text);
     model.put(TYPE, CHAT_TYPE_TEXT);
@@ -679,7 +697,6 @@ class _OfferMainState extends State<OfferMain>
     model.saveItem(OFFER_BASE, true, document: id, onComplete: () {
       pushChat(text);
     });
-
 
     addOfferToList(model);
     setState(() {});
@@ -809,8 +826,9 @@ class _OfferMainState extends State<OfferMain>
 
   loadMorePrev() async {
     shownChatsCount = shownChatsCount + countIncrement;
-    shownChatsCount =
-        shownChatsCount >= offerList.length ? offerList.length : shownChatsCount;
+    shownChatsCount = shownChatsCount >= offerList.length
+        ? offerList.length
+        : shownChatsCount;
     setState(() {});
   }
 
@@ -821,9 +839,7 @@ class _OfferMainState extends State<OfferMain>
     return new Stack(
       children: <Widget>[
         new GestureDetector(
-          onLongPress: () {
-
-          },
+          onLongPress: () {},
           child: Container(
               margin: EdgeInsets.fromLTRB(60, 0, 60, 15),
               child: Column(
@@ -950,14 +966,13 @@ class _OfferMainState extends State<OfferMain>
   }
 
   outgoingChatBid(context, BaseModel chat, bool firstChat) {
-
     double myBid = chat.getDouble(MY_BID);
     String otherPersonId = getOtherPersonId(offerModel);
     bool read = chat.getList(READ_BY).contains(otherPersonId);
 
-    bool newest = myNewestOffer.getObjectId()==chat.getObjectId();
+    bool newest = myNewestOffer.getObjectId() == chat.getObjectId();
     return Opacity(
-      opacity: newest?1:(.5),
+      opacity: newest ? 1 : (.5),
       child: new GestureDetector(
         onLongPress: () {
 //        print(offerList.length);
@@ -967,32 +982,29 @@ class _OfferMainState extends State<OfferMain>
           children: [
             Container(
               margin: EdgeInsets.fromLTRB(0, 0, 20, 5),
-              child:
-              Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     decoration: BoxDecoration(
                         color: default_white,
-                        borderRadius: BorderRadius.circular(25)
+                        borderRadius: BorderRadius.circular(25)),
+                    child: Text(
+                      timeAgo.format(
+                          DateTime.fromMillisecondsSinceEpoch(chat.getTime()),
+                          locale: "en_short"),
+                      style: textStyle(false, 12, black),
                     ),
-                    child: Text(timeAgo.format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            chat.getTime()),
-                        locale: "en_short"),style: textStyle(false,12,black),),
                   ),
-      if (read && firstChat)
-                  addSpaceWidth(5),
+                  if (read && firstChat) addSpaceWidth(5),
                   Icon(
                     Icons.remove_red_eye,
                     size: 12,
                     color: blue0,
                   ),
-
                 ],
               ),
-
             ),
             Container(
               margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
@@ -1002,22 +1014,27 @@ class _OfferMainState extends State<OfferMain>
                 children: [
                   Align(
                     alignment: Alignment.bottomRight,
-                    child: Image.asset(bid_hand1,color: blue0,width: 100,height: 100,),
+                    child: Image.asset(
+                      bid_hand1,
+                      color: blue0,
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
                       height: 50,
-                      padding: EdgeInsets.fromLTRB(20,5,20,5),
+                      padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                       decoration: BoxDecoration(
-                        color: blue0,
-                          borderRadius: BorderRadius.all(Radius.circular(5))
+                          color: blue0,
+                          borderRadius: BorderRadius.all(Radius.circular(5))),
+                      child: Text(
+                        "\$$myBid",
+                        style: textStyle(true, 30, white_color),
                       ),
-                      child: Text("\$$myBid",style: textStyle(true,30,white_color),),
                     ),
                   ),
-
-
                 ],
               ),
             ),
@@ -1028,15 +1045,13 @@ class _OfferMainState extends State<OfferMain>
     );
   }
 
-
   incomingChatBid(context, BaseModel chat) {
-
     double myBid = chat.getDouble(MY_BID);
     String otherPersonId = getOtherPersonId(offerModel);
 
-    bool newest = myNewestOffer.getObjectId()==chat.getObjectId();
+    bool newest = myNewestOffer.getObjectId() == chat.getObjectId();
     return Opacity(
-      opacity: newest?1:(.5),
+      opacity: newest ? 1 : (.5),
       child: new GestureDetector(
         onLongPress: () {
 //        print(offerList.length);
@@ -1046,25 +1061,20 @@ class _OfferMainState extends State<OfferMain>
           children: [
             Container(
               margin: EdgeInsets.fromLTRB(20, 0, 20, 5),
-              child:
-              Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     decoration: BoxDecoration(
                         color: default_white,
-                        borderRadius: BorderRadius.circular(25)
-                    ),
+                        borderRadius: BorderRadius.circular(25)),
                     child: Text(timeAgo.format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            chat.getTime()),
+                        DateTime.fromMillisecondsSinceEpoch(chat.getTime()),
                         locale: "en_short")),
                   ),
-
                 ],
               ),
-
             ),
             Container(
               margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
@@ -1074,22 +1084,27 @@ class _OfferMainState extends State<OfferMain>
                 children: [
                   Align(
                     alignment: Alignment.bottomLeft,
-                    child: Image.asset(bid_hand,color: red0,width: 100,height: 100,),
+                    child: Image.asset(
+                      bid_hand,
+                      color: red0,
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.topLeft,
                     child: Container(
                       height: 50,
-                      padding: EdgeInsets.fromLTRB(20,5,20,5),
+                      padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                       decoration: BoxDecoration(
-                        color: red0,
-                          borderRadius: BorderRadius.all(Radius.circular(5))
+                          color: red0,
+                          borderRadius: BorderRadius.all(Radius.circular(5))),
+                      child: Text(
+                        "\$$myBid",
+                        style: textStyle(true, 30, white_color),
                       ),
-                      child: Text("\$$myBid",style: textStyle(true,30,white_color),),
                     ),
                   ),
-
-
                 ],
               ),
             ),
@@ -1099,8 +1114,6 @@ class _OfferMainState extends State<OfferMain>
       ),
     );
   }
-
-
 
   offerModelImage(context) {
     return GestureDetector(
@@ -1114,7 +1127,6 @@ class _OfferMainState extends State<OfferMain>
       child: userImageItem(context, offerModel, size: 40, strokeSize: 1),
     );
   }
-
 }
 
 //keytool -list -v \-alias androiddebugkey -keystore ~/.android/debug.keystore

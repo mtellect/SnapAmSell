@@ -31,6 +31,7 @@ import 'main_pages/Notifications.dart';
 import 'main_pages/SellCamera.dart';
 import 'main_pages/ShowCart.dart';
 import 'main_pages/ShowStore.dart';
+import 'main_pages/Wallet.dart';
 
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
@@ -107,7 +108,6 @@ var notificationsPlugin = FlutterLocalNotificationsPlugin();
 //Color white_widget_color = darkMode?white:Colors.grey[850];
 //Color white_reverse = darkMode?Colors.grey[850]:white;//themeColors(false);
 
-
 class MainAdmin extends StatefulWidget {
   @override
   _MainAdminState createState() => _MainAdminState();
@@ -181,7 +181,7 @@ class _MainAdminState extends State<MainAdmin>
     });
 
     var sub4 = modeController.stream.listen((bool) {
-      darkMode=bool;
+      darkMode = bool;
       setState(() {
 //        white = themeColors(bool);
       });
@@ -194,13 +194,17 @@ class _MainAdminState extends State<MainAdmin>
       bool exists = p != -1;
       if (exists) {
         cartLists.removeAt(p);
+        model.deleteItem();
       } else {
         cartLists.add(model);
+        model
+          ..put(OBJECT_ID, model.getObjectId())
+          ..saveItem(CART_BASE, true, document: model.getObjectId());
       }
       setState(() {});
     });
 
-   /* var sub6 = cartController.stream.listen((model) {
+    /* var sub6 = cartController.stream.listen((model) {
       String id = model.getObjectId();
       int p = offerLists.indexWhere((e) => e.getObjectId() == id);
       model.put(QUANTITY, 1);
@@ -214,7 +218,7 @@ class _MainAdminState extends State<MainAdmin>
     });*/
 
     var sub7 = FirebaseAuth.instance.onAuthStateChanged.listen((event) {
-      if(event==null)return;
+      if (event == null) return;
       if (event.uid == null) {
         cartLists.clear();
         lastMessages.clear();
@@ -369,6 +373,7 @@ class _MainAdminState extends State<MainAdmin>
           //loadItems();
           loadNotification();
           loadMessages();
+          loadCarts();
           loadProducts();
           loadBids();
           setupPush();
@@ -679,6 +684,27 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
+  loadCarts() async {
+    Firestore.instance
+        .collection(CART_BASE)
+        .where(USER_ID, isEqualTo: userModel.getUserId())
+        .getDocuments()
+        .then((value) {
+      for (var doc in value.documents) {
+        BaseModel bm = BaseModel(doc: doc);
+        int p =
+            cartLists.indexWhere((e) => e.getObjectId() == bm.getObjectId());
+        if (p != -1) {
+          cartLists[p] = bm;
+        } else {
+          cartLists.add(bm);
+        }
+      }
+      cartSetup = true;
+      if (mounted) setState(() {});
+    });
+  }
+
   loadBids() async {
     var lock = Lock();
     await lock.synchronized(() async {
@@ -705,7 +731,6 @@ class _MainAdminState extends State<MainAdmin>
               .limit(1)
               .snapshots()
               .listen((shots) async {
-
             /*if (shots.documents.isNotEmpty) {
               BaseModel cModel = BaseModel(doc: (shots.documents[0]));
               if (isBlocked(null, userId: getOtherPersonId(cModel))) {
@@ -729,8 +754,9 @@ class _MainAdminState extends State<MainAdmin>
               if (!model.getList(READ_BY).contains(userModel.getObjectId()) &&
                   !model.myItem() &&
                   visibleChatId != offerId) {
-                if (!showNewMessageOffer.contains(offerId)) showNewMessageOffer.add(offerId);
-                  if(mounted)setState(() {});
+                if (!showNewMessageOffer.contains(offerId))
+                  showNewMessageOffer.add(offerId);
+                if (mounted) setState(() {});
 //                countUnread(chatId);
               }
             }
@@ -750,8 +776,6 @@ class _MainAdminState extends State<MainAdmin>
       subs.add(sub);
     });
   }
-
-
 
   loadProducts() async {
     Firestore.instance
@@ -1084,6 +1108,7 @@ class _MainAdminState extends State<MainAdmin>
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onPressed: () {
                           // postChatDoc();
+                          pushAndResult(context, Wallet(), depend: false);
                         },
                         color: AppConfig.appColor,
                         shape: RoundedRectangleBorder(
@@ -1098,7 +1123,10 @@ class _MainAdminState extends State<MainAdmin>
                               color: black,
                             ),
                             addSpaceWidth(5),
-                            Text("Wallet",style: textStyle(true,13,black),)
+                            Text(
+                              "Wallet",
+                              style: textStyle(true, 13, black),
+                            )
                           ],
                         ))),
                   ),
@@ -1120,9 +1148,17 @@ class _MainAdminState extends State<MainAdmin>
                           color: black,
                         ))),
                   ),
-                  if(isLoggedIn)imageHolder(35, userModel.userImage, onImageTap: () {
-                    pushAndResult(context, ShowStore(userModel), depend: false);
-                  }, strokeColor: black, stroke: 2,)
+                  if (isLoggedIn)
+                    imageHolder(
+                      35,
+                      userModel.userImage,
+                      onImageTap: () {
+                        pushAndResult(context, ShowStore(userModel),
+                            depend: false);
+                      },
+                      strokeColor: black,
+                      stroke: 2,
+                    )
                 ],
               )
             ],

@@ -51,12 +51,12 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   @override
   void initState() {
     super.initState();
-//    StripeService.init();
-    StripeService.doConversion(widget.amount).then((value) {
-      payText = "PAY ${value.getString(AMOUNT_TO_PAY)}";
-      if (mounted) setState(() {});
-    });
-
+    StripeService.init();
+//    StripeService.doConversion(widget.amount).then((value) {
+//      payText = "PAY ${value.getString(AMOUNT_TO_PAY)}";
+//      if (mounted) setState(() {});
+//    });
+    payText = "PAY \$${widget.amount}";
     _focusNode = new FocusNode();
     _focusNode.addListener(() {
       setState(() {

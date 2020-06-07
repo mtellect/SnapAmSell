@@ -24,7 +24,7 @@ class StripeService {
   static init() {
     StripePayment.setOptions(StripeOptions(
         publishableKey: appSettingsModel.getString(STRIPE_PUB_KEY),
-        merchantId: "merchant.strockapp.app",
+        merchantId: "merchant.fetish.app",
         androidPayMode: 'test,'));
   }
 

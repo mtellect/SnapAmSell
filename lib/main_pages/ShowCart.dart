@@ -2,7 +2,9 @@ import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
+import 'package:Strokes/main_pages/EditProfile.dart';
 import 'package:Strokes/main_pages/ShowProduct.dart';
+import 'package:Strokes/payment_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -81,7 +83,24 @@ class _ShowCartState extends State<ShowCart> {
           Container(
             padding: EdgeInsets.all(15),
             child: FlatButton(
-              onPressed: () {},
+              onPressed: () {
+                if (userModel.signUpCompleted) {
+                  pushAndResult(
+                      context,
+                      PaymentDialog(
+                        amount: getTotalCost,
+                      ),
+                      depend: false);
+                  return;
+                }
+
+                pushAndResult(
+                    context,
+                    EditProfile(
+                      modeEdit: true,
+                    ),
+                    depend: false);
+              },
               color: AppConfig.appColor,
               padding: EdgeInsets.all(20),
               shape: RoundedRectangleBorder(

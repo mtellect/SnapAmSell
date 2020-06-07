@@ -890,6 +890,7 @@ const String AVATAR_POSITION = "avatarPosition";
 const String GENDER = "gender";
 const String PLACE_NAME = "placeName";
 const String ADDRESS = "address";
+const String LANDMARK = "landMark";
 const String JOB_LOCATION = "jobLocation";
 const String JOB_NAME = "jobName";
 const String JOB_SKILLS = "jobSkills";
@@ -1516,6 +1517,7 @@ const String AMOUNT_TO_PAY = "amountToPay";
 
 const String PRODUCT_ID = "productId";
 const String PRODUCT_BASE = "productBase";
+const String CART_BASE = "cartBase";
 const String OFFER_BASE = "offerBase";
 const String OFFER_ID = "offerId";
 const String OFFER_IDS_BASE = "offerIdsBase";
