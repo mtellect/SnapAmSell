@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 const String bid_hand = 'assets/icons/bid_hand.png';
 const String bid_hand1 = 'assets/icons/bid_hand1.png';
 const String ic_bid = 'assets/icons/ic_bid.png';
+const String ic_bid1 = 'assets/icons/ic_bid1.png';
 const String love_back = 'assets/icons/love_back.jpg';
 const String ic_edit_profile = 'assets/icons/ic_edit_profile.png';
 const String ic_low_ba = 'assets/icons/ic_low_ba.png';
@@ -779,7 +780,13 @@ const String IMPRESSIONS = "impressions";
 
 const String BY = "by";
 
+const String ACCEPTED = "accepted";
+const String ACCEPTED_BY = "acceptedBy";
+const String ACCEPTED_PRICE = "acceptedPrice";
+const String ACCEPTED_QUANTITY = "acceptedQuantity";
+
 const String BANNED = "banned";
+
 const String DISABLED = "disabled";
 
 const String FAILED_ATTEMPTS = "failedAttempt";

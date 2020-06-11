@@ -146,137 +146,157 @@ class _ShowCartState extends State<ShowCart> {
           setState(() {});
         });
       },
-      child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: white.withOpacity(.1)),
-            color: white.withOpacity(.05)),
-        child: Stack(
-          alignment: Alignment.topRight,
-          children: [
-            Row(
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.all(5),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: white.withOpacity(.1)),
+                color: white.withOpacity(.05)),
+            child: Stack(
               children: [
-                Flexible(
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          imageUrl: image,
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      addSpaceWidth(15),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text.rich(TextSpan(children: [
-                              TextSpan(
-                                  text: "Category ",
-                                  style: textStyle(
-                                      false, 12, black.withOpacity(.5))),
-                              TextSpan(
-                                  text: category,
-                                  style: textStyle(false, 12, black)),
-                            ])),
-                            addSpace(2),
-                            Text(
-                              title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: textStyle(true, 18, black),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: CachedNetworkImage(
+                              imageUrl: image,
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
                             ),
-                            addSpace(2),
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: black.withOpacity(.09), width: 1),
-                                  color: AppConfig.appColor,
-                                  borderRadius: BorderRadius.circular(8)),
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                "\$$price",
-                                style: textStyle(true, 16, black),
-                              ),
+                          ),
+                          addSpaceWidth(15),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+//                            Text.rich(TextSpan(children: [
+//                              TextSpan(
+//                                  text: "Category ",
+//                                  style: textStyle(
+//                                      false, 12, black.withOpacity(.5))),
+//                              TextSpan(
+//                                  text: category,
+//                                  style: textStyle(false, 12, black)),
+//                            ])),
+//                            addSpace(2),
+                                Text(
+                                  title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textStyle(true, 14, black),
+                                ),
+                                addSpace(2),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: black.withOpacity(.09), width: 1),
+                                      color: AppConfig.appColor,
+                                      borderRadius: BorderRadius.circular(8)),
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    "\$$price",
+                                    style: textStyle(true, 12, black),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: black, borderRadius: BorderRadius.circular(18)),
-                  padding: EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          cartLists[p]
-                              .put(QUANTITY, quantity == 1 ? 1 : quantity - 1);
-                          setState(() {});
-                        },
-                        child: Container(
-                          height: 20,
-                          width: 40,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "-",
-                            style: textStyle(false, 16, white),
+                    ),
+                    GestureDetector(onTap: (){
+
+                    },
+                      child: Container(color: transparent,height: 100,
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: black, borderRadius: BorderRadius.circular(25)),
+//                  padding: EdgeInsets.all(8),
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    cartLists[p]
+                                        .put(QUANTITY, quantity == 1 ? 1 : quantity - 1);
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: 40,
+                                    decoration: BoxDecoration(shape: BoxShape.circle),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "-",
+                                      style: textStyle(false, 16, white),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "$quantity",
+                                  style: textStyle(true, 15, white),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    cartLists[p].put(QUANTITY, quantity + 1);
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: 40,
+                                    decoration: BoxDecoration(shape: BoxShape.circle),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "+",
+                                      style: textStyle(false, 16, white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      Text(
-                        "$quantity",
-                        style: textStyle(true, 15, white),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          cartLists[p].put(QUANTITY, quantity + 1);
-                          setState(() {});
-                        },
-                        child: Container(
-                          height: 20,
-                          width: 40,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "+",
-                            style: textStyle(false, 16, white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                Align(alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      yesNoDialog(context, "Remove Item", "Are you sure?", (){
+                        cartController.add(model);
+                        setState(() {});
+                      });
+                    },
+                    child: Container(
+                      child: Icon(
+                        Icons.close,
+                        color: white,
+                        size: 15,
+                      ),
+                      height: 25,
+                      width: 25,
+                      decoration: BoxDecoration(
+                          color: red, shape: BoxShape.circle
+//                    borderRadius: BorderRadius.circular(10)
+                      ),
+
+                    ),
+                  ),
+                )
               ],
             ),
-            GestureDetector(
-              onTap: () {
-                cartController.add(model);
-                setState(() {});
-              },
-              child: Container(
-                child: Icon(
-                  Icons.close,
-                  color: white,
-                  size: 15,
-                ),
-                height: 25,
-                width: 25,
-                decoration: BoxDecoration(
-                    color: red, borderRadius: BorderRadius.circular(10)),
-              ),
-            )
-          ],
-        ),
+          ),
+          addLine(.5, black.withOpacity(.1), 10, 0, 10, 0)
+        ],
       ),
     );
   }

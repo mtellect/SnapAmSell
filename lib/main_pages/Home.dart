@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
     Firestore.instance
         .collection(PRODUCT_BASE)
         //.where(PARTIES, arrayContains: userModel.getUserId())
-        .limit(6)
+        .limit(16)
         .orderBy(CREATED_AT, descending: !isNew)
         .startAt(startFeedAt)
         .getDocuments()
@@ -58,14 +58,15 @@ class _HomeState extends State<Home> {
       if (isNew) {
         refreshController.refreshCompleted();
       } else {
-        int oldLength = productLists.length;
+        /*int oldLength = productLists.length;
         int newLength = local.length;
         if (newLength <= oldLength) {
           refreshController.loadNoData();
           canRefresh = false;
         } else {
           refreshController.loadComplete();
-        }
+        }*/
+        refreshController.loadComplete();
       }
       productSetup = true;
       if (mounted)

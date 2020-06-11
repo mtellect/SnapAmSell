@@ -533,7 +533,7 @@ class BaseModel {
       Firestore.instance
           .collection(name)
           .document(document)
-          .setData(items)
+          .setData(items,merge: true)
           .whenComplete(() {
         if (onComplete != null) onComplete();
       });

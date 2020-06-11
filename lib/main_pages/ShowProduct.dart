@@ -1,6 +1,8 @@
 import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/OfferDialog.dart';
+import 'package:Strokes/OfferDialogg.dart';
+import 'package:Strokes/OfferMain.dart';
 import 'package:Strokes/app/app.dart';
 import 'package:Strokes/app/dotsIndicator.dart';
 import 'package:Strokes/app_config.dart';
@@ -13,9 +15,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ShowProduct extends StatefulWidget {
-  final BaseModel model;
-
-  const ShowProduct(this.model);
+  final BaseModel theModel;
+  final String objectId;
+  const ShowProduct(this.theModel,{this.objectId});
   @override
   _ShowProductState createState() => _ShowProductState();
 }
@@ -25,20 +27,35 @@ class _ShowProductState extends State<ShowProduct> {
   final vp = PageController();
   int currentPage = 0;
   BaseModel theUser;
-
+  String objectId;
+  bool setup = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    model = widget.model;
+    model = widget.theModel;
+    if(model==null){
+      loadProduct();
+    }else{
+    setup=true;
+    loadUser();
+    }
+  }
+
+  loadProduct()async{
+    DocumentSnapshot doc = await Firestore.instance.collection(PRODUCT_BASE).document(widget.objectId).get();
+    model = BaseModel(doc:doc);
+
+    setup=true;
+    setState(() {});
     loadUser();
   }
 
   loadUser() {
-    if (widget.model.getUserId().isEmpty) return;
+    if (model.getUserId().isEmpty) return;
     Firestore.instance
         .collection(USER_BASE)
-        .document(widget.model.getUserId())
+        .document(model.getUserId())
         .get()
         .then((value) {
       theUser = BaseModel(doc: value);
@@ -58,9 +75,12 @@ class _ShowProductState extends State<ShowProduct> {
   }
 
   page() {
-    int p = cartLists.indexWhere((e) => e.getObjectId() == model.getObjectId());
-    bool isInCart = p != -1;
-
+    bool isInCart = false;
+    if(model!=null) {
+      int p = cartLists.indexWhere((e) =>
+      e.getObjectId() == model.getObjectId());
+      isInCart = p != -1;
+    }
     return Column(
       children: [
         Container(
@@ -82,7 +102,7 @@ class _ShowProductState extends State<ShowProduct> {
           ),
         ),
         Flexible(
-            child: ListView(
+            child: !setup?loadingLayout():ListView(
           padding: EdgeInsets.all(0),physics: BouncingScrollPhysics(),
           children: [
             Container(
@@ -383,7 +403,7 @@ class _ShowProductState extends State<ShowProduct> {
             addSpace(20),
           ],
         )),
-        if (!model.myItem())
+        if(setup)if (!model.myItem())
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
@@ -423,7 +443,25 @@ class _ShowProductState extends State<ShowProduct> {
                           return;
                         }
 
-                        pushAndResult(context, OfferDialog(model), depend: false);
+//                        pushAndResult(context, OfferDialogg(), depend: false);
+                        String offerId = "${model.getObjectId()}${userModel.getObjectId()}";
+                        BaseModel offer = BaseModel();
+                        offer.put(OBJECT_ID, offerId);
+                        offer.put(SELLER_ID, model.getString(USER_ID));
+                        offer.put(PRODUCT_ID, model.getObjectId());
+                        offer.put(PRICE,model.getDouble(PRICE));
+                        offer.put(TITLE,model.getString(TITLE));
+                        offer.put(DESCRIPTION,model.getString(DESCRIPTION));
+                        offer.put(IMAGES, model.getList(IMAGES));
+                        offer.put(PARTIES, [userModel.getUserId(), model.getUserId()]);
+                        offer.saveItem(OFFER_IDS_BASE, true,document: offerId);
+
+                        pushAndResult(
+                            context,
+                            OfferMain(
+                              offerId,
+                            ),
+                            depend: false);
                       },
                       color: AppConfig.appColor,
                       padding: EdgeInsets.all(0),

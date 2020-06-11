@@ -6,6 +6,7 @@ import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/basemodel.dart';
+import 'package:Strokes/payment_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -195,6 +196,7 @@ class _OfferItemState extends State<OfferItem>
     String offerId = model.getString(OFFER_ID);
 
     BaseModel offer = offerInfo[offerId];
+    bool accepted = offer.getBoolean(ACCEPTED);
     String image = getFirstPhoto(offer.images);
     String title = offer.getString(TITLE);
     String desc = offer.getString(DESCRIPTION);
@@ -225,107 +227,155 @@ class _OfferItemState extends State<OfferItem>
             ),
             depend: false);
       },
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            height: 120,
-            width: double.infinity,
-            decoration: BoxDecoration(color: white
-//            border: Border.all(color: white.withOpacity(0.1), width: 2)
-                ),
-            child: Stack(
+      child: Container(color: white,
+        child: Column(
+          children: [
+            addSpace(10),
+            Row(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5))),
-                        child: CachedNetworkImage(
-                          imageUrl: image,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                addSpaceWidth(10),
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      fit: BoxFit.cover,
                     ),
-                    addSpaceWidth(10),
-                    Flexible(
-                        fit: FlexFit.tight,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              title,
-                              style: textStyle(true, 16, black),
-                            ),
-                            addSpace(5),
-                            Text(
-                              desc,
-                              style: textStyle(false, 12, black),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            addSpace(5),
-                            Text(
-                              "\$$price",
-                              style: textStyle(true, 12, black.withOpacity(.5)),
-                            ),
-                          ],
-                        )),
-                    addSpaceWidth(10),
+                  ),
+                ),
+                addSpaceWidth(10),
+                Flexible(
+                    fit: FlexFit.tight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title,
+                          style: textStyle(true, 16, black),
+                        ),
+                        addSpace(5),
+                        Text(
+                          desc,
+                          style: textStyle(false, 12, black),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        addSpace(5),
+                        if(!accepted)Text(
+                          "\$$price",
+                          style: textStyle(true, 12, black.withOpacity(.5)),
+                        ),
+                        if(accepted)Container(
+//                        color: red0,
+//                        width: double.infinity,
+//                        padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+//                          color: red0,
+                            borderRadius: BorderRadius.all(Radius.circular(5))
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("\$${offer.getDouble(ACCEPTED_PRICE)} "
+                                  "for ${offer.getInt(QUANTITY)} Item${offer.getInt(QUANTITY)>1?"s":""}",
+                                style: textStyle(true, 12, black.withOpacity(.5)),),
+
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
+                addSpaceWidth(10),
+                accepted?Container():model.myItem()?(
                     Container(
                       padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
                       decoration: BoxDecoration(
-                          color: AppConfig.appColor,
+                          color: blue0,
                           borderRadius: BorderRadius.all(Radius.circular(25))),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(
-                            ic_bid,
-                            height: 17,
-                            color: black,
-                          ),
-                          addSpaceWidth(8),
+
                           Text(
                             "\$$myBid",
-                            style: textStyle(true, 20, black),
-                          )
+                            style: textStyle(true, 20, white_color),
+                          ),
+                          addSpaceWidth(8),
+                          Image.asset(
+                            ic_bid1,
+                            height: 17,
+                            color: white_color.withOpacity(.7),
+                          ),
                         ],
                       ),
-                    ),
-                    addSpaceWidth(10),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: CustomPaint(
-                    painter: TrianglePainter(
-                      strokeColor: typeColor,
-                      strokeWidth: 10,
-                      paintingStyle: PaintingStyle.fill,
-                    ),
-                    child: Container(
-                      height: 25,
-                      padding: EdgeInsets.all(2),
-                      width: 70,
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        type,
-                        style: textStyle(true, 10, white_color),
+                    )
+                ):Container(
+                  padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
+                  decoration: BoxDecoration(
+                      color: red0,
+                      borderRadius: BorderRadius.all(Radius.circular(25))),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        ic_bid,
+                        height: 17,
+                        color: white_color.withOpacity(.7),
                       ),
+                      addSpaceWidth(8),
+                      Text(
+                        "\$$myBid",
+                        style: textStyle(true, 20, white_color),
+                      )
+                    ],
+                  ),
+                ),
+                addSpaceWidth(10),
+                if(offer.getString(SELLER_ID)!=userModel.getObjectId()
+                 && accepted)Container(
+                  height: 40,
+                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+
+                  child: RaisedButton(
+                    onPressed: () {
+                      pushAndResult(context, PaymentDialog(amount: offer.getDouble(ACCEPTED_PRICE),));
+                    },
+                    color: AppConfig.appColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+//                      Icon(
+//                        Icons.monetization_on,
+//                        size: 16,
+//                        color: black_color,
+//                      ),
+//                      addSpaceWidth(5),
+                        Flexible(
+                          child: Text(
+                            "Pay \$${offer.getDouble(ACCEPTED_PRICE)}",
+                            style: textStyle(true, 14, black_color),
+                            maxLines: 1,
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 )
               ],
             ),
-          ),
-          addLine(.5, black.withOpacity(.1), 0, 0, 0, 10)
-        ],
+            addLine(.5, black.withOpacity(.1), 0, 10, 0, 0)
+          ],
+        ),
       ),
     );
   }

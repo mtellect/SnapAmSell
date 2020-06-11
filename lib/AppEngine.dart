@@ -4432,10 +4432,124 @@ shareButton(color, String text, icon, onTap, {width}) {
   );
 }
 
+String oldNumber = "";
+bool checking = false;
+inputTextView(String title, controller,
+    {@required isNum, int maxLine = 1, priceFormatted, onTipClicked,priceIcon}) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Row(
+        children: <Widget>[
+          Flexible(
+            fit: FlexFit.tight,
+            child: Text(
+              title,
+              style: textStyle(true, 14, black),
+            ),
+          ),
+          if (onTipClicked != null)
+            GestureDetector(
+              onTap: () {
+                onTipClicked();
+              },
+              child: Text(
+                "What's this?",
+                style: textStyle(false, 12, blue0),
+              ),
+            ),
+        ],
+      ),
+      addSpace(10),
+      Container(
+        //height: 45,
+        margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+        decoration: BoxDecoration(
+//            color: blue09,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: black, width: 2)),
+        child: Row(
+          children: <Widget>[
+            if (priceIcon != null) addSpaceWidth(15),
+            if (priceIcon != null)
+              priceIcon is String ?
+              Image.asset(
+                priceIcon,
+                height: 18,
+                width: 18,
+                color: black.withOpacity(.3),
+              ):Icon(priceIcon,size: 18, color:black.withOpacity(.3)),
+            Flexible(
+              child: new TextField(
+                onSubmitted: (_) {
+                  //postHeadline();
+                },
+//                textInputAction: maxLine==1?TextInputAction.done:TextInputAction.newline,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.fromLTRB(
+                        (priceIcon != null) ? 5 : 10, 10, 10, 10),
+                    hintText: "",
+                    hintStyle: textStyle(false, 18, black.withOpacity(.2)),
+                    counter: null
+                  /*counterStyle: textStyle(true, 0, white)*/
+                ),
+                style: textStyle(
+                  false,
+                  18,
+                  black,
+                ),
+                controller: controller,
+                cursorColor: black,
+                cursorWidth: 1,
+//                          maxLength: 50,
+                maxLines: maxLine,
+                keyboardType:
+                isNum ? (TextInputType.number) : TextInputType.text,
+                scrollPadding: EdgeInsets.all(0),
+                onChanged: (String s) {
+                  if (priceFormatted == null) return;
+                  if (checking || s.trim().length<4) {
+                    priceFormatted();
+                    return;}
+                  checking = true;
+
+                  controller.text = formatAmount(s);
+                  priceFormatted();
+
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    final val =
+                    TextSelection.collapsed(offset: controller.text.length);
+                    controller.selection = val;
+                    checking = false;
+                    priceFormatted();
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+String formatAmount(String text) {
+  if(text==null)return "";
+  if(text.isEmpty)return "";
+  text = text.replaceAll(",", "");
+  RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+  Function mathFunc = (Match match) => '${match[1]},';
+
+  return text.replaceAllMapped(reg, mathFunc);
+}
+
 nameItem(String title, String text, {color, bool center = false}) {
   color = color??black;
   return Container(
-    margin: EdgeInsets.only(bottom: 10),
+//    margin: EdgeInsets.only(bottom: 10),
     child: RichText(
       text: TextSpan(children: [
         TextSpan(text: title, style: textStyle(true, 13, color)),
@@ -5321,7 +5435,7 @@ userImageItem(
   context,
   BaseModel model, {
   double size = 40,
-  double strokeSize = 4,
+  double strokeSize = 4,strokeColor=white_color,
   bool padLeft = true,
 }) {
   return new GestureDetector(
@@ -5336,26 +5450,33 @@ userImageItem(
     child: new AnimatedContainer(
       duration: Duration(milliseconds: 500),
       decoration: BoxDecoration(
-        border: Border.all(width: strokeSize, color: white),
-        shape: BoxShape.circle,
+        border: Border.all(width: strokeSize, color: strokeColor),
+        shape: BoxShape.circle,color:AppConfig.appColor,
       ),
       margin: EdgeInsets.fromLTRB(padLeft ? 10 : 0, 0, 0, 0),
       width: size,
       height: size,
-      child: Stack(
+      child: Stack(fit: StackFit.expand,
         children: <Widget>[
-          /* Card(
+          model.userImage.isEmpty
+              ? Center(
+            child: Text(
+              getInitials(model.getString(NAME)),
+              style: textStyle(true, 18, white),
+            ),
+          )
+              :Card(
             margin: EdgeInsets.all(0),
             shape: CircleBorder(),
             clipBehavior: Clip.antiAlias,
             color: transparent,
-            elevation: .5,
+            elevation: 0,
             child: Stack(
+              fit: StackFit.expand,
               children: <Widget>[
                 Container(
                   width: size,
                   height: size,
-                  color: AppConfig.appColor,
                   child: Center(
                       child: Icon(
                     Icons.person,
@@ -5363,17 +5484,15 @@ userImageItem(
                     size: 15,
                   )),
                 ),
-                CachedNetworkImage(
-                  width: size,
-                  height: size,
+                 CachedNetworkImage(
                   imageUrl: model.userImage,
                   fit: BoxFit.cover,
                 ),
               ],
             ),
-          ),*/
+          ),
 
-          ClipRRect(
+          /*ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Container(
 //                width: size,
@@ -5397,7 +5516,7 @@ userImageItem(
                       fit: BoxFit.cover,
                     ),
             ),
-          ),
+          ),*/
           if (isOnline(model) && !model.myItem())
             Container(
               width: 10,

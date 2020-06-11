@@ -186,7 +186,6 @@ class _OfferDialogState extends State<OfferDialog> {
     offerItem.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
     offerItem.saveItem(OFFER_BASE, true);
 
-
     showMessage(context, Icons.check, green, "Offer sent",
         "Your Price offer of \$$text has been sent to the seller",
         cancellable: false, onClicked: (_) {

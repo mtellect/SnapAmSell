@@ -187,19 +187,20 @@ class _MainAdminState extends State<MainAdmin>
       });
     });
 
-    var sub5 = cartController.stream.listen((model) {
+    var sub5 = cartController.stream.listen((bm) {
+      BaseModel model = BaseModel(items: bm.items);
       String id = model.getObjectId();
       int p = cartLists.indexWhere((e) => e.getObjectId() == id);
       model.put(QUANTITY, 1);
       bool exists = p != -1;
       if (exists) {
         cartLists.removeAt(p);
-        model.deleteItem();
+//        model.deleteItem();
       } else {
         cartLists.add(model);
-        model
-          ..put(OBJECT_ID, model.getObjectId())
-          ..saveItem(CART_BASE, true, document: model.getObjectId());
+//        model
+//          ..put(OBJECT_ID, model.getObjectId())
+//          ..saveItem(CART_BASE, true, document: model.getObjectId());
       }
       setState(() {});
     });
@@ -373,8 +374,8 @@ class _MainAdminState extends State<MainAdmin>
           //loadItems();
           loadNotification();
           loadMessages();
-          loadCarts();
-          loadProducts();
+//          loadCarts();
+//          loadProducts();
           loadBids();
           setupPush();
           loadBlocked();

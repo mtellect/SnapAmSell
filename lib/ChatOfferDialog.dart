@@ -8,8 +8,8 @@ import 'basemodel.dart';
 
 class ChatOfferDialog extends StatefulWidget {
   final double prevPrice;
-  final bool isBuyer;
-  const ChatOfferDialog(this.prevPrice,this.isBuyer);
+  final String description;
+  const ChatOfferDialog(this.prevPrice,this.description);
   @override
   _ChatOfferDialogState createState() => _ChatOfferDialogState();
 }
@@ -61,14 +61,14 @@ class _ChatOfferDialogState extends State<ChatOfferDialog> {
                         type: VirtualKeyboardType.Numeric,
                         onKeyPress: _onKeyPress),
                   ),
-                  Container(
+                  if(widget.prevPrice>0)Container(
                       padding: EdgeInsets.all(15),
                       alignment: Alignment.center,
                       color: black.withOpacity(.02),
                       child: Text.rich(
                         TextSpan(children: [
                           TextSpan(
-                            text: "${widget.isBuyer?"The Buyer":"The Seller"} is Offering to sell @ ",
+                            text: "${widget.description}",
                             style: textStyle(false, 16, black.withOpacity(0.6)),
                           ),
                           TextSpan(
