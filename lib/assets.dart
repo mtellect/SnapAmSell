@@ -1530,6 +1530,11 @@ const String OFFER_ID = "offerId";
 const String OFFER_IDS_BASE = "offerIdsBase";
 const String QUANTITY = "quantity";
 const String SELLER_ID = "seller";
+const String SEEN_PRODUCTS = "seenProducts";
+
+const String ACCOUNT_DEPOSIT = "accountDeposit";
+const String ACCOUNT_WITHDRAWN = "accountWithdrawn";
+const String ACCOUNT_BALANCE = "accountBalance";
 
 List productCategories = [
   "Hair",

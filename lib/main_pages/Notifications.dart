@@ -46,8 +46,8 @@ class _NotificationsState extends State<Notifications>
       for (var doc in value.documents) {
         BaseModel model = BaseModel(doc: doc);
         //if (userModel.isMuted(model.getObjectId())) continue;
-        int p = listItems
-            .indexWhere((e) => e.getObjectId() == model.getObjectId());
+        int p =
+            listItems.indexWhere((e) => e.getObjectId() == model.getObjectId());
         if (p != -1) {
           listItems[p] = model;
         } else {
@@ -92,14 +92,14 @@ class _NotificationsState extends State<Notifications>
           child: Row(
             children: [
               BackButton(
-                color: white,
+                color: black,
                 onPressed: () {
                   Navigator.pop(context, "");
                 },
               ),
               Text(
                 "Notifications",
-                style: textStyle(true, 25, white),
+                style: textStyle(true, 25, black),
               ),
               Spacer(),
             ],

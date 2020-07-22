@@ -1119,7 +1119,7 @@ class _MainAdminState extends State<MainAdmin>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.account_balance_wallet,
+                              Icons.account_balance,
                               size: 16,
                               color: black,
                             ),

@@ -71,12 +71,10 @@ dependencies:
   dashed_circle: ^0.0.1
   datetime_picker_formfield: ^0.4.3
   shared_preferences: ^0.5.6+3
-  multi_image_picker: 4.6.7
+#  multi_image_picker: 4.6.7
 
-#  flutter_rave: ^0.0.5
   flutter_local_notifications: ^1.4.0
-#  rxdart: ^0.23.1
-#  rave_flutter: 0.0.8-alpha+1
+
 
   flutter_svg: ^0.17.4
   dio_flutter_transformer: ^3.0.2
@@ -91,7 +89,7 @@ dependencies:
   android_alarm_manager: ^0.4.5+2
   animated_text_kit: ^1.3.1
   place_picker: ^0.9.11
-#  flutter_google_ad_manager: ^0.10.1
+
   cloud_functions: ^0.5.0
   money_field: ^1.0.1
   csv: ^4.0.3
@@ -121,22 +119,13 @@ dependencies:
   flutter_xlider: ^3.3.0
   scrollable_positioned_list: ^0.1.5
 
-  flutter_photo_picker:
-    git:
-      url: https://github.com/blankapp/flutter_photo_picker.git
-      ref: master
-  flutter_datetime_picker:
-    git:
-      url: https://github.com/derohimat/flutter_datetime_picker.git
   flutter_icons: ^1.1.0
   random_color: ^1.0.5
   video_compress: ^0.1.3
   masked_controller: ^1.0.1
   flutter_masked_text:
   font_awesome_flutter:
-  fluttery:
-     git:
-       url: git://github.com/mtellect/fluttery
+
 
   great_circle_distance2: ^1.0.1+1
 #  stripe_fl: ^0.1.0
@@ -181,37 +170,6 @@ flutter:
 
 
   fonts:
-       - family: Nirmala
-         fonts:
-           - asset: assets/fonts/Nirmala.ttf
-
-       - family: NirmalaB
-         fonts: 
-           - asset: assets/fonts/NirmalaB.ttf
-
-
-       - family: Av
-         fonts:
-           - asset: assets/fonts/Av.otf
-
-       - family: AvB
-         fonts:
-           - asset: assets/fonts/AvB.otf
-
-
-
-
-       - family: Futura
-         fonts:
-           - asset: assets/fonts/Futura.ttf 
-
-       - family: FuturaB
-         fonts: 
-           - asset: assets/fonts/FuturaB.ttf 
-
-       - family: Arayara
-         fonts:
-           - asset: assets/fonts/arayara demo.ttf
 
        - family: Averta
          fonts:
@@ -226,10 +184,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/tinder/
     - assets/icons/
     - assets/sounds/
-    - assets/videos/
     - flags/
 
 

@@ -1,7 +1,6 @@
 import 'package:Strokes/AppEngine.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/OfferMain.dart';
-import 'package:Strokes/TrianglePainter.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/login_page.dart';
@@ -227,7 +226,8 @@ class _OfferItemState extends State<OfferItem>
             ),
             depend: false);
       },
-      child: Container(color: white,
+      child: Container(
+        color: white,
         child: Column(
           children: [
             addSpace(10),
@@ -266,111 +266,123 @@ class _OfferItemState extends State<OfferItem>
                           overflow: TextOverflow.ellipsis,
                         ),
                         addSpace(5),
-                        if(!accepted)Text(
-                          "\$$price",
-                          style: textStyle(true, 12, black.withOpacity(.5)),
-                        ),
-                        if(accepted)Container(
+                        if (!accepted)
+                          Text(
+                            "\$$price",
+                            style: textStyle(true, 12, black.withOpacity(.5)),
+                          ),
+                        if (accepted)
+                          Container(
 //                        color: red0,
 //                        width: double.infinity,
 //                        padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
+                            decoration: BoxDecoration(
 //                          color: red0,
-                            borderRadius: BorderRadius.all(Radius.circular(5))
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("\$${offer.getDouble(ACCEPTED_PRICE)} "
-                                  "for ${offer.getInt(QUANTITY)} Item${offer.getInt(QUANTITY)>1?"s":""}",
-                                style: textStyle(true, 12, black.withOpacity(.5)),),
-
-                            ],
-                          ),
-                        )
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "\$${offer.getDouble(ACCEPTED_PRICE)} "
+                                  "for ${offer.getInt(QUANTITY)} Item${offer.getInt(QUANTITY) > 1 ? "s" : ""}",
+                                  style: textStyle(
+                                      true, 12, black.withOpacity(.5)),
+                                ),
+                              ],
+                            ),
+                          )
                       ],
                     )),
                 addSpaceWidth(10),
-                accepted?Container():model.myItem()?(
-                    Container(
-                      padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
-                      decoration: BoxDecoration(
-                          color: blue0,
-                          borderRadius: BorderRadius.all(Radius.circular(25))),
+                accepted
+                    ? Container()
+                    : model.myItem()
+                        ? (Container(
+                            padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
+                            decoration: BoxDecoration(
+                                color: blue0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25))),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "\$$myBid",
+                                  style: textStyle(true, 20, white_color),
+                                ),
+                                addSpaceWidth(8),
+                                Image.asset(
+                                  ic_bid1,
+                                  height: 17,
+                                  color: white_color.withOpacity(.7),
+                                ),
+                              ],
+                            ),
+                          ))
+                        : Container(
+                            padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
+                            decoration: BoxDecoration(
+                                color: red0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25))),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  ic_bid,
+                                  height: 17,
+                                  color: white_color.withOpacity(.7),
+                                ),
+                                addSpaceWidth(8),
+                                Text(
+                                  "\$$myBid",
+                                  style: textStyle(true, 20, white_color),
+                                )
+                              ],
+                            ),
+                          ),
+                addSpaceWidth(10),
+                if (offer.getString(SELLER_ID) != userModel.getObjectId() &&
+                    accepted)
+                  Container(
+                    height: 40,
+                    margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: RaisedButton(
+                      onPressed: () {
+                        pushAndResult(
+                            context,
+                            PaymentDialog(
+                              amount: offer.getDouble(ACCEPTED_PRICE),
+                            ),
+                            depend: false);
+                      },
+                      color: AppConfig.appColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-
-                          Text(
-                            "\$$myBid",
-                            style: textStyle(true, 20, white_color),
-                          ),
-                          addSpaceWidth(8),
-                          Image.asset(
-                            ic_bid1,
-                            height: 17,
-                            color: white_color.withOpacity(.7),
-                          ),
-                        ],
-                      ),
-                    )
-                ):Container(
-                  padding: EdgeInsets.fromLTRB(15, 5, 10, 5),
-                  decoration: BoxDecoration(
-                      color: red0,
-                      borderRadius: BorderRadius.all(Radius.circular(25))),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        ic_bid,
-                        height: 17,
-                        color: white_color.withOpacity(.7),
-                      ),
-                      addSpaceWidth(8),
-                      Text(
-                        "\$$myBid",
-                        style: textStyle(true, 20, white_color),
-                      )
-                    ],
-                  ),
-                ),
-                addSpaceWidth(10),
-                if(offer.getString(SELLER_ID)!=userModel.getObjectId()
-                 && accepted)Container(
-                  height: 40,
-                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-
-                  child: RaisedButton(
-                    onPressed: () {
-                      pushAndResult(context, PaymentDialog(amount: offer.getDouble(ACCEPTED_PRICE),));
-                    },
-                    color: AppConfig.appColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
 //                      Icon(
 //                        Icons.monetization_on,
 //                        size: 16,
 //                        color: black_color,
 //                      ),
 //                      addSpaceWidth(5),
-                        Flexible(
-                          child: Text(
-                            "Pay \$${offer.getDouble(ACCEPTED_PRICE)}",
-                            style: textStyle(true, 14, black_color),
-                            maxLines: 1,
-                          ),
-                        )
-                      ],
+                          Flexible(
+                            child: Text(
+                              "Pay \$${offer.getDouble(ACCEPTED_PRICE)}",
+                              style: textStyle(true, 14, black_color),
+                              maxLines: 1,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                )
+                  )
               ],
             ),
             addLine(.5, black.withOpacity(.1), 0, 10, 0, 0)

@@ -26,7 +26,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_photo_picker/flutter_photo_picker.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -97,27 +96,6 @@ getSingleCroppedImage(BuildContext context,
     onPicked(value.path);
   });
   return;
-
-  PhotoPicker.openPicker(
-    mediaType: 'image', // image | video | any
-    multiple: false,
-    limit: 1,
-  ).then((value) async {
-    if (null == value) return;
-    print("Picked");
-    String urlPath = value[0].url.replaceAll("file://", "");
-    String thumbnail = value[0].thumbnailUrl.replaceAll("file://", "");
-    if (crop) {
-      File file = await cropThisImage(urlPath, circle: circle);
-      if (null == file) return;
-      onPicked(file.path);
-      return;
-    }
-    onPicked(urlPath);
-  }).catchError((e) {
-    //logError(e.code, e.message);
-  });
-  ;
 }
 
 getVideoThumbnail(String path) async {
@@ -137,24 +115,7 @@ getSingleVideo(BuildContext context,
     onPicked(model);
   });
   return;
-  PhotoPicker.openPicker(
-    mediaType: 'video', // image | video | any
-    multiple: false,
-    limit: 1,
-  ).then((value) {
-    if (null == value) return;
-    List<BaseModel> path = value.map((e) {
-      String urlPath = value[0].url.replaceAll("file://", "");
-      String thumbnail = value[0].thumbnailUrl.replaceAll("file://", "");
-      return BaseModel()
-        ..put(VIDEO_PATH, urlPath)
-        ..put(THUMBNAIL_PATH, thumbnail);
-    }).toList();
-    onPicked(path[0]);
-  }).catchError((e) {
-    //logError(e.code, e.message);
-  });
-  ;
+
 }
 
 getMultiCroppedImage(BuildContext context,
@@ -180,36 +141,7 @@ getMultiCroppedImage(BuildContext context,
 //     //logError(e.code, e.message);
 //   });
 
-  PhotoPicker.openPicker(
-    mediaType: withVideo ? "any" : 'image', // image | video | any
-    multiple: true,
-    limit: max,
-  ).then((value) async {
-    if (null == value) return;
-    List<BaseModel> path = value.map((e) {
-      String urlPath = e.url.replaceAll("file://", "");
-      String thumbnail = e.thumbnailUrl.replaceAll("file://", "");
-      print(e.toJson());
-      return BaseModel()
-        ..put(IMAGE_URL, urlPath)
-        ..put(THUMBNAIL_URL, thumbnail)
-        ..put(IS_VIDEO, e.type == "video");
-    }).toList();
-    // List<BaseModel> newPaths = [];
-    // for (BaseModel bm in path) {
-    //   if (bm.getBoolean(IS_VIDEO)) {
-    //     newPaths.add(bm);
-    //     continue;
-    //   }
-    //   File newFile = await cropThisImage(bm.getString(IMAGE_URL));
-    //   BaseModel model = BaseModel();
-    //   model.put(IMAGE_URL, newFile.path);
-    //   newPaths.add(model);
-    // }
-    onPicked(path);
-  }).catchError((e) {
-    //logError(e.code, e.message);
-  });
+
 }
 
 toast(scaffoldKey, text, {Color color}) {

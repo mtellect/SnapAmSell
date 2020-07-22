@@ -1,11 +1,11 @@
 import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/app/app.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
 import 'package:Strokes/auth/login_page.dart';
 import 'package:Strokes/auth/signUp_page.dart';
 import 'package:Strokes/basemodel.dart';
+import 'package:Strokes/main_pages/RecentlyViewed.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo/photo.dart';
@@ -32,111 +32,114 @@ class _AccountState extends State<Account> {
     return ListView(
       padding: EdgeInsets.all(0),
       children: [
-        if(!isLoggedIn)Container(
-          width: double.infinity,
+        if (!isLoggedIn)
+          Container(
+            width: double.infinity,
 //          margin: EdgeInsets.all(10),
-          padding: EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              color: black.withOpacity(.05),
-              borderRadius: BorderRadius.circular(5)),
-          child: Row(
-            children: [
-              Flexible(child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      side: BorderSide(
-                          color: black,width: 2
-                      )),
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                color: black.withOpacity(.05),
+                borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              children: [
+                Flexible(
+                  child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          side: BorderSide(color: black, width: 2)),
 //                    color: blue3,
-                  onPressed: (){
-                    pushAndResult(context, LoginPage(), depend: false);
-                  },
-                  child: Text(
-                    "Login",
-                    style: textStyle(true, 16, black),
-                  )),fit: FlexFit.tight,),
-             addSpaceWidth(10),
-             Flexible(child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      side: BorderSide(
-                          color: black,width: 2
+                      onPressed: () {
+                        pushAndResult(context, LoginPage(), depend: false);
+                      },
+                      child: Text(
+                        "Login",
+                        style: textStyle(true, 16, black),
                       )),
+                  fit: FlexFit.tight,
+                ),
+                addSpaceWidth(10),
+                Flexible(
+                  child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          side: BorderSide(color: black, width: 2)),
 //                    color: blue3,
-                  onPressed: (){
-                    pushAndResult(context, SignUp(), depend: false);
-                  },
-                  child: Text(
-                    "Signup",
-                    style: textStyle(true, 16, black),
-                  )),fit: FlexFit.tight,),
-
-            ],
+                      onPressed: () {
+                        pushAndResult(context, SignUp(), depend: false);
+                      },
+                      child: Text(
+                        "Signup",
+                        style: textStyle(true, 16, black),
+                      )),
+                  fit: FlexFit.tight,
+                ),
+              ],
+            ),
           ),
-        ),
-        if(isLoggedIn)Container(
-          width: double.infinity,
-          margin: EdgeInsets.all(10),
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              color: black.withOpacity(.05),
+        if (isLoggedIn)
+          Container(
+            width: double.infinity,
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                color: black.withOpacity(.05),
 //                  border: Border.all(color: black.withOpacity(.09)),
-              borderRadius: BorderRadius.circular(5)),
-          child: Column(
+                borderRadius: BorderRadius.circular(5)),
+            child: Column(
 //                    crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              userImageItem(context, userModel,
-                  size: 60, strokeSize: 1,padLeft: false),
-              Text(
-                userModel.getString(NAME),
-                style: textStyle(true, 20, black),
-              ),
-              StarRating(
-                rating: 5,
-                size: 16,
-                color: AppConfig.appColor,
-                borderColor: black,
-              ),
-              addSpace(5),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 12,
-                        color: black,
-                      ),
-                      addSpaceWidth(2),
-                      Text(
-                        "Buyer",
-                        style: textStyle(false, 12, black),
-                      ),
-                    ],
-                  ),
-                  addSpaceWidth(10),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        height: 8,
-                        width: 8,
-                        decoration: BoxDecoration(
-                            color: dark_green0, shape: BoxShape.circle),
-                      ),
-                      addSpaceWidth(2),
-                      Text(
-                        "Active",
-                        style: textStyle(false, 12, black),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              children: [
+                userImageItem(context, userModel,
+                    size: 60, strokeSize: 1, padLeft: false),
+                Text(
+                  userModel.getString(NAME),
+                  style: textStyle(true, 20, black),
+                ),
+                StarRating(
+                  rating: 5,
+                  size: 16,
+                  color: AppConfig.appColor,
+                  borderColor: black,
+                ),
+                addSpace(5),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          size: 12,
+                          color: black,
+                        ),
+                        addSpaceWidth(2),
+                        Text(
+                          "Buyer",
+                          style: textStyle(false, 12, black),
+                        ),
+                      ],
+                    ),
+                    addSpaceWidth(10),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 8,
+                          width: 8,
+                          decoration: BoxDecoration(
+                              color: dark_green0, shape: BoxShape.circle),
+                        ),
+                        addSpaceWidth(2),
+                        Text(
+                          "Active",
+                          style: textStyle(false, 12, black),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 //                      Spacer(),
-              Container(
+                Container(
 //                    decoration: BoxDecoration(
 //                        border: Border.all(color: black, width: 2),
 //                        color: black.withOpacity(.9),
@@ -144,78 +147,89 @@ class _AccountState extends State<Account> {
 //                      //shape: BoxShape.circle
 //                    ),
 //                    padding: EdgeInsets.all(5),
-                //height: 70,
-                //width: 70,
-                alignment: Alignment.center,
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(3, (p) {
-                      String title = "likes";
-                      var icon = Icons.favorite;
+                  //height: 70,
+                  //width: 70,
+                  alignment: Alignment.center,
+                  child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(3, (p) {
+                        String title = "likes";
+                        var icon = Icons.favorite;
 
-                      if (p == 1) {
-                        title = "Views";
-                        icon = Icons.visibility;
-                      }
+                        if (p == 1) {
+                          title = "Views";
+                          icon = Icons.visibility;
+                        }
 
-                      if (p == 2) {
-                        title = "Stars";
-                        icon = Icons.star;
-                      }
+                        if (p == 2) {
+                          title = "Stars";
+                          icon = Icons.star;
+                        }
 
-                      return Container(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 40,height: 40,
-                              decoration: BoxDecoration(
-                                  color: AppConfig.appColor,
-                                  shape: BoxShape.circle
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  icon,
-                                  size: 18,
-                                  color: white_color,
+                        return Container(
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    color: AppConfig.appColor,
+                                    shape: BoxShape.circle),
+                                child: Center(
+                                  child: Icon(
+                                    icon,
+                                    size: 18,
+                                    color: white_color,
+                                  ),
                                 ),
                               ),
-                            ),
-                            addSpace(5),
-                            Text(
-                              "15 $title",
-                              style: textStyle(false, 13, black),
-                            ),
-                          ],
-                        ),
-                      );
-                    })),
-              ),
-            ],
+                              addSpace(5),
+                              Text(
+                                "15 $title",
+                                style: textStyle(false, 13, black),
+                              ),
+                            ],
+                          ),
+                        );
+                      })),
+                ),
+              ],
+            ),
           ),
-        ),
-        if(isLoggedIn)Container(
-          color: black.withOpacity(.05),
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(top: 10, bottom: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //fieldItem(Icons.home, brown, "Delivery Address", () {}),
-              fieldItem(Icons.person, green, "Edit Profile", () {
-                pushAndResult(
-                    context,
-                    EditProfile(
-                      modeEdit: true,
-                    ),
-                    depend: false);
-              }),
-              fieldItem(Icons.headset_mic, blue1, "Support", () {}),
-              fieldItem(Icons.help, black.withOpacity(.5), "Help", () {}),
-            ],
+        if (isLoggedIn)
+          Container(
+            color: black.withOpacity(.05),
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(top: 10, bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                fieldItem(Icons.visibility, brown, "Recently Viewed", () {
+                  pushAndResult(context, RecentlyViewed(), depend: false);
+                }),
+                fieldItem(Icons.person, green, "Edit Profile", () {
+                  pushAndResult(
+                      context,
+                      EditProfile(
+                        modeEdit: true,
+                      ),
+                      depend: false);
+                }),
+                fieldItem(Icons.account_balance, orange0, "Wallet Setup", () {
+                  pushAndResult(
+                      context,
+                      EditProfile(
+                        modeEdit: true,
+                      ),
+                      depend: false);
+                }),
+                fieldItem(Icons.headset_mic, blue1, "Support", () {}),
+                fieldItem(Icons.help, black.withOpacity(.5), "Help", () {}),
+              ],
+            ),
           ),
-        ),
         Container(
           color: black.withOpacity(.05),
           padding: EdgeInsets.all(10),
@@ -231,17 +245,18 @@ class _AccountState extends State<Account> {
             ],
           ),
         ),
-        if(isLoggedIn)Container(
-          color: black.withOpacity(.05),
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(top: 0, bottom: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              fieldItem(Icons.exit_to_app, red, "Logout", () {}),
-            ],
+        if (isLoggedIn)
+          Container(
+            color: black.withOpacity(.05),
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(top: 0, bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                fieldItem(Icons.exit_to_app, red, "Logout", () {}),
+              ],
+            ),
           ),
-        ),
         addSpace(100)
       ],
     );

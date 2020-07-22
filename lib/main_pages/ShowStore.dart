@@ -17,13 +17,28 @@ class ShowStore extends StatefulWidget {
 class _ShowStoreState extends State<ShowStore> {
   List<BaseModel> productLists = [];
   bool hasSetup = false;
+  BaseModel model;
+  BaseModel theUser;
 
   @override
   initState() {
     super.initState();
     if (widget.model.myItem()) productLists = myProducts;
     hasSetup = productLists.isNotEmpty;
+    model = widget.model;
     loadProducts(false);
+    loadUser();
+  }
+
+  loadUser() async {
+    Firestore.instance
+        .collection(USER_BASE)
+        .document(widget.model.getUserId())
+        .get()
+        .then((value) {
+      theUser = BaseModel(doc: value);
+      setState(() {});
+    });
   }
 
   loadProducts(bool isNew) async {
@@ -93,10 +108,10 @@ class _ShowStoreState extends State<ShowStore> {
               child: Column(
 //                    crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  userImageItem(context, userModel,
-                      size: 60, strokeSize: 1,padLeft: false),
+                  userImageItem(context, (theUser == null ? model : theUser),
+                      size: 60, strokeSize: 1, padLeft: false),
                   Text(
-                    userModel.getString(NAME),
+                    (theUser == null ? model : theUser).getString(NAME),
                     style: textStyle(true, 20, black),
                   ),
                   StarRating(
@@ -177,11 +192,11 @@ class _ShowStoreState extends State<ShowStore> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  width: 40,height: 40,
+                                  width: 40,
+                                  height: 40,
                                   decoration: BoxDecoration(
                                       color: AppConfig.appColor,
-                                      shape: BoxShape.circle
-                                  ),
+                                      shape: BoxShape.circle),
                                   child: Center(
                                     child: Icon(
                                       icon,
@@ -204,7 +219,7 @@ class _ShowStoreState extends State<ShowStore> {
               ),
             ),
             addSpace(10),
-           /* Container(
+            /* Container(
               //height: 40,
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,

@@ -1,13 +1,8 @@
-import 'dart:io';
-
 import 'package:Strokes/AppEngine.dart';
+import 'package:Strokes/WithdrawDialog.dart';
 import 'package:Strokes/app_config.dart';
 import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:flutter/material.dart';
-import 'package:masked_controller/mask.dart';
-import 'package:masked_controller/masked_controller.dart';
-import 'package:photo/photo.dart';
 
 class Wallet extends StatefulWidget {
   @override
@@ -15,31 +10,13 @@ class Wallet extends StatefulWidget {
 }
 
 class _WalletState extends State<Wallet> {
-  final fullName = TextEditingController();
-  //final number = TextEditingController();
-  final number = MaskedController(mask: Mask(mask: 'NNN-NNN-NNNNN'));
-
-  final phoneNumber = TextEditingController();
-  final address = TextEditingController();
-  final landMark = TextEditingController();
-  String selectedAddress;
-//  double addressLat = 0.0;
-//  double addressLong = 0.0;
-  String profilePhoto = "";
-  BaseModel placeModel;
-
+  int selectedMode = -1;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fullName.text = userModel.getString(NAME);
-    number.text = userModel.getString(PHONE_NUMBER);
-    address.text = userModel.getString(ADDRESS);
-    landMark.text = userModel.getString(LANDMARK);
-    placeModel = userModel.getModel(MY_LOCATION);
-    profilePhoto = userModel.userImage;
   }
 
   @override
@@ -62,7 +39,7 @@ class _WalletState extends State<Wallet> {
                 color: black,
               ),
               Text(
-                "Account Details",
+                "Account",
                 style: textStyle(true, 25, black),
               ),
               Spacer(),
@@ -92,7 +69,7 @@ class _WalletState extends State<Wallet> {
                           child: Column(
                             children: [
                               Text(
-                                "\$29",
+                                "\$${userModel.getDouble(ACCOUNT_DEPOSIT)}",
                                 style: textStyle(true, 25, black),
                               ),
                               Text(
@@ -111,7 +88,7 @@ class _WalletState extends State<Wallet> {
                           child: Column(
                             children: [
                               Text(
-                                "\$50",
+                                "\$${userModel.getDouble(ACCOUNT_WITHDRAWN)}",
                                 style: textStyle(true, 25, black),
                               ),
                               Text(
@@ -131,7 +108,7 @@ class _WalletState extends State<Wallet> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "\$229",
+                        "\$${userModel.getDouble(ACCOUNT_BALANCE)}",
                         style: textStyle(true, 40, green),
                       ),
                       Text(
@@ -140,7 +117,37 @@ class _WalletState extends State<Wallet> {
                       ),
                       addSpace(10),
                       FlatButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (userModel.getDouble(ACCOUNT_BALANCE) == 0) {
+                            showMessage(
+                                context,
+                                Icons.warning,
+                                red,
+                                "Insufficent Funds",
+                                "Sorry you have insufficant funds in your account to proceed with this transaction");
+                            return;
+                          }
+
+                          if (selectedMode == -1) {
+                            showMessage(
+                                context,
+                                Icons.warning,
+                                red,
+                                "Select Option",
+                                "Please select a mode in which you would want your funds sent to you");
+                            return;
+                          }
+
+                          pushAndResult(context, WithdrawDialog(),
+                              result: (List _) {
+                            showMessage(
+                                context,
+                                Icons.check,
+                                green,
+                                "Request Successful!",
+                                "Your withdrawal was successful");
+                          }, depend: false);
+                        },
                         color: green,
                         //padding: EdgeInsets.all(20),
                         shape: RoundedRectangleBorder(
@@ -158,6 +165,98 @@ class _WalletState extends State<Wallet> {
                 ],
               ),
             ),
+            Column(
+              children: List.generate(2, (p) {
+                bool active = selectedMode == p;
+                bool payPal = p == 0;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedMode = p;
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    margin: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: black.withOpacity(.05),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (active)
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: blue3,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: white,
+                                ),
+                                addSpaceWidth(5),
+                                Text(
+                                  "Active",
+                                  style: textStyle(true, 13, white),
+                                )
+                              ],
+                            ),
+                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    p == 0
+                                        ? userModel.getEmail()
+                                        : "IRS Bank of Africa",
+                                    style: textStyle(true, 18, black),
+                                  ),
+                                  Text(
+                                    p == 0
+                                        ? "PayPal Email Address"
+                                        : "Banking Information",
+                                    style: textStyle(false, 12, black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Image.asset(
+                              "assets/icons/${payPal ? "paypal.jpg" : "bank.png"}",
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          ],
+                        ),
+                        FlatButton(
+                          onPressed: () {},
+                          color: AppConfig.appColor,
+                          //padding: EdgeInsets.all(20),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              side: BorderSide(color: white.withOpacity(.3))),
+                          child: Center(
+                            child: Text(
+                              "EDIT ${payPal ? "PAYPAL" : "ACCOUNT"}",
+                              style: textStyle(true, 14, black),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            )
           ],
         )),
       ],
@@ -208,87 +307,5 @@ class _WalletState extends State<Wallet> {
         ),
       ),
     );
-  }
-
-  saveProfile() {
-    String name = fullName.text;
-    String num = number.text;
-    String cAddress = address.text;
-    String landM = landMark.text;
-
-    if (profilePhoto.isEmpty) {
-      snack("Add Profile Photo");
-      return;
-    }
-
-    if (name.isEmpty) {
-      snack("Add Full Name");
-      return;
-    }
-
-    if (num.isEmpty) {
-      snack("Add Mobile Number");
-      return;
-    }
-
-    if (placeModel.items.isEmpty) {
-      snack("Pick delivery location");
-      return;
-    }
-
-    if (address.text.isEmpty) {
-      snack("Add delivery address");
-      return;
-    }
-
-    if (landM.isEmpty) {
-      snack("Add delivery landMark");
-      return;
-    }
-
-    userModel
-      ..put(NAME, name)
-      ..put(PHONE_NUMBER, num)
-      ..put(MY_LOCATION, placeModel.items)
-      ..put(ADDRESS, cAddress)
-      ..put(LANDMARK, landM)
-      ..put(SIGNUP_COMPLETED, true)
-      ..updateItems();
-    Future.delayed(Duration(milliseconds: 10), () {
-      snack("Profile Updated!");
-    });
-  }
-
-  snack(String text) {
-    Future.delayed(Duration(milliseconds: 500), () {
-      showSnack(scaffoldKey, text, useWife: true);
-    });
-  }
-
-  void pickAssets() async {
-    PhotoPicker.pickAsset(
-            maxSelected: 1,
-            thumbSize: 250,
-            context: context,
-            provider: I18nProvider.english,
-            pickType: PickType.onlyImage,
-            themeColor: AppConfig.appColor,
-            rowCount: 3)
-        .then((value) async {
-      if (value == null) return;
-      String path = (await value[0].originFile).path;
-      uploadFile(File(path), (res, e) {
-        if (null != e) {
-          return;
-        }
-        profilePhoto = res;
-        userModel
-          ..put(USER_IMAGE, res)
-          ..updateItems();
-        setState(() {});
-      });
-    }).catchError((e) {});
-
-    /// Use assetList to do something.
   }
 }

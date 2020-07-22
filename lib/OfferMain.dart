@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/ChatOfferDialog.dart';
 import 'package:Strokes/MainAdmin.dart';
 import 'package:Strokes/OfferDialogg.dart';
 import 'package:Strokes/app_config.dart';
@@ -78,26 +77,27 @@ class _OfferMainState extends State<OfferMain>
 
   bool chatLoaded = false;
   startup() async {
-   /* if (widget.offerModel != null) {
+    /* if (widget.offerModel != null) {
       loadChat();
       refreshOtherUser();
       return;
     }*/
 
-    var sub  = Firestore.instance
+    var sub = Firestore.instance
         .collection(OFFER_IDS_BASE)
         .document(offerId)
-        .snapshots().listen((doc) {
-          print("Offer Loaded");
+        .snapshots()
+        .listen((doc) {
+      print("Offer Loaded");
 //      if (!doc.exists) return;
 
       offerModel = BaseModel(doc: doc);
-      if(!chatLoaded) {
-        chatLoaded=true;
+      if (!chatLoaded) {
+        chatLoaded = true;
         loadChat();
         refreshOtherUser();
       }
-     // setup=true;
+      // setup=true;
       setState(() {});
     });
     subs.add(sub);
@@ -116,7 +116,8 @@ class _OfferMainState extends State<OfferMain>
         .snapshots()
         .listen((shot) {
       otherPerson = BaseModel(doc: shot);
-      if(offerModel.getString(SELLER_ID)==otherPerson.getObjectId())isSeller = true;
+      if (offerModel.getString(SELLER_ID) == otherPerson.getObjectId())
+        isSeller = true;
       int now = DateTime.now().millisecondsSinceEpoch;
       int lastUpdated = otherPerson.getInt(TIME_UPDATED);
       int tsDiff = (now - lastUpdated);
@@ -412,9 +413,14 @@ class _OfferMainState extends State<OfferMain>
           ),
         ),
         GestureDetector(
-          onTap:(){
-            pushAndResult(context, ShowProduct(null,objectId: offerModel.getString(PRODUCT_ID),));
-    },
+          onTap: () {
+            pushAndResult(
+                context,
+                ShowProduct(
+                  null,
+                  objectId: offerModel.getString(PRODUCT_ID),
+                ));
+          },
           child: Card(
             clipBehavior: Clip.antiAlias,
             color: default_white,
@@ -580,76 +586,35 @@ class _OfferMainState extends State<OfferMain>
                 ),
               );
             })),
-        if(offerModel.getBoolean(ACCEPTED))Container(
-          color: red0,width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Offer Accepted at \$${offerModel.getDouble(ACCEPTED_PRICE)} "
-                    "for ${offerModel.getInt(QUANTITY)} Item${offerModel.getInt(QUANTITY)>1?"s":""}",style: textStyle(true, 16, white_color),),
-                if(offerModel.getString(SELLER_ID)!=userModel.getObjectId())Container(
-                  height: 40,
-                  margin: EdgeInsets.fromLTRB(0, 10, 5, 0),
-                  child: RaisedButton(
-                    onPressed: () {
-                      pushAndResult(context, PaymentDialog(amount: offerModel.getDouble(ACCEPTED_PRICE),));
-                    },
-                    color: white_color,
-//            padding: EdgeInsets.all(0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-//                          side: BorderSide(color: black)
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.monetization_on,
-                          size: 16,
-                          color: black_color,
-                        ),
-                        addSpaceWidth(5),
-                        Flexible(
-                          child: Text(
-                            "Make Payment",
-                            style: textStyle(true, 14, black_color),
-                            maxLines: 1,
-                          ),
-                        )
-                      ],
-                    ),
+        if (offerModel.getBoolean(ACCEPTED))
+          Container(
+            color: red0,
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Offer Accepted at \$${offerModel.getDouble(ACCEPTED_PRICE)} "
+                    "for ${offerModel.getInt(QUANTITY)} Item${offerModel.getInt(QUANTITY) > 1 ? "s" : ""}",
+                    style: textStyle(true, 16, white_color),
                   ),
-                )
-              ],
-            ),
-          ),
-        ),
-        if(!offerModel.getBoolean(ACCEPTED))Center(
-          child: Container(
-            margin: EdgeInsets.all(15),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (yourNewestOffer.getDouble(MY_BID) > 0)
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: Container(
+                  if (offerModel.getString(SELLER_ID) !=
+                      userModel.getObjectId())
+                    Container(
                       height: 40,
-                      margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                      margin: EdgeInsets.fromLTRB(0, 10, 5, 0),
                       child: RaisedButton(
                         onPressed: () {
-                          showMessage(context, Icons.check, blue0, "Accept \$${yourNewestOffer.getDouble(MY_BID)} "
-                              "for ${yourNewestOffer.getInt(QUANTITY)} Item${yourNewestOffer.getInt(QUANTITY)>1?"s":""}",
-                          "Are you sure you want to accept this offer?",onClicked: (_){
-                            if(_==true){
-                              acceptOffer(yourNewestOffer);
-                            }
-                              });
+                          pushAndResult(
+                              context,
+                              PaymentDialog(
+                                amount: offerModel.getDouble(ACCEPTED_PRICE),
+                              ),
+                              depend: false);
                         },
-                        color: black,
+                        color: white_color,
 //            padding: EdgeInsets.all(0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
@@ -660,16 +625,135 @@ class _OfferMainState extends State<OfferMain>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.check_circle,
+                              Icons.monetization_on,
                               size: 16,
-                              color: white,
+                              color: black_color,
                             ),
                             addSpaceWidth(5),
                             Flexible(
                               child: Text(
-                                "\$${yourNewestOffer.getDouble(MY_BID)} "
-                                    "for ${yourNewestOffer.getInt(QUANTITY)} Item${yourNewestOffer.getInt(QUANTITY)>1?"s":""}",
-                                style: textStyle(true, 14, white),
+                                "Make Payment",
+                                style: textStyle(true, 14, black_color),
+                                maxLines: 1,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                ],
+              ),
+            ),
+          ),
+        if (!offerModel.getBoolean(ACCEPTED))
+          Center(
+            child: Container(
+              margin: EdgeInsets.all(15),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (yourNewestOffer.getDouble(MY_BID) > 0)
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Container(
+                        height: 40,
+                        margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                        child: RaisedButton(
+                          onPressed: () {
+                            showMessage(
+                                context,
+                                Icons.check,
+                                blue0,
+                                "Accept \$${yourNewestOffer.getDouble(MY_BID)} "
+                                    "for ${yourNewestOffer.getInt(QUANTITY)} Item${yourNewestOffer.getInt(QUANTITY) > 1 ? "s" : ""}",
+                                "Are you sure you want to accept this offer?",
+                                onClicked: (_) {
+                              if (_ == true) {
+                                acceptOffer(yourNewestOffer);
+                              }
+                            });
+                          },
+                          color: black,
+//            padding: EdgeInsets.all(0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+//                          side: BorderSide(color: black)
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                size: 16,
+                                color: white,
+                              ),
+                              addSpaceWidth(5),
+                              Flexible(
+                                child: Text(
+                                  "\$${yourNewestOffer.getDouble(MY_BID)} "
+                                  "for ${yourNewestOffer.getInt(QUANTITY)} Item${yourNewestOffer.getInt(QUANTITY) > 1 ? "s" : ""}",
+                                  style: textStyle(true, 14, white),
+                                  maxLines: 1,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Container(
+                      height: 40,
+                      margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                      child: RaisedButton(
+                        onPressed: () {
+                          pushAndResult(
+                              context,
+                              OfferDialogg(
+                                quantity: myNewestOffer.getInt(QUANTITY),
+                              ), result: (List _) {
+                            double myAmount = _[0];
+                            int myQuantity = _[1];
+                            String id = getRandomId();
+                            BaseModel offerItem = BaseModel();
+                            offerItem.put(OBJECT_ID, id);
+                            offerItem.put(OFFER_ID, offerId);
+                            offerItem.put(MY_BID, myAmount);
+                            offerItem.put(QUANTITY, myQuantity);
+                            offerItem.put(PARTIES, [
+                              userModel.getUserId(),
+                              otherPerson.getUserId()
+                            ]);
+                            offerItem.saveItem(OFFER_BASE, true, document: id);
+                            addOfferToList(offerItem);
+                            setState(() {});
+                            scrollToBottom();
+                            updateTyping(false);
+                          }, depend: false);
+                        },
+                        color: AppConfig.appColor,
+//            padding: EdgeInsets.all(0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+//                          side: BorderSide(color: black)
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              ic_offer,
+                              height: 16,
+                              width: 16,
+                              color: black,
+                            ),
+                            addSpaceWidth(5),
+                            Flexible(
+                              child: Text(
+                                "Make New Offer",
+                                style: textStyle(true, 14, black),
                                 maxLines: 1,
                               ),
                             )
@@ -678,65 +762,10 @@ class _OfferMainState extends State<OfferMain>
                       ),
                     ),
                   ),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: Container(
-                    height: 40,
-                    margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    child: RaisedButton(
-                      onPressed: () {
-                        pushAndResult(context, OfferDialogg(quantity: myNewestOffer.getInt(QUANTITY),),
-                            result: (List _) {
-                          double myAmount = _[0];
-                          int myQuantity = _[1];
-                          String id = getRandomId();
-                          BaseModel offerItem = BaseModel();
-                          offerItem.put(OBJECT_ID, id);
-                          offerItem.put(OFFER_ID, offerId);
-                          offerItem.put(MY_BID, myAmount);
-                          offerItem.put(QUANTITY, myQuantity);
-                          offerItem.put(PARTIES,
-                              [userModel.getUserId(), otherPerson.getUserId()]);
-                          offerItem.saveItem(OFFER_BASE, true, document: id);
-                          addOfferToList(offerItem);
-                          setState(() {});
-                          scrollToBottom();
-                          updateTyping(false);
-                        }, depend: false);
-                      },
-                      color: AppConfig.appColor,
-//            padding: EdgeInsets.all(0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-//                          side: BorderSide(color: black)
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            ic_offer,
-                            height: 16,
-                            width: 16,
-                            color: black,
-                          ),
-                          addSpaceWidth(5),
-                          Flexible(
-                            child: Text(
-                              "Make New Offer",
-                              style: textStyle(true, 14, black),
-                              maxLines: 1,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -1022,14 +1051,15 @@ class _OfferMainState extends State<OfferMain>
 //        width: 200,
               child: Stack(
                 children: [
-                  if(read && firstChat)Align(
-                    alignment: Alignment.bottomRight,
-                    child:Icon(
-                      Icons.remove_red_eye,
-                      size: 12,
-                      color: red0,
+                  if (read && firstChat)
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Icon(
+                        Icons.remove_red_eye,
+                        size: 12,
+                        color: red0,
+                      ),
                     ),
-                  ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Image.asset(
@@ -1047,16 +1077,25 @@ class _OfferMainState extends State<OfferMain>
                       decoration: BoxDecoration(
                           color: blue0,
                           borderRadius: BorderRadius.all(Radius.circular(5))),
-                      child: Column(mainAxisSize: MainAxisSize.min,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             "\$$myBid",
                             style: textStyle(true, 25, white_color),
                           ),
-                          Row(mainAxisSize: MainAxisSize.min,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.shopping_cart,color: white,size: 12,),
-                              Text("$quantity",style: textStyle(true,12,white),)
+                              Icon(
+                                Icons.shopping_cart,
+                                color: white,
+                                size: 12,
+                              ),
+                              Text(
+                                "$quantity",
+                                style: textStyle(true, 12, white),
+                              )
                             ],
                           )
                         ],
@@ -1090,7 +1129,7 @@ class _OfferMainState extends State<OfferMain>
           children: [
             Container(
               margin: EdgeInsets.fromLTRB(20, 0, 20, 5),
-              child:Text(timeAgo.format(
+              child: Text(timeAgo.format(
                   DateTime.fromMillisecondsSinceEpoch(chat.getTime()),
                   locale: "en_short")),
             ),
@@ -1117,16 +1156,25 @@ class _OfferMainState extends State<OfferMain>
                       decoration: BoxDecoration(
                           color: red0,
                           borderRadius: BorderRadius.all(Radius.circular(5))),
-                      child: Column(mainAxisSize: MainAxisSize.min,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             "\$$myBid",
                             style: textStyle(true, 25, white_color),
                           ),
-                          Row(mainAxisSize: MainAxisSize.min,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.shopping_cart,color: white,size: 12,),
-                              Text("$quantity",style: textStyle(true,12,white),)
+                              Icon(
+                                Icons.shopping_cart,
+                                color: white,
+                                size: 12,
+                              ),
+                              Text(
+                                "$quantity",
+                                style: textStyle(true, 12, white),
+                              )
                             ],
                           )
                         ],
@@ -1156,7 +1204,7 @@ class _OfferMainState extends State<OfferMain>
     );
   }
 
-  acceptOffer(BaseModel model){
+  acceptOffer(BaseModel model) {
     offerModel.put(ACCEPTED, true);
     offerModel.put(ACCEPTED_BY, userModel.getObjectId());
     offerModel.put(ACCEPTED_PRICE, model.getDouble(MY_BID));
