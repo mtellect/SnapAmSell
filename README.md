@@ -1,4 +1,4 @@
-# Stroke
+# Fetish E-commerce App
 
 A new Flutter application.
 
