@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 import 'MainAdmin.dart';
 

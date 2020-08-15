@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/OfferDialogg.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/main_pages/ShowProduct.dart';
-import 'package:Strokes/notificationService.dart';
-import 'package:Strokes/payment_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/OfferDialogg.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/main_pages/ShowProduct.dart';
+import 'package:maugost_apps/notificationService.dart';
+import 'package:maugost_apps/payment_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
@@ -417,7 +417,7 @@ class _OfferMainState extends State<OfferMain>
             pushAndResult(
                 context,
                 ShowProduct(
-                  null,
+                  otherProductInfo[offerModel.getString(PRODUCT_ID)],
                   objectId: offerModel.getString(PRODUCT_ID),
                 ));
           },
@@ -1118,89 +1118,100 @@ class _OfferMainState extends State<OfferMain>
     String otherPersonId = getOtherPersonId(offerModel);
 
     bool newest = myNewestOffer.getObjectId() == chat.getObjectId();
-    return Opacity(
-      opacity: newest ? 1 : (.5),
-      child: new GestureDetector(
-        onLongPress: () {
+    return Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 20),
+          child: Opacity(
+            opacity: newest ? 1 : (.5),
+            child: new GestureDetector(
+              onLongPress: () {
 //        print(offerList.length);
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.fromLTRB(20, 0, 20, 5),
-              child: Text(timeAgo.format(
-                  DateTime.fromMillisecondsSinceEpoch(chat.getTime()),
-                  locale: "en_short")),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
-              height: 90,
-//        width: 200,
-              child: Stack(
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Image.asset(
-                      bid_hand,
-                      color: red0,
-                      width: 70,
-                      height: 70,
-                    ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(35, 0, 20, 5),
+                    child: Text(timeAgo.format(
+                        DateTime.fromMillisecondsSinceEpoch(chat.getTime()),
+                        locale: "en_short")),
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-//                      height: 50,
-                      padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-                      decoration: BoxDecoration(
-                          color: red0,
-                          borderRadius: BorderRadius.all(Radius.circular(5))),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "\$$myBid",
-                            style: textStyle(true, 25, white_color),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(15, 0, 15, 15),
+                    height: 90,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Image.asset(
+                            bid_hand,
+                            color: red0,
+                            width: 70,
+                            height: 70,
                           ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.shopping_cart,
-                                color: white,
-                                size: 12,
-                              ),
-                              Text(
-                                "$quantity",
-                                style: textStyle(true, 12, white),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+//                      height: 50,
+                            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+                            decoration: BoxDecoration(
+                                color: red0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "\$$myBid",
+                                  style: textStyle(true, 25, white_color),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.shopping_cart,
+                                      color: white,
+                                      size: 12,
+                                    ),
+                                    Text(
+                                      "$quantity",
+                                      style: textStyle(true, 12, white),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+//          Divider()
                 ],
               ),
             ),
-//          Divider()
-          ],
+          ),
         ),
-      ),
+        offerModelImage(context)
+      ],
     );
   }
 
   offerModelImage(context) {
-    return GestureDetector(
-      onTap: () {
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: GestureDetector(
+        onTap: () {
 //        pushAndResult(
 //            context,
 //            ShowStore(
 //              theUser: offerModel,
 //            ),depend: false);
-      },
-      child: userImageItem(context, offerModel, size: 40, strokeSize: 1),
+        },
+        child: userImageItem(context, offerModel, size: 40, strokeSize: 1),
+      ),
     );
   }
 

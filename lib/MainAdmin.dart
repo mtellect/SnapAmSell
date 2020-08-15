@@ -3,10 +3,6 @@ import 'dart:io';
 import 'dart:io' as io;
 import 'dart:ui';
 
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/login_page.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/main_pages/OfferItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,18 +12,22 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/login_page.dart';
+import 'package:maugost_apps/basemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synchronized/synchronized.dart';
 
+import 'AppConfig.dart';
 import 'AppEngine.dart';
 import 'ChatMain.dart';
 import 'ReportMain.dart';
-import 'app_config.dart';
 import 'main_pages/Account.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/Home.dart';
 import 'main_pages/Notifications.dart';
+import 'main_pages/OfferPage.dart';
 import 'main_pages/SellCamera.dart';
 import 'main_pages/ShowCart.dart';
 import 'main_pages/ShowStore.dart';
@@ -761,7 +761,11 @@ class _MainAdminState extends State<MainAdmin>
 //                countUnread(chatId);
               }
             }
-
+            String otherPersonId = getOtherPersonId(offerModel);
+            print("Offer party $otherPersonId");
+            loadOtherPerson(otherPersonId);
+            String productId = offerModel.getString(PRODUCT_ID);
+            loadProductAt(productId);
             try {
               lastOffers
                   .sort((bm1, bm2) => bm2.getTime().compareTo(bm1.getTime()));
@@ -862,15 +866,17 @@ class _MainAdminState extends State<MainAdmin>
     var lock = Lock();
     await lock.synchronized(() async {
       Future.delayed(Duration(seconds: delay), () async {
-        DocumentSnapshot doc = await Firestore.instance
+        Firestore.instance
             .collection(PRODUCT_BASE)
             .document(pID)
-            .get();
-        if (doc == null) return;
-        if (!doc.exists) return;
-        BaseModel product = BaseModel(doc: doc);
-        otherProductInfo[pID] = product;
-        if (mounted) setState(() {});
+            .get()
+            .then((doc) {
+          if (doc == null) return;
+          if (!doc.exists) return;
+          BaseModel product = BaseModel(doc: doc);
+          otherProductInfo[pID] = product;
+          if (mounted) setState(() {});
+        });
       });
     }, timeout: Duration(seconds: 10));
   }
@@ -879,14 +885,18 @@ class _MainAdminState extends State<MainAdmin>
     var lock = Lock();
     await lock.synchronized(() async {
       Future.delayed(Duration(seconds: delay), () async {
-        DocumentSnapshot doc =
-            await Firestore.instance.collection(USER_BASE).document(uId).get();
-        if (doc == null) return;
-        if (!doc.exists) return;
+        Firestore.instance
+            .collection(USER_BASE)
+            .document(uId)
+            .get()
+            .then((doc) {
+          if (doc == null) return;
+          if (!doc.exists) return;
 
-        BaseModel user = BaseModel(doc: doc);
-        otherPeronInfo[uId] = user;
-        if (mounted) setState(() {});
+          BaseModel user = BaseModel(doc: doc);
+          otherPeronInfo[uId] = user;
+          if (mounted) setState(() {});
+        });
       });
     }, timeout: Duration(seconds: 10));
   }
@@ -1174,7 +1184,7 @@ class _MainAdminState extends State<MainAdmin>
               setState(() {});
             },
             physics: NeverScrollableScrollPhysics(),
-            children: [Home(), Chat(), Container(), OfferItem(), Account()],
+            children: [Home(), Chat(), Container(), OfferPage(), Account()],
           ),
         ),
       ],

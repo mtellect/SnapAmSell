@@ -1,13 +1,13 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/navigation.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/preinit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/app/navigation.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/preinit.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override

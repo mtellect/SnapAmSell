@@ -1,13 +1,13 @@
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 import 'MainAdmin.dart';
 import 'assets.dart';

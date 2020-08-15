@@ -1,16 +1,18 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/OfferMain.dart';
-import 'package:Strokes/app/app.dart';
-import 'package:Strokes/app/dotsIndicator.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/login_page.dart';
-import 'package:Strokes/basemodel.dart';
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/OfferMain.dart';
+import 'package:maugost_apps/app/app.dart';
+import 'package:maugost_apps/app/dotsIndicator.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/login_page.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 class ShowProduct extends StatefulWidget {
   final BaseModel theModel;
@@ -27,17 +29,15 @@ class _ShowProductState extends State<ShowProduct> {
   BaseModel theUser;
   String objectId;
   bool setup = false;
+  List<StreamSubscription> subs = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     model = widget.theModel;
-    if (model == null) {
-      loadProduct();
-    } else {
-      setup = true;
-      loadUser();
-    }
+    setup = null != widget.theModel;
+    loadProduct();
+    loadUser();
     if (!userModel
             .getList(SEEN_PRODUCTS)
             .contains(widget.theModel.getObjectId()) &&
@@ -47,31 +47,42 @@ class _ShowProductState extends State<ShowProduct> {
         ..updateItems();
   }
 
+  @override
+  dispose() {
+    super.dispose();
+    for (var s in subs) s?.cancel();
+  }
+
   loadProduct() async {
-    DocumentSnapshot doc = await Firestore.instance
+    var sub = Firestore.instance
         .collection(PRODUCT_BASE)
         .document(widget.objectId)
-        .get();
-    model = BaseModel(doc: doc);
-
-    setup = true;
-    setState(() {});
-    loadUser();
+        .snapshots()
+        .listen((doc) {
+      model = BaseModel(doc: doc);
+      print(model.getString(NAME));
+      setup = true;
+      setState(() {});
+      loadUser();
+    });
+    subs.add(sub);
   }
 
   loadUser() {
     if (model.getUserId().isEmpty) return;
-    Firestore.instance
+    print(widget.theModel.getString(NAME));
+    var sub = Firestore.instance
         .collection(USER_BASE)
-        .document(model.getUserId())
-        .get()
-        .then((value) {
+        .document(widget.theModel.getUserId())
+        .snapshots()
+        .listen((value) {
       theUser = BaseModel(doc: value);
       model.put(NAME, theUser.getString(NAME));
       model.put(USER_IMAGE, theUser.getString(USER_IMAGE));
 //      model.put(NAME, theUser.getString(NAME));
       setState(() {});
     });
+    subs.add(sub);
   }
 
   @override
@@ -258,14 +269,9 @@ class _ShowProductState extends State<ShowProduct> {
                           ],
                         ),
                       ),
-//            addSpace(10),
                       Container(
-                        //height: 40,
-                        padding: EdgeInsets.all(10),
                         margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-//              alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
-                            color: black.withOpacity(.05),
                             borderRadius: BorderRadius.all(Radius.circular(5))),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,91 +280,96 @@ class _ShowProductState extends State<ShowProduct> {
                               "Description",
                               style: textStyle(true, 16, black),
                             ),
-//                  addSpace(10),
-                            Text(
-                              model.getString(DESCRIPTION),
-                              style: textStyle(false, 18, black),
+                            addSpace(10),
+                            Container(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                left: BorderSide(
+                                    width: 10, color: black.withOpacity(.5)),
+                              )),
+                              child: Text(
+                                model.getString(DESCRIPTION),
+                                style: textStyle(false, 18, black),
+                              ),
                             ),
                           ],
                         ),
                       ),
-
                       addSpace(15),
                       Container(
-                        //height: 40,
-                        padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-//              alignment: Alignment.centerLeft,
-//              color: black.withOpacity(.02),
-                        child: Text(
-                          "Seller",
-                          style: textStyle(true, 20, black),
-                        ),
-                      ),
-//            addSpace(10),
-                      Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.all(10),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: black.withOpacity(.05),
-//                  border: Border.all(color: black.withOpacity(.09)),
-                            borderRadius: BorderRadius.circular(5)),
+                        margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                         child: Column(
-//                    crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            userImageItem(context, theUser ?? model,
-                                size: 60, strokeSize: 1, padLeft: false),
                             Text(
-                              model.getString(NAME),
+                              "Seller",
                               style: textStyle(true, 20, black),
                             ),
-                            StarRating(
-                              rating: 5,
-                              size: 16,
-                              color: AppConfig.appColor,
-                              borderColor: black,
-                            ),
-                            addSpace(5),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.camera_alt,
-                                      size: 12,
-                                      color: black,
-                                    ),
-                                    addSpaceWidth(2),
-                                    Text(
-                                      "Buyer",
-                                      style: textStyle(false, 12, black),
-                                    ),
-                                  ],
-                                ),
-                                addSpaceWidth(10),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      height: 8,
-                                      width: 8,
-                                      decoration: BoxDecoration(
-                                          color: dark_green0,
-                                          shape: BoxShape.circle),
-                                    ),
-                                    addSpaceWidth(2),
-                                    Text(
-                                      "Active",
-                                      style: textStyle(false, 12, black),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-//                      Spacer(),
+                            addSpace(10),
                             Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                left: BorderSide(
+                                    width: 10, color: black.withOpacity(.5)),
+                              )),
+                              child: Column(
+                                children: [
+                                  userImageItem(context, theUser ?? model,
+                                      size: 60, strokeSize: 1, padLeft: false),
+                                  Text(
+                                    model.getString(NAME),
+                                    style: textStyle(true, 20, black),
+                                  ),
+                                  StarRating(
+                                    rating: 5,
+                                    size: 16,
+                                    color: AppConfig.appColor,
+                                    borderColor: black,
+                                  ),
+                                  addSpace(5),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.camera_alt,
+                                            size: 12,
+                                            color: black,
+                                          ),
+                                          addSpaceWidth(2),
+                                          Text(
+                                            "Buyer",
+                                            style: textStyle(false, 12, black),
+                                          ),
+                                        ],
+                                      ),
+                                      addSpaceWidth(10),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            height: 8,
+                                            width: 8,
+                                            decoration: BoxDecoration(
+                                                color: dark_green0,
+                                                shape: BoxShape.circle),
+                                          ),
+                                          addSpaceWidth(2),
+                                          Text(
+                                            "Active",
+                                            style: textStyle(false, 12, black),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+//                      Spacer(),
+                                  Container(
 //                    decoration: BoxDecoration(
 //                        border: Border.all(color: black, width: 2),
 //                        color: black.withOpacity(.9),
@@ -366,53 +377,57 @@ class _ShowProductState extends State<ShowProduct> {
 //                      //shape: BoxShape.circle
 //                    ),
 //                    padding: EdgeInsets.all(5),
-                              //height: 70,
-                              //width: 70,
-                              alignment: Alignment.center,
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: List.generate(3, (p) {
-                                    String title = "likes";
-                                    var icon = Icons.favorite;
-
-                                    if (p == 1) {
-                                      title = "Views";
-                                      icon = Icons.visibility;
-                                    }
-
-                                    if (p == 2) {
-                                      title = "Stars";
-                                      icon = Icons.star;
-                                    }
-
-                                    return Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Column(
+                                    //height: 70,
+                                    //width: 70,
+                                    alignment: Alignment.center,
+                                    child: Row(
                                         mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                                color: AppConfig.appColor,
-                                                shape: BoxShape.circle),
-                                            child: Center(
-                                              child: Icon(
-                                                icon,
-                                                size: 18,
-                                                color: white_color,
-                                              ),
+                                        children: List.generate(3, (p) {
+                                          String title = "likes";
+                                          var icon = Icons.favorite;
+
+                                          if (p == 1) {
+                                            title = "Views";
+                                            icon = Icons.visibility;
+                                          }
+
+                                          if (p == 2) {
+                                            title = "Stars";
+                                            icon = Icons.star;
+                                          }
+
+                                          return Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: 40,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                      color: AppConfig.appColor,
+                                                      shape: BoxShape.circle),
+                                                  child: Center(
+                                                    child: Icon(
+                                                      icon,
+                                                      size: 18,
+                                                      color: white_color,
+                                                    ),
+                                                  ),
+                                                ),
+                                                addSpace(5),
+                                                Text(
+                                                  "15 $title",
+                                                  style: textStyle(
+                                                      false, 13, black),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          addSpace(5),
-                                          Text(
-                                            "15 $title",
-                                            style: textStyle(false, 13, black),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  })),
+                                          );
+                                        })),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -463,10 +478,21 @@ class _ShowProductState extends State<ShowProduct> {
                             pushAndResult(context, LoginPage(), depend: false);
                             return;
                           }
-
-//                        pushAndResult(context, OfferDialogg(), depend: false);
                           String offerId =
                               "${model.getObjectId()}${userModel.getObjectId()}";
+                          bool active = model
+                              .getList(ACTIVE_OFFER)
+                              .contains(userModel.getUserId());
+                          if (active) {
+                            pushAndResult(
+                                context,
+                                OfferMain(
+                                  offerId,
+                                  offerModel: offerInfo[offerId],
+                                ),
+                                depend: false);
+                            return;
+                          }
                           BaseModel offer = BaseModel();
                           offer.put(OBJECT_ID, offerId);
                           offer.put(SELLER_ID, model.getString(USER_ID));
@@ -479,7 +505,10 @@ class _ShowProductState extends State<ShowProduct> {
                               [userModel.getUserId(), model.getUserId()]);
                           offer.saveItem(OFFER_IDS_BASE, true,
                               document: offerId);
-
+                          model
+                            ..putInList(
+                                ACTIVE_OFFER, userModel.getUserId(), true)
+                            ..updateItems();
                           pushAndResult(
                               context,
                               OfferMain(
@@ -506,7 +535,11 @@ class _ShowProductState extends State<ShowProduct> {
                             addSpaceWidth(5),
                             Flexible(
                               child: Text(
-                                "Make Offer",
+                                model
+                                        .getList(ACTIVE_OFFER)
+                                        .contains(userModel.getUserId())
+                                    ? "Continue Offer"
+                                    : "Make Offer",
                                 style: textStyle(true, 16, black),
                                 maxLines: 1,
                               ),

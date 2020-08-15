@@ -1,14 +1,13 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/OfferMain.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/login_page.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/payment_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/OfferMain.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/login_page.dart';
+import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class OfferItem extends StatefulWidget {
@@ -193,9 +192,12 @@ class _OfferItemState extends State<OfferItem>
   ) {
     double myBid = model.getDouble(MY_BID);
     String offerId = model.getString(OFFER_ID);
+    String otherPersonId = getOtherPersonId(model);
 
     BaseModel offer = offerInfo[offerId];
+    BaseModel bidder = otherPeronInfo[otherPersonId];
     bool accepted = offer.getBoolean(ACCEPTED);
+    bool hasPaid = offer.getBoolean(HAS_PAID);
     String image = getFirstPhoto(offer.images);
     String title = offer.getString(TITLE);
     String desc = offer.getString(DESCRIPTION);
@@ -292,7 +294,35 @@ class _OfferItemState extends State<OfferItem>
                                 ),
                               ],
                             ),
-                          )
+                          ),
+                        addSpace(5),
+                        Container(
+                          padding: EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              color: black.withOpacity(.05),
+                              border: Border.all(color: black.withOpacity(.08))
+                              /* border: Border(
+                                top: BorderSide(
+                                    width: 5, color: black.withOpacity(.5)),
+                                left: BorderSide(
+                                    width: 5, color: black.withOpacity(.5)),
+                              )*/
+                              ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              userImageItem(context, bidder,
+                                  padLeft: false, size: 30),
+                              addSpaceWidth(5),
+                              Text(
+                                bidder.getString(NAME),
+                                style: textStyle(true, 13, black),
+                              ),
+                              addSpaceWidth(5),
+                            ],
+                          ),
+                        )
                       ],
                     )),
                 addSpaceWidth(10),
@@ -345,18 +375,48 @@ class _OfferItemState extends State<OfferItem>
                           ),
                 addSpaceWidth(10),
                 if (offer.getString(SELLER_ID) != userModel.getObjectId() &&
-                    accepted)
+                    accepted &&
+                    !hasPaid)
                   Container(
                     height: 40,
                     margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
                     child: RaisedButton(
                       onPressed: () {
-                        pushAndResult(
-                            context,
-                            PaymentDialog(
-                              amount: offer.getDouble(ACCEPTED_PRICE),
-                            ),
-                            depend: false);
+                        double accountBal = userModel.getDouble(ESCROW_BALANCE);
+                        double offerAmount = offer.getDouble(ACCEPTED_PRICE);
+                        double leftOver = accountBal - offerAmount;
+                        String sellerId = offer.getString(SELLER_ID);
+                        print(offer.myItem());
+                        print(offer.getUserId());
+                        print(userModel.getUserId());
+                        print(sellerId);
+
+                        if (accountBal == 0 || leftOver.isNegative) {
+                          showMessage(
+                              context,
+                              Icons.warning,
+                              red,
+                              "Insufficient Funds",
+                              "Oops! You do not have sufficient"
+                                  " funds in your wallet. Please"
+                                  " add funds to your wallet to proceed.",
+                              clickYesText: "Fund Wallet", onClicked: (_) {
+                            if (_)
+                              fundWallet(context, onProcessed: () {
+                                setState(() {});
+                              });
+                          });
+                          return;
+                        }
+                        fundSeller(context, bidder, offerAmount,
+                            onProcessed: () {
+                          model
+                            ..put(
+                              HAS_PAID,
+                              true,
+                            )
+                            ..updateItems();
+                        });
                       },
                       color: AppConfig.appColor,
                       shape: RoundedRectangleBorder(

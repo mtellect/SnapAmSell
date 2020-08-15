@@ -1,13 +1,6 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/inputDialog.dart';
-import 'package:Strokes/dialogs/listDialog.dart';
-import 'package:Strokes/main.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 class PriceMain extends StatefulWidget {
   bool selling;

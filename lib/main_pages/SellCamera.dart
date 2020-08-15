@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/app.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/app/app.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import 'SellPage.dart';
@@ -775,29 +774,29 @@ class _SellCameraState extends State<SellCamera>
   }
 
   void pickAssets() async {
-    PhotoPicker.pickAsset(
-            pickType: PickType.onlyImage,
-            context: context,
-            provider: I18nProvider.english,
-            rowCount: 3)
-        .then((value) async {
-      if (value == null) return;
-      for (var a in value) {
-        String path = (await a.originFile).path;
-        bool isVideo = a.type == AssetType.video;
-        BaseModel model = BaseModel();
-        model.put(OBJECT_ID, a.id);
-        model.put(IMAGE_PATH, path);
-        model.put(IS_VIDEO, isVideo);
-//        if (isVideo) {
-//          model.put(THUMBNAIL_URL,
-//              (await VideoCompress().getThumbnailWithFile(path)).path);
-//        }
-        addToList(model);
-      }
-
-      setState(() {});
-    }).catchError((e) {});
+//    PhotoPicker.pickAsset(
+//            pickType: PickType.onlyImage,
+//            context: context,
+//            provider: I18nProvider.english,
+//            rowCount: 3)
+//        .then((value) async {
+//      if (value == null) return;
+//      for (var a in value) {
+//        String path = (await a.originFile).path;
+//        bool isVideo = a.type == AssetType.video;
+//        BaseModel model = BaseModel();
+//        model.put(OBJECT_ID, a.id);
+//        model.put(IMAGE_PATH, path);
+//        model.put(IS_VIDEO, isVideo);
+////        if (isVideo) {
+////          model.put(THUMBNAIL_URL,
+////              (await VideoCompress().getThumbnailWithFile(path)).path);
+////        }
+//        addToList(model);
+//      }
+//
+//      setState(() {});
+//    }).catchError((e) {});
 
     /// Use assetList to do something.
   }

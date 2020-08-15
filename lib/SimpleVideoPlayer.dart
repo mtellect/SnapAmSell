@@ -2,11 +2,11 @@ library flutter_page_video;
 
 import 'dart:io';
 
-import 'package:Strokes/app_config.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:screen/screen.dart';
+import 'package:video_player/video_player.dart';
 
 class SimpleVideoPlayer extends StatefulWidget {
   final String source;

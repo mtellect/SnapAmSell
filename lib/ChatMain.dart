@@ -2,14 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/PreSendVideo.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/listDialog.dart';
-import 'package:Strokes/notificationService.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,6 +18,13 @@ import 'package:flutter_sound/flauto.dart';
 import 'package:flutter_sound/flutter_sound_player.dart';
 import 'package:flutter_sound/flutter_sound_recorder.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/PreSendVideo.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/listDialog.dart';
+import 'package:maugost_apps/notificationService.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -88,19 +87,16 @@ class _ChatMainState extends State<ChatMain>
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
     mainReplyItem = null;
     loadSound();
     loadRecorder();
-    chatId = widget.chatId;
     WidgetsBinding.instance.addObserver(this);
-//    showNewMessageDot.removeWhere((id)=>id==chatId);
-    visibleChatId = chatId;
-    otherPerson = widget.otherPerson ?? BaseModel();
-
-    startup();
-
+    setState(() {
+      chatId = widget.chatId;
+      visibleChatId = chatId;
+      otherPerson = widget.otherPerson ?? BaseModel();
+    });
     timerType = new Timer.periodic(Duration(seconds: 1), (_) {
       if (!keyboardVisible) {
         if (amTyping) {
@@ -155,6 +151,12 @@ class _ChatMainState extends State<ChatMain>
     subs.add(audioSub);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    startup();
+  }
+
   loadSound() async {
     File bubble = await loadFile('assets/sounds/typing.m4a', "typing.m4a");
     File bubble1 = await loadFile('assets/sounds/sent.m4a', "sent.m4a");
@@ -173,25 +175,26 @@ class _ChatMainState extends State<ChatMain>
       return;
     }
 
+    if (chatId == null || chatId.isEmpty) return;
     DocumentSnapshot doc = await Firestore.instance
         .collection(CHAT_IDS_BASE)
         .document(chatId)
         .get();
     if (!doc.exists) return;
-
     String otherId = getOtherPersonId(BaseModel(doc: doc));
+    if (otherId == null || otherId.isEmpty) return;
     DocumentSnapshot person =
         await Firestore.instance.collection(USER_BASE).document(otherId).get();
     if (!person.exists) return;
-
     otherPerson = BaseModel(doc: person);
     loadChat();
     refreshOtherUser();
   }
 
   refreshOtherUser() async {
-    String otherPersonId = otherPerson.getUserId();
-    StreamSubscription<DocumentSnapshot> sub = Firestore.instance
+    String otherPersonId = widget.otherPerson.getUserId();
+    if (otherPersonId == null || otherPersonId.isEmpty) return;
+    var sub = Firestore.instance
         .collection(USER_BASE)
         .document(otherPersonId)
         .snapshots()
@@ -234,7 +237,9 @@ class _ChatMainState extends State<ChatMain>
   List audioSetupList = [];
   List<StreamSubscription> subs = List();
   void loadChat() async {
-    StreamSubscription<QuerySnapshot> sub = Firestore.instance
+    if (chatId == null || chatId.isEmpty) return;
+    print("my chat id $chatId");
+    var sub = Firestore.instance
         .collection(CHAT_BASE)
         .where(CHAT_ID, isEqualTo: chatId)
         .orderBy(CREATED_AT, descending: false)
@@ -256,9 +261,7 @@ class _ChatMainState extends State<ChatMain>
           chat.updateItems();
         }
       }
-
       refreshChatDates();
-
       setup = true;
       if (mounted) setState(() {});
     });
@@ -331,7 +334,6 @@ class _ChatMainState extends State<ChatMain>
     if (fileExists) {
       fileThatExists.add(model.getObjectId());
     }
-
     if (/*notify &&*/ mounted) setState(() {});
   }
 
@@ -661,7 +663,8 @@ class _ChatMainState extends State<ChatMain>
                         if (getLastSeen(otherPerson) != null)
                           Text(
                             getLastSeen(otherPerson),
-                            style: textStyle(false, 12, textColor.withOpacity(.3)),
+                            style:
+                                textStyle(false, 12, textColor.withOpacity(.3)),
                             maxLines: 1,
                           ),
                       ],

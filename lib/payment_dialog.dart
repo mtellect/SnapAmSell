@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/payment_details.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/payment_details.dart';
 
 import 'admin/StripeService.dart';
 import 'basemodel.dart';
@@ -76,9 +76,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
                           context,
                           PaymentDetails(
                             amount: amount,
-                            premiumIndex: widget.premiumPosition,
-                            adsModel: widget.adsModel,
-                            isAds: widget.isAds,
                           ),
                           depend: false);
                     },

@@ -1,9 +1,9 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/inputDialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/inputDialog.dart';
 
 class ShowAds extends StatefulWidget {
   final List<BaseModel> ads;

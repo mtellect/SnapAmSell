@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -78,8 +76,12 @@ class _SignUpState extends State<SignUp> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     addSpace(20),
-                    Image.asset("assets/icons/ic_plain.png",
-                        height: 80, width: 80,color: white,),
+                    Image.asset(
+                      "assets/icons/ic_plain.png",
+                      height: 80,
+                      width: 80,
+                      color: white,
+                    ),
                     addSpace(10),
                     Text("Create Account", style: textStyle(true, 20, white)),
                   ],
@@ -107,20 +109,23 @@ class _SignUpState extends State<SignUp> {
                         children: <Widget>[
                           addSpace(20),
                           textbox(nameController, "Name", focusNode: focusName),
-                          textbox(emailController, "Email Address",
-                              focusNode: focusEmail,),
+                          textbox(
+                            emailController,
+                            "Email Address",
+                            focusNode: focusEmail,
+                          ),
                           textbox(passwordController, "Password",
                               focusNode: focusPassword,
                               isPass: true,
                               refresh: () => setState(() {})),
-
                           Container(
 //                            width: double.infinity,
-                          width: 150,
+                            width: 150,
                             height: 50,
-                            margin: EdgeInsets.fromLTRB(15,5,15,10),
+                            margin: EdgeInsets.fromLTRB(15, 5, 15, 10),
                             child: FlatButton(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25)),
                                 color: black,
@@ -136,7 +141,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                   ),
-                 /* Container(
+                  /* Container(
                     width: double.infinity,
                     height: 60,
                     margin: EdgeInsets.all(15),

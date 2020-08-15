@@ -2,33 +2,22 @@ library app;
 
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/currencies.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
 import 'package:camera/camera.dart';
 import 'package:currency_pickers/currency_pickers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/app/currencies.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
 
 import 'countries.dart';
 
 part 'countryChooser.dart';
 part 'currencyChooser.dart';
-// part 'dotsIndicator.dart';
-// part 'gridCollage.dart';
-// part 'infoDialog.dart';
-// part 'inputDialog.dart';
-// part 'listDialog.dart';
-// part 'messageDialog.dart';
-// part 'navigation.dart';
-// part 'notificationService.dart';
-// part 'placeChooser.dart';
-// part 'preview_image.dart';
-// part 'progressDialog.dart';
- part 'rating.dart';
+part 'rating.dart';
 // part 'unicons.dart';
 
 class Countries {

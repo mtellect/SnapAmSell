@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 /*class progressDialog extends StatefulWidget {
   String id;
@@ -112,13 +111,13 @@ class _progressDialogState extends State<progressDialog> {
                 height: 120,
                 child: LoadingIndicator(
                   indicatorType: Indicator.ballScaleMultiple,
-                  color:white,
+                  color: white,
                 ))),
         Center(
           child: Opacity(
             opacity: 1,
             child: Image.asset(
-              ic_plain1,color: black,
+              ic_plain1, color: black,
               width: 60,
               height: 60,
               //color: white,

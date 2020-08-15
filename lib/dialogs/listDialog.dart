@@ -1,13 +1,12 @@
 import 'dart:ui';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
-import '../app_config.dart';
+import '../AppConfig.dart';
 
 class listDialog extends StatefulWidget {
   String title;
@@ -16,8 +15,7 @@ class listDialog extends StatefulWidget {
   bool useTint;
   List selections;
 
-  listDialog(items,
-      {title, images, bool useTint = true,selections}) {
+  listDialog(items, {title, images, bool useTint = true, selections}) {
     this.title = title;
     this.items = items;
     this.images = images == null ? List() : images;
@@ -38,8 +36,8 @@ class _listDialogState extends State<listDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    multiple = widget.selections !=null;
-    selections = widget.selections??[];
+    multiple = widget.selections != null;
+    selections = widget.selections ?? [];
   }
 
   @override
@@ -82,7 +80,8 @@ class _listDialogState extends State<listDialog> {
                       Image.asset(
                         ic_plain,
                         height: 14,
-                        width: 14,color: red0,
+                        width: 14,
+                        color: red0,
                       ),
                       addSpaceWidth(10),
                       new Flexible(
@@ -104,7 +103,8 @@ class _listDialogState extends State<listDialog> {
                 ),
                 addSpace(5),
                 addLine(.5, black.withOpacity(.1), 0, 0, 0, 0),
-                Flexible(fit: FlexFit.loose,
+                Flexible(
+                  fit: FlexFit.loose,
                   child: Container(
                     color: white,
                     child: new ConstrainedBox(
@@ -128,26 +128,27 @@ class _listDialogState extends State<listDialog> {
                                         .5, black.withOpacity(.1), 0, 0, 0, 0),
                                 GestureDetector(
                                   onTap: () {
-                                    if(multiple){
-                                      bool selected = selections.contains(widget.items[position]);
-                                      if(selected){
-                                        selections.remove(widget.items[position]);
-                                      }else{
+                                    if (multiple) {
+                                      bool selected = selections
+                                          .contains(widget.items[position]);
+                                      if (selected) {
+                                        selections
+                                            .remove(widget.items[position]);
+                                      } else {
                                         selections.add(widget.items[position]);
                                       }
-                                      setState(() {
-
-                                      });
+                                      setState(() {});
                                       return;
                                     }
-                                    Navigator.of(context).pop(widget.items[position]);
+                                    Navigator.of(context)
+                                        .pop(widget.items[position]);
                                   },
                                   child: new Container(
                                     color: white,
                                     width: double.infinity,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 15, 0, 15),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
                                         crossAxisAlignment:
@@ -155,13 +156,15 @@ class _listDialogState extends State<listDialog> {
                                         children: <Widget>[
                                           widget.images.isEmpty
                                               ? Container()
-                                              : !(widget.images[position] is String)
+                                              : !(widget.images[position]
+                                                      is String)
                                                   ? Icon(
                                                       widget.images[position],
                                                       size: 17,
                                                       color: !widget.useTint
                                                           ? null
-                                                          : black.withOpacity(.3),
+                                                          : black
+                                                              .withOpacity(.3),
                                                     )
                                                   : Image.asset(
                                                       widget.images[position],
@@ -169,21 +172,25 @@ class _listDialogState extends State<listDialog> {
                                                       height: 17,
                                                       color: !widget.useTint
                                                           ? null
-                                                          : black.withOpacity(.3),
+                                                          : black
+                                                              .withOpacity(.3),
                                                     ),
                                           widget.images.isNotEmpty
                                               ? addSpaceWidth(10)
                                               : Container(),
                                           Flexible(
-                                            flex:1,fit:FlexFit.tight,
+                                            flex: 1,
+                                            fit: FlexFit.tight,
                                             child: Text(
                                               widget.items[position],
-                                              style: textStyle(
-                                                  false, 18, black.withOpacity(.8)),
+                                              style: textStyle(false, 18,
+                                                  black.withOpacity(.8)),
                                             ),
                                           ),
-                                          if(multiple)addSpace(10),
-                                          if(multiple)checkBox(selections.contains(widget.items[position]))
+                                          if (multiple) addSpace(10),
+                                          if (multiple)
+                                            checkBox(selections.contains(
+                                                widget.items[position]))
                                         ],
                                       ),
                                     ),
@@ -208,7 +215,8 @@ class _listDialogState extends State<listDialog> {
                       child: FlatButton(
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(side: BorderSide(color: blue0,width: 1),
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(color: blue0, width: 1),
                               borderRadius: BorderRadius.circular(10)),
                           color: white,
                           onPressed: () {

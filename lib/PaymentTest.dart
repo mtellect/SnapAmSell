@@ -5,9 +5,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Strokes/AppEngine.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:maugost_apps/AppEngine.dart';
 
 import 'assets.dart';
 

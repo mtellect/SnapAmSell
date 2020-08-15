@@ -1,10 +1,10 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Home extends StatefulWidget {
@@ -94,10 +94,9 @@ class _HomeState extends State<Home> {
                 height: 45,
                 margin: EdgeInsets.fromLTRB(10, 5, 0, 10),
                 decoration: BoxDecoration(
-                    color: default_white,//black.withOpacity(.1),
+                    color: default_white, //black.withOpacity(.1),
                     borderRadius: BorderRadius.circular(25),
-                    border:
-                        Border.all(color: black.withOpacity(.1), width: 1)),
+                    border: Border.all(color: black.withOpacity(.1), width: 1)),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,

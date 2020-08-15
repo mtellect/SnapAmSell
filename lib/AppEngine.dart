@@ -3,15 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:Strokes/ChatMain.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/countryDialog.dart';
-import 'package:Strokes/dialogs/inputDialog.dart';
-import 'package:Strokes/dialogs/listDialog.dart';
-import 'package:Strokes/dialogs/messageDialog.dart';
-import 'package:Strokes/dialogs/progressDialog.dart';
-import 'package:Strokes/preinit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
@@ -31,6 +22,17 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:maugost_apps/ChatMain.dart';
+import 'package:maugost_apps/app/app.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/countryDialog.dart';
+import 'package:maugost_apps/dialogs/inputDialog.dart';
+import 'package:maugost_apps/dialogs/listDialog.dart';
+import 'package:maugost_apps/dialogs/messageDialog.dart';
+import 'package:maugost_apps/dialogs/progressDialog.dart';
+import 'package:maugost_apps/payment_details.dart';
+import 'package:maugost_apps/preinit.dart';
 import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
@@ -41,10 +43,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_compress/video_compress.dart';
 
+import 'AppConfig.dart';
 import 'MainAdmin.dart';
 import 'SimpleVideoPlayer.dart';
 import 'app/navigation.dart';
-import 'app_config.dart';
+import 'dialogs/OfferDialog.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/ShowProduct.dart';
 import 'main_pages/ShowStore.dart';
@@ -115,7 +118,6 @@ getSingleVideo(BuildContext context,
     onPicked(model);
   });
   return;
-
 }
 
 getMultiCroppedImage(BuildContext context,
@@ -140,8 +142,6 @@ getMultiCroppedImage(BuildContext context,
 //       }).catchError((e) {
 //     //logError(e.code, e.message);
 //   });
-
-
 }
 
 toast(scaffoldKey, text, {Color color}) {
@@ -573,8 +573,8 @@ emptyLayout(icon, String title, String text,
                   new Container(
                     height: 50,
                     width: 50,
-                    decoration: BoxDecoration(
-                        color: black, shape: BoxShape.circle),
+                    decoration:
+                        BoxDecoration(color: black, shape: BoxShape.circle),
                   ),
                   new Center(
                       child: !(icon is String)
@@ -621,22 +621,21 @@ emptyLayout(icon, String title, String text,
               style: textStyle(true, 16, trans ? white : black),
               textAlign: TextAlign.center,
             ),
-            if(text.isNotEmpty)addSpace(5),
-            if(text.isNotEmpty)Text(
-              text,
-              style: textStyle(false, 14,
-                  trans ? (white.withOpacity(.5)) : black.withOpacity(.5)),
-              textAlign: TextAlign.center,
-            ),
+            if (text.isNotEmpty) addSpace(5),
+            if (text.isNotEmpty)
+              Text(
+                text,
+                style: textStyle(false, 14,
+                    trans ? (white.withOpacity(.5)) : black.withOpacity(.5)),
+                textAlign: TextAlign.center,
+              ),
             addSpace(10),
             click == null
                 ? new Container()
                 : FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
-                    side: BorderSide(
-                      color: black,width: 2
-                    )),
+                        side: BorderSide(color: black, width: 2)),
 //                    color: blue3,
                     onPressed: click,
                     child: Text(
@@ -712,54 +711,33 @@ List<BaseModel> levelList = new List();*/
   });
 }*/
 
-pushAndResult(context, item, {result, opaque = true, bool depend = true}) {
-  bool isIOS = Platform.isIOS;
-
-  PageRoute route;
-
-  if (isIOS && depend) {
-    route = CupertinoPageRoute(builder: (ctx) {
-      return item;
-    });
-  } else {
-    route = PageRouteBuilder(
-        transitionsBuilder: transition,
-        opaque: false,
-        pageBuilder: (context, _, __) {
-          return item;
-        });
-  }
-
-  Navigator.push(context, route).then((_) {
-    //if (_() == null) return;
+pushAndResult(context, item, {result, opaque = false, bool depend = true}) {
+  Navigator.push(
+      context,
+      PageRouteBuilder(
+//          transitionsBuilder: transition,
+          opaque: opaque,
+          pageBuilder: (context, _, __) {
+            return item;
+          })).then((_) {
     if (_ != null) {
-      if (null != result) result(_);
+      if (result != null) result(_);
     }
   });
 }
 
 pushReplacementAndResult(context, item,
-    {result, opaque = true, bool depend = true}) {
-  bool isIOS = Platform.isIOS;
-
-  PageRoute route;
-
-  if (isIOS && depend) {
-    route = CupertinoPageRoute(builder: (ctx) {
-      return item;
-    });
-  } else {
-    route = PageRouteBuilder(
-        transitionsBuilder: transition,
-        opaque: false,
-        pageBuilder: (context, _, __) {
-          return item;
-        });
-  }
-
-  Navigator.pushReplacement(context, route).then((_) {
+    {result, opaque = false, bool depend = true}) {
+  Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+//          transitionsBuilder: transition,
+          opaque: opaque,
+          pageBuilder: (context, _, __) {
+            return item;
+          })).then((_) {
     if (_ != null) {
-      if (null != result) result(_);
+      if (result != null) result(_);
     }
   });
 }
@@ -1254,7 +1232,8 @@ Future<File> getDirFile(String name) async {
   final dir = Platform.isIOS
       ? await getApplicationDocumentsDirectory()
       : await getExternalStorageDirectory();
-  var testDir = await Directory("${dir.path}/Strokes").create(recursive: true);
+  var testDir =
+      await Directory("${dir.path}/maugost_apps").create(recursive: true);
   return File("${testDir.path}/$name");
 }
 
@@ -1364,7 +1343,8 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                   : expanded
                       ? widget.text
                       : (widget.text.substring(0, widget.minLength)),
-              style: textStyle(false, widget.fontSize, widget.textColor??black)),
+              style:
+                  textStyle(false, widget.fontSize, widget.textColor ?? black)),
           TextSpan(
               text: widget.text.length < widget.minLength || expanded
                   ? ""
@@ -2120,7 +2100,7 @@ clickOnAd(context, BaseModel model) {
       }
       if (_ == "Send Email") {
         openLink(
-            "mailto:$email?subject=${model.getString(ITEM_NAME)}&body=${"Hi, i am interested in your ad i saw on Strokes App"}");
+            "mailto:$email?subject=${model.getString(ITEM_NAME)}&body=${"Hi, i am interested in your ad i saw on maugost_apps App"}");
       }
       if (_ == "Chat on Whatsapp") {
         openLink(
@@ -4367,7 +4347,11 @@ shareButton(color, String text, icon, onTap, {width}) {
 String oldNumber = "";
 bool checking = false;
 inputTextView(String title, controller,
-    {@required isNum, int maxLine = 1, priceFormatted, onTipClicked,priceIcon}) {
+    {@required isNum,
+    int maxLine = 1,
+    priceFormatted,
+    onTipClicked,
+    priceIcon}) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -4405,13 +4389,14 @@ inputTextView(String title, controller,
           children: <Widget>[
             if (priceIcon != null) addSpaceWidth(15),
             if (priceIcon != null)
-              priceIcon is String ?
-              Image.asset(
-                priceIcon,
-                height: 18,
-                width: 18,
-                color: black.withOpacity(.3),
-              ):Icon(priceIcon,size: 18, color:black.withOpacity(.3)),
+              priceIcon is String
+                  ? Image.asset(
+                      priceIcon,
+                      height: 18,
+                      width: 18,
+                      color: black.withOpacity(.3),
+                    )
+                  : Icon(priceIcon, size: 18, color: black.withOpacity(.3)),
             Flexible(
               child: new TextField(
                 onSubmitted: (_) {
@@ -4426,8 +4411,8 @@ inputTextView(String title, controller,
                     hintText: "",
                     hintStyle: textStyle(false, 18, black.withOpacity(.2)),
                     counter: null
-                  /*counterStyle: textStyle(true, 0, white)*/
-                ),
+                    /*counterStyle: textStyle(true, 0, white)*/
+                    ),
                 style: textStyle(
                   false,
                   18,
@@ -4439,13 +4424,14 @@ inputTextView(String title, controller,
 //                          maxLength: 50,
                 maxLines: maxLine,
                 keyboardType:
-                isNum ? (TextInputType.number) : TextInputType.text,
+                    isNum ? (TextInputType.number) : TextInputType.text,
                 scrollPadding: EdgeInsets.all(0),
                 onChanged: (String s) {
                   if (priceFormatted == null) return;
-                  if (checking || s.trim().length<4) {
+                  if (checking || s.trim().length < 4) {
                     priceFormatted();
-                    return;}
+                    return;
+                  }
                   checking = true;
 
                   controller.text = formatAmount(s);
@@ -4453,7 +4439,7 @@ inputTextView(String title, controller,
 
                   Future.delayed(Duration(milliseconds: 100), () {
                     final val =
-                    TextSelection.collapsed(offset: controller.text.length);
+                        TextSelection.collapsed(offset: controller.text.length);
                     controller.selection = val;
                     checking = false;
                     priceFormatted();
@@ -4469,8 +4455,8 @@ inputTextView(String title, controller,
 }
 
 String formatAmount(String text) {
-  if(text==null)return "";
-  if(text.isEmpty)return "";
+  if (text == null) return "";
+  if (text.isEmpty) return "";
   text = text.replaceAll(",", "");
   RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
   Function mathFunc = (Match match) => '${match[1]},';
@@ -4479,7 +4465,7 @@ String formatAmount(String text) {
 }
 
 nameItem(String title, String text, {color, bool center = false}) {
-  color = color??black;
+  color = color ?? black;
   return Container(
 //    margin: EdgeInsets.only(bottom: 10),
     child: RichText(
@@ -4829,7 +4815,7 @@ textbox(TextEditingController controller, String hint,
     onChanged,
     bool dontPad = false,
     bool isNum = false,
-    double rad=25}) {
+    double rad = 25}) {
   return Container(
     constraints: BoxConstraints(minHeight: 45),
     margin: EdgeInsets.fromLTRB(
@@ -4837,10 +4823,8 @@ textbox(TextEditingController controller, String hint,
     padding: EdgeInsets.fromLTRB(isPass ? 40 : 10, 0, 10, 0),
 //    height: lines>1?null:50,
     decoration: BoxDecoration(
-        border: Border.all(
-            color: black.withOpacity(.5),
-            width: 2),
-        borderRadius: BorderRadius.circular(rad),
+      border: Border.all(color: black.withOpacity(.5), width: 2),
+      borderRadius: BorderRadius.circular(rad),
 //        color: blue09
     ),
     child: new TextField(
@@ -4863,15 +4847,12 @@ textbox(TextEditingController controller, String hint,
                   },
                   child: Text(
                     passwordVisible ? "HIDE" : "SHOW",
-                    style: textStyle(
-                        false,
-                        12,
-                        black.withOpacity(.5)),
+                    style: textStyle(false, 12, black.withOpacity(.5)),
                   )),
           hintStyle: textStyle(
             false,
             18,
-           black.withOpacity(.35),
+            black.withOpacity(.35),
           ),
           border: InputBorder.none),
       textAlign: center ? TextAlign.center : TextAlign.left,
@@ -5367,7 +5348,8 @@ userImageItem(
   context,
   BaseModel model, {
   double size = 40,
-  double strokeSize = 4,strokeColor=white_color,
+  double strokeSize = 4,
+  strokeColor = white_color,
   bool padLeft = true,
 }) {
   return new GestureDetector(
@@ -5383,46 +5365,48 @@ userImageItem(
       duration: Duration(milliseconds: 500),
       decoration: BoxDecoration(
         border: Border.all(width: strokeSize, color: strokeColor),
-        shape: BoxShape.circle,color:AppConfig.appColor,
+        shape: BoxShape.circle,
+        color: AppConfig.appColor,
       ),
       margin: EdgeInsets.fromLTRB(padLeft ? 10 : 0, 0, 0, 0),
       width: size,
       height: size,
-      child: Stack(fit: StackFit.expand,
+      child: Stack(
+        fit: StackFit.expand,
         children: <Widget>[
           model.userImage.isEmpty
               ? Center(
-            child: Text(
-              getInitials(model.getString(NAME)),
-              style: textStyle(true, 18, white),
-            ),
-          )
-              :Card(
-            margin: EdgeInsets.all(0),
-            shape: CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            color: transparent,
-            elevation: 0,
-            child: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                Container(
-                  width: size,
-                  height: size,
-                  child: Center(
-                      child: Icon(
-                    Icons.person,
-                    color: white,
-                    size: 15,
-                  )),
+                  child: Text(
+                    getInitials(model.getString(NAME)),
+                    style: textStyle(true, 18, white),
+                  ),
+                )
+              : Card(
+                  margin: EdgeInsets.all(0),
+                  shape: CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  color: transparent,
+                  elevation: 0,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Container(
+                        width: size,
+                        height: size,
+                        child: Center(
+                            child: Icon(
+                          Icons.person,
+                          color: white,
+                          size: 15,
+                        )),
+                      ),
+                      CachedNetworkImage(
+                        imageUrl: model.userImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ],
+                  ),
                 ),
-                 CachedNetworkImage(
-                  imageUrl: model.userImage,
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
-          ),
 
           /*ClipRRect(
             borderRadius: BorderRadius.circular(22),
@@ -5490,15 +5474,21 @@ shopItem(BuildContext context, BaseModel model, setState) {
 
   return GestureDetector(
     onTap: () {
-      pushAndResult(context, ShowProduct(model), depend: false);
+      pushAndResult(
+          context,
+          ShowProduct(
+            model,
+            objectId: id,
+          ),
+          depend: false);
     },
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(5),clipBehavior: Clip.antiAlias,
+      borderRadius: BorderRadius.circular(5),
+      clipBehavior: Clip.antiAlias,
       child: Container(
-        decoration: BoxDecoration(
-          color: black.withOpacity(.1)
+        decoration: BoxDecoration(color: black.withOpacity(.1)
 //            border: Border.all(color: white.withOpacity(0.1), width: 2)
-        ),
+            ),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -5511,12 +5501,14 @@ shopItem(BuildContext context, BaseModel model, setState) {
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                margin: EdgeInsets.fromLTRB(8,8,8,8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
 //                decoration: BoxDecoration(
 //                    borderRadius: BorderRadius.circular(5), color: white),
                 child: Card(
-                  clipBehavior: Clip.antiAlias,color: white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                  clipBehavior: Clip.antiAlias,
+                  color: white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -5534,20 +5526,22 @@ shopItem(BuildContext context, BaseModel model, setState) {
 //                            addSpace(2),
                             Text(
                               title,
-                              style: textStyle(false, 14, black),textAlign: TextAlign.center,
+                              style: textStyle(false, 14, black),
+                              textAlign: TextAlign.center,
                               maxLines: 2,
                             ),
                             addSpace(2),
                           ],
                         ),
                       ),
-                      FlatButton(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      FlatButton(
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onPressed: () {
-                          cartController.add(model);
+                          if (!model.myItem()) cartController.add(model);
                         },
                         color: isInCart ? red : AppConfig.appColor,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
+                          borderRadius: BorderRadius.circular(0),
 //                            side: BorderSide(color: white)
                         ),
                         child: Center(
@@ -5585,4 +5579,291 @@ shopItem(BuildContext context, BaseModel model, setState) {
       ),
     ),
   );
+}
+
+enum UniqueStatus {
+  searching,
+  available,
+  failed,
+  none,
+}
+
+textInputField(
+    {@required TextEditingController controller,
+    @required String title,
+    @required String hint,
+    @required String asset,
+    bool isPass = false,
+    bool isPhone = false,
+    UniqueStatus unique = UniqueStatus.none,
+    FocusNode focusNode,
+    IconData icon,
+    void Function() refresh,
+    void Function(String) onSearching,
+    onPhoneTap,
+    int maxLines = 1,
+    bool disableIconAsset = false,
+    Color fillColor,
+    bool fill = false}) {
+  return Container(
+    padding: EdgeInsets.only(left: 15, right: 15),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        addSpace(5),
+        Text(
+          title,
+          style: textStyle(false, 14, AppConfig.appColor),
+        ),
+        addSpace(4),
+        Container(
+          padding: EdgeInsets.only(left: 15, right: 15),
+          decoration: BoxDecoration(
+              color: fill ? black.withOpacity(0.08) : white,
+              border: Border.all(
+                color: black.withOpacity(fill ? 0 : 0.2),
+              ),
+              borderRadius: BorderRadius.circular(10)),
+          child: Row(
+            children: [
+              if (!disableIconAsset)
+                Icon(
+                  icon,
+                  color: AppConfig.appColor,
+                ),
+              if (!disableIconAsset)
+                Container(
+                  height: 20,
+                  width: 1,
+                  color: black.withOpacity(.1),
+                  margin: EdgeInsets.only(left: 5, right: 15),
+                ),
+              Flexible(
+                child: TextField(
+                  controller: controller,
+                  maxLines: maxLines,
+                  obscureText: isPass && !passwordVisible,
+                  keyboardType: isPhone ? TextInputType.number : null,
+                  onChanged: (unique == null || onSearching == null)
+                      ? null
+                      : onSearching,
+                  decoration: InputDecoration(
+                      suffix: !isPass
+                          ? null
+                          : GestureDetector(
+                              onTap: () {
+                                passwordVisible = !passwordVisible;
+                                if (refresh != null) refresh();
+                              },
+                              child: Text(
+                                passwordVisible ? "HIDE" : "SHOW",
+                                style:
+                                    textStyle(false, 12, black.withOpacity(.5)),
+                              )),
+                      hintText: hint,
+                      hintStyle: textStyle(false, 16, black.withOpacity(.6)),
+                      border: InputBorder.none),
+                ),
+              ),
+              if (null != unique)
+                Container(
+                  height: 20,
+                  width: 20,
+                  alignment: Alignment.center,
+                  child: uniqueBuilder(unique),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: unique == UniqueStatus.none
+                          ? transparent
+                          : unique == UniqueStatus.searching
+                              ? transparent
+                              : unique == UniqueStatus.available ? green : red),
+                ),
+              if (isPhone && (null != onPhoneTap)) ...[
+                Container(
+                  height: 20,
+                  width: 1,
+                  color: black.withOpacity(.1),
+                  margin: EdgeInsets.only(left: 5, right: 15),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    onPhoneTap();
+                  },
+                  child: Row(children: [
+                    addSpaceWidth(5),
+                    Image.asset(country.countryFlag, height: 20, width: 20),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      color: black.withOpacity(.4),
+                    ),
+                  ]),
+                ),
+              ]
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+uniqueBuilder(UniqueStatus status) {
+  switch (status) {
+    case UniqueStatus.searching:
+      // TODO: Handle this case.
+      return CircularProgressIndicator(
+        strokeWidth: 2,
+        //valueColor: AlwaysStoppedAnimation(AppConfig.appColor),
+      );
+      break;
+    case UniqueStatus.available:
+      // TODO: Handle this case.
+      return Icon(
+        Icons.check,
+        color: white,
+        size: 15,
+      );
+      break;
+    case UniqueStatus.failed:
+      // TODO: Handle this case.
+      return Icon(
+        Icons.error_outline,
+        color: white,
+        size: 15,
+      );
+      break;
+    case UniqueStatus.none:
+      // TODO: Handle this case.
+      return Container();
+      break;
+  }
+}
+
+selectorField({
+  @required String value,
+  @required String title,
+  @required String hint,
+  String asset,
+  IconData icon,
+  void Function() onTap,
+  bool fill = false,
+  bool disableIconAsset = false,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.only(left: 15, right: 15),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          addSpace(5),
+          Text(
+            title,
+            style: textStyle(false, 14, AppConfig.appColor),
+          ),
+          addSpace(4),
+          Container(
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                color: fill ? black.withOpacity(0.08) : white,
+                border: Border.all(
+                  color: black.withOpacity(fill ? 0 : 0.2),
+                ),
+                borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              children: [
+                if (null == icon && !disableIconAsset)
+                  Image.asset(
+                    asset,
+                    height: 20,
+                    width: 20,
+                    fit: BoxFit.cover,
+                    color: AppConfig.appColor,
+                  )
+                else if (null != asset && !disableIconAsset)
+                  Icon(
+                    icon,
+                    color: AppConfig.appColor,
+                  ),
+                if (!disableIconAsset)
+                  Container(
+                    height: 20,
+                    width: 1,
+                    color: black.withOpacity(.1),
+                    margin: EdgeInsets.only(left: 5, right: 15),
+                  ),
+                Text(
+                  value ?? hint,
+                  style: textStyle(
+                      false, 16, black.withOpacity(value == null ? 0.5 : 1)),
+                ),
+                Spacer(),
+                Icon(
+                  Icons.arrow_drop_down_circle,
+                  color: black.withOpacity(.5),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+double get accountBalance => userModel.getDouble(ESCROW_BALANCE);
+
+fundWallet(BuildContext context, {onProcessed, bool isPremium = false}) async {
+  if (isPremium) {
+    pushAndResult(
+        context,
+        PaymentDetails(
+          amount: 10,
+          isSubscription: true,
+        ),
+        depend: false, result: (_) {
+      if (onProcessed != null) onProcessed(true);
+    });
+    return;
+  }
+
+  pushAndResult(context, AmountDialog(), depend: false, result: (_) async {
+    if (null == _) return;
+    pushAndResult(
+        context,
+        PaymentDetails(
+          amount: _,
+        ),
+        depend: false, result: (BaseModel _) {
+      if (null == _) return;
+//      double availableBalance = userModel.getDouble(ESCROW_BALANCE);
+//      userModel
+//        ..put(ESCROW_BALANCE, availableBalance + _.getDouble(AMOUNT))
+//        ..updateItems();
+      onProcessed(true);
+    });
+  });
+}
+
+fundSeller(BuildContext context, BaseModel seller, double amount,
+    {onProcessed}) async {
+  showMessage(context, Icons.warning, red, "Pay Seller?",
+      "Are you sure you want to proceed with the payment to seller @${seller.getString(NAME)}?",
+      clickYesText: "Pay", clickNoText: "Go Back", onClicked: (_) {
+    if (!_) return;
+    double accountBal = userModel.getDouble(ESCROW_BALANCE);
+    double accountBalSeller = seller.getDouble(ESCROW_BALANCE);
+    double leftOver = accountBal - amount;
+    double addToSeller = accountBalSeller + amount;
+    userModel
+      ..put(ESCROW_BALANCE, leftOver)
+      ..updateItems();
+    seller
+      ..put(ESCROW_BALANCE, addToSeller)
+      ..updateItems();
+    if (null != onProcessed) onProcessed();
+  });
 }

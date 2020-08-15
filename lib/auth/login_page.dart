@@ -1,17 +1,15 @@
 import 'dart:async';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/signUp_page.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/signUp_page.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 import 'forgot_password.dart';
 
@@ -84,13 +82,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset("assets/icons/ic_plain.png",
-                        height: 80, width: 80,color: white,),
+                    Image.asset(
+                      "assets/icons/ic_plain.png",
+                      height: 80,
+                      width: 80,
+                      color: white,
+                    ),
                     addSpace(20),
                     Text("Login to Fetish", style: textStyle(true, 20, white)),
 //                    Text("Login", style: textStyle(true, 14, black.withOpacity(.5))),
                     addSpace(10),
-
                   ],
                 ),
               )
@@ -124,9 +125,10 @@ class _LoginPageState extends State<LoginPage> {
                           Container(
                             width: 150,
                             height: 50,
-                            margin: EdgeInsets.fromLTRB(15,5,15,10),
+                            margin: EdgeInsets.fromLTRB(15, 5, 15, 10),
                             child: FlatButton(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25)),
                                 color: black,
@@ -141,15 +143,18 @@ class _LoginPageState extends State<LoginPage> {
                           Container(
                             height: 30,
                             child: FlatButton(
-                              onPressed: (){
-                                pushAndResult(context, ForgotPassword(), depend: false);
+                              onPressed: () {
+                                pushAndResult(context, ForgotPassword(),
+                                    depend: false);
                               },
                               color: black.withOpacity(.05),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(25)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25)),
                                 // side: BorderSide(color: app_green,width: 2)
                               ),
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                               padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                               child: new Text(
                                 "Forgot Password",
@@ -158,25 +163,30 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(20,10,20,20),
-                            child: RichText(text: TextSpan(children:
-                            [ TextSpan(text: "Don't have an account? ",style: textStyle(false, 14, black)),
-                              TextSpan(text: "Signup",style: textStyle(true, 15, blue0),
-                                recognizer: new TapGestureRecognizer()
-                                  ..onTap = () {
-                                    pushReplacementAndResult(context, SignUp(),
-                              depend: false);
-                                  },),
-
-                            ]),textAlign: TextAlign.center,),
+                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                            child: RichText(
+                              text: TextSpan(children: [
+                                TextSpan(
+                                    text: "Don't have an account? ",
+                                    style: textStyle(false, 14, black)),
+                                TextSpan(
+                                  text: "Signup",
+                                  style: textStyle(true, 15, blue0),
+                                  recognizer: new TapGestureRecognizer()
+                                    ..onTap = () {
+                                      pushReplacementAndResult(
+                                          context, SignUp(),
+                                          depend: false);
+                                    },
+                                ),
+                              ]),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-
-
                         ],
                       ),
                     ),
                   ),
-
 
 //                  Container(
 //                    child: FlatButton(

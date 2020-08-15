@@ -1,9 +1,5 @@
 import 'dart:async';
 
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app/navigation.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -14,11 +10,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/app/navigation.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
 import 'ChatMain.dart';
 import 'app/app.dart';
+import 'photo/photo_provider.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -29,11 +31,12 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 // Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
 final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
     BehaviorSubject<ReceivedNotification>();
-StreamController<List<String>> galleryController =
-    StreamController<List<String>>.broadcast();
 
 final BehaviorSubject<String> selectNotificationSubject =
     BehaviorSubject<String>();
+
+final galleryController = StreamController<List<String>>.broadcast();
+final galleryResultController = StreamController<List<dynamic>>.broadcast();
 
 class ReceivedNotification {
   final int id;
@@ -62,8 +65,13 @@ void main() async {
 //    logError(e.code, e.description);
   }
   InAppPurchaseConnection.enablePendingPurchases();
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider<PhotoProvider>.value(
+    value: provider,
+    child: MyApp(),
+  ));
 }
+
+final provider = PhotoProvider();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -79,6 +87,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Averta',
           primaryColor: white,
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: <TargetPlatform, PageTransitionsBuilder>{
+              TargetPlatform.iOS: createTransition(),
+              TargetPlatform.android: createTransition(),
+            },
+          ),
         ), //Futura//Nirmala
         navigatorObservers: [
           routeObserver,
@@ -87,6 +101,10 @@ class MyApp extends StatelessWidget {
         home: MainHome()
         // PostAd(),
         );
+  }
+
+  PageTransitionsBuilder createTransition() {
+    return ZoomPageTransitionsBuilder();
   }
 }
 

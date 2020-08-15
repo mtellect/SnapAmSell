@@ -1,12 +1,11 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/main_pages/EditProfile.dart';
-import 'package:Strokes/main_pages/ShowProduct.dart';
-import 'package:Strokes/payment_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/main_pages/EditProfile.dart';
+import 'package:maugost_apps/main_pages/ShowProduct.dart';
 
 class ShowCart extends StatefulWidget {
   @override
@@ -84,22 +83,36 @@ class _ShowCartState extends State<ShowCart> {
             padding: EdgeInsets.all(15),
             child: FlatButton(
               onPressed: () {
-                if (userModel.signUpCompleted) {
+                if (!userModel.signUpCompleted) {
                   pushAndResult(
                       context,
-                      PaymentDialog(
-                        amount: getTotalCost,
+                      EditProfile(
+                        modeEdit: true,
                       ),
                       depend: false);
                   return;
                 }
 
-                pushAndResult(
-                    context,
-                    EditProfile(
-                      modeEdit: true,
-                    ),
-                    depend: false);
+                double accountBal = userModel.getDouble(ESCROW_BALANCE);
+                double offerAmount = getTotalCost;
+                double leftOver = accountBal - offerAmount;
+                if (accountBal == 0 || leftOver.isNegative) {
+                  showMessage(
+                      context,
+                      Icons.warning,
+                      red,
+                      "Insufficient Funds",
+                      "Oops! You do not have sufficient"
+                          " funds in your wallet. Please"
+                          " add funds to your wallet to proceed.",
+                      clickYesText: "Fund Wallet", onClicked: (_) {
+                    if (_)
+                      fundWallet(context, onProcessed: () {
+                        setState(() {});
+                      });
+                  });
+                  return;
+                }
               },
               color: AppConfig.appColor,
               padding: EdgeInsets.all(20),
@@ -191,13 +204,21 @@ class _ShowCartState extends State<ShowCart> {
                                   title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: textStyle(true, 14, black),
+                                  style: textStyle(true, 16, black),
+                                ),
+                                addSpace(2),
+                                Text(
+                                  '~$category~',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textStyle(false, 14, black),
                                 ),
                                 addSpace(2),
                                 Container(
                                   decoration: BoxDecoration(
                                       border: Border.all(
-                                          color: black.withOpacity(.09), width: 1),
+                                          color: black.withOpacity(.09),
+                                          width: 1),
                                       color: AppConfig.appColor,
                                       borderRadius: BorderRadius.circular(8)),
                                   padding: EdgeInsets.all(8),
@@ -212,27 +233,30 @@ class _ShowCartState extends State<ShowCart> {
                         ],
                       ),
                     ),
-                    GestureDetector(onTap: (){
-
-                    },
-                      child: Container(color: transparent,height: 100,
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        color: transparent,
+                        height: 100,
                         child: Center(
                           child: Container(
                             decoration: BoxDecoration(
-                                color: black, borderRadius: BorderRadius.circular(25)),
+                                color: black,
+                                borderRadius: BorderRadius.circular(25)),
 //                  padding: EdgeInsets.all(8),
                             child: Row(
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    cartLists[p]
-                                        .put(QUANTITY, quantity == 1 ? 1 : quantity - 1);
+                                    cartLists[p].put(QUANTITY,
+                                        quantity == 1 ? 1 : quantity - 1);
                                     setState(() {});
                                   },
                                   child: Container(
                                     height: 30,
                                     width: 40,
-                                    decoration: BoxDecoration(shape: BoxShape.circle),
+                                    decoration:
+                                        BoxDecoration(shape: BoxShape.circle),
                                     alignment: Alignment.center,
                                     child: Text(
                                       "-",
@@ -252,7 +276,8 @@ class _ShowCartState extends State<ShowCart> {
                                   child: Container(
                                     height: 30,
                                     width: 40,
-                                    decoration: BoxDecoration(shape: BoxShape.circle),
+                                    decoration:
+                                        BoxDecoration(shape: BoxShape.circle),
                                     alignment: Alignment.center,
                                     child: Text(
                                       "+",
@@ -268,10 +293,11 @@ class _ShowCartState extends State<ShowCart> {
                     ),
                   ],
                 ),
-                Align(alignment: Alignment.topRight,
+                Align(
+                  alignment: Alignment.topRight,
                   child: GestureDetector(
                     onTap: () {
-                      yesNoDialog(context, "Remove Item", "Are you sure?", (){
+                      yesNoDialog(context, "Remove Item", "Are you sure?", () {
                         cartController.add(model);
                         setState(() {});
                       });
@@ -284,11 +310,10 @@ class _ShowCartState extends State<ShowCart> {
                       ),
                       height: 25,
                       width: 25,
-                      decoration: BoxDecoration(
-                          color: red, shape: BoxShape.circle
+                      decoration:
+                          BoxDecoration(color: red, shape: BoxShape.circle
 //                    borderRadius: BorderRadius.circular(10)
-                      ),
-
+                              ),
                     ),
                   ),
                 )

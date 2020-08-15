@@ -1,16 +1,14 @@
 import 'dart:ui';
 
-
 import 'package:country_pickers/countries.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 class countryDialog extends StatefulWidget {
-
   @override
   _countryDialogState createState() => _countryDialogState();
 }
@@ -22,8 +20,8 @@ class _countryDialogState extends State<countryDialog> {
   bool setup = false;
   bool showCancel = false;
   FocusNode focusSearch = FocusNode();
-  List<Country> listItems=[];
-  List<Country> allItems=[];
+  List<Country> listItems = [];
+  List<Country> allItems = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -32,20 +30,23 @@ class _countryDialogState extends State<countryDialog> {
     allItems.addAll(countryList);
   }
 
-  reload(){
+  reload() {
     String search = searchController.text.trim();
     listItems.clear();
-    for(Country c in allItems){
+    for (Country c in allItems) {
       String s = c.name;
-      if(search.isNotEmpty && !s.toLowerCase().contains(search.toLowerCase()))continue;
+      if (search.isNotEmpty && !s.toLowerCase().contains(search.toLowerCase()))
+        continue;
       listItems.add(c);
     }
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    return Scaffold(backgroundColor: transparent,
+    return Scaffold(
+      backgroundColor: transparent,
       body: Stack(fit: StackFit.expand, children: <Widget>[
         GestureDetector(
           onTap: () {
@@ -90,9 +91,9 @@ class _countryDialogState extends State<countryDialog> {
                       new Flexible(
                         flex: 1,
                         child: new Text(
-                                "Your Country",
-                                style: textStyle(true, 14, black),
-                              ),
+                          "Your Country",
+                          style: textStyle(true, 14, black),
+                        ),
                       ),
                       addSpaceWidth(15),
                     ],
@@ -105,8 +106,8 @@ class _countryDialogState extends State<countryDialog> {
                   decoration: BoxDecoration(
                       color: white.withOpacity(.8),
                       borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: app_blue.withOpacity(.5),width: 1)
-                  ),
+                      border: Border.all(
+                          color: app_blue.withOpacity(.5), width: 1)),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,7 +136,8 @@ class _countryDialogState extends State<countryDialog> {
                                 18,
                                 blue3.withOpacity(.5),
                               ),
-                              border: InputBorder.none,isDense: true),
+                              border: InputBorder.none,
+                              isDense: true),
                           style: textStyle(false, 16, black),
                           controller: searchController,
                           cursorColor: black,
@@ -160,20 +162,21 @@ class _countryDialogState extends State<countryDialog> {
                         },
                         child: showCancel
                             ? Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                          child: Icon(
-                            Icons.close,
-                            color: black,
-                            size: 20,
-                          ),
-                        )
+                                padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                child: Icon(
+                                  Icons.close,
+                                  color: black,
+                                  size: 20,
+                                ),
+                              )
                             : new Container(),
                       )
                     ],
                   ),
                 ),
                 addLine(.5, black.withOpacity(.1), 0, 0, 0, 0),
-                Flexible(fit: FlexFit.loose,
+                Flexible(
+                  fit: FlexFit.loose,
                   child: Container(
                     color: white,
                     child: new ConstrainedBox(
@@ -198,27 +201,33 @@ class _countryDialogState extends State<countryDialog> {
                                         .5, black.withOpacity(.1), 0, 0, 0, 0),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.of(context).pop(listItems[position]);
+                                    Navigator.of(context)
+                                        .pop(listItems[position]);
                                   },
                                   child: new Container(
                                     color: white,
                                     width: double.infinity,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 15, 0, 15),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          CountryPickerUtils.getDefaultFlagImage(CountryPickerUtils.getCountryByIsoCode(country.isoCode)),
+                                          CountryPickerUtils
+                                              .getDefaultFlagImage(
+                                                  CountryPickerUtils
+                                                      .getCountryByIsoCode(
+                                                          country.isoCode)),
                                           addSpaceWidth(10),
                                           Flexible(
-                                            flex:1,fit:FlexFit.tight,
+                                            flex: 1,
+                                            fit: FlexFit.tight,
                                             child: Text(
                                               country.name,
-                                              style: textStyle(
-                                                  false, 18, black.withOpacity(.8)),
+                                              style: textStyle(false, 18,
+                                                  black.withOpacity(.8)),
                                             ),
                                           ),
                                         ],

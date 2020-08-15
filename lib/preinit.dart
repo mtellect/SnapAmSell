@@ -1,27 +1,23 @@
 import 'dart:io';
+import 'dart:io' as io;
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:io' as io;
 
 import 'MainAdmin.dart';
-import 'SimpleVideoPlayer.dart';
 import 'app/navigation.dart';
-import 'app_config.dart';
+import 'AppConfig.dart';
 import 'auth/auth_main.dart';
 import 'auth/login_page.dart';
 import 'basemodel.dart';
-import 'main.dart';
 
 bool isWife = false;
 

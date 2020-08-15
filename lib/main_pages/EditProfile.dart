@@ -1,15 +1,12 @@
-import 'dart:io';
-
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/SearchPlace.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:masked_controller/mask.dart';
 import 'package:masked_controller/masked_controller.dart';
-import 'package:photo/photo.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/SearchPlace.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 class EditProfile extends StatefulWidget {
   final bool modeEdit;
@@ -43,7 +40,8 @@ class _EditProfileState extends State<EditProfile> {
     number.text = userModel.getString(PHONE_NUMBER);
     address.text = userModel.getString(ADDRESS);
     landMark.text = userModel.getString(LANDMARK);
-    placeModel = userModel.getModel(MY_LOCATION);
+    placeModel = userModel.getModel(DELIVERY_LOCATION);
+    selectedAddress = placeModel.getString(PLACE_NAME);
     profilePhoto = userModel.userImage;
   }
 
@@ -270,7 +268,7 @@ class _EditProfileState extends State<EditProfile> {
     userModel
       ..put(NAME, name)
       ..put(PHONE_NUMBER, num)
-      ..put(MY_LOCATION, placeModel.items)
+      ..put(DELIVERY_LOCATION, placeModel.items)
       ..put(ADDRESS, cAddress)
       ..put(LANDMARK, landM)
       ..put(SIGNUP_COMPLETED, true)
@@ -287,28 +285,28 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void pickAssets() async {
-    PhotoPicker.pickAsset(
-            maxSelected: 1,
-            thumbSize: 250,
-            context: context,
-            provider: I18nProvider.english,
-            pickType: PickType.onlyImage,
-            themeColor: AppConfig.appColor,
-            rowCount: 3)
-        .then((value) async {
-      if (value == null) return;
-      String path = (await value[0].originFile).path;
-      uploadFile(File(path), (res, e) {
-        if (null != e) {
-          return;
-        }
-        profilePhoto = res;
-        userModel
-          ..put(USER_IMAGE, res)
-          ..updateItems();
-        setState(() {});
-      });
-    }).catchError((e) {});
+//    PhotoPicker.pickAsset(
+//            maxSelected: 1,
+//            thumbSize: 250,
+//            context: context,
+//            provider: I18nProvider.english,
+//            pickType: PickType.onlyImage,
+//            themeColor: AppConfig.appColor,
+//            rowCount: 3)
+//        .then((value) async {
+//      if (value == null) return;
+//      String path = (await value[0].originFile).path;
+//      uploadFile(File(path), (res, e) {
+//        if (null != e) {
+//          return;
+//        }
+//        profilePhoto = res;
+//        userModel
+//          ..put(USER_IMAGE, res)
+//          ..updateItems();
+//        setState(() {});
+//      });
+//    }).catchError((e) {});
 
     /// Use assetList to do something.
   }

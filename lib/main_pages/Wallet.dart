@@ -1,8 +1,13 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/WithdrawDialog.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/PayoutMain.dart';
+import 'package:maugost_apps/admin/ShowStripeTC.dart';
+import 'package:maugost_apps/admin/StripeService.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/OfferDialog.dart';
 
 class Wallet extends StatefulWidget {
   @override
@@ -49,263 +54,397 @@ class _WalletState extends State<Wallet> {
         Flexible(
             child: ListView(
           padding: EdgeInsets.all(0),
-          children: [
-            Container(
-              padding: EdgeInsets.all(15),
-              margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: black.withOpacity(.05),
+          children: [balanceItem(), payoutItem()],
+        )),
+      ],
+    );
+  }
+
+  balanceItem() {
+    final formatCurrency =
+        new NumberFormat.currency(decimalDigits: 2, symbol: "\$");
+    double balance = userModel.getDouble(ESCROW_BALANCE);
+    double deposits = userModel.getDouble(ACCOUNT_DEPOSIT);
+    double withdrawals = userModel.getDouble(ACCOUNT_WITHDRAWN);
+
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 8, right: 8),
+          child: Row(
+            children: [
+              Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      //shape: BoxShape.circle,
+                      color: orange0,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Icon(
+                    Icons.account_balance_wallet,
+                    color: white,
+                    size: 15,
+                  )),
+              addSpaceWidth(10),
+              Text(
+                "Wallet Balance",
+                style: textStyle(true, 14, black.withOpacity(.9)),
               ),
-              child: Column(
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+              //borderRadius: BorderRadius.circular(5),
+              //color: black.withOpacity(.05),
+              border: Border(
+            //top: BorderSide(width: 10, color: black.withOpacity(.5)),
+            left: BorderSide(width: 10, color: black.withOpacity(.5)),
+          )),
+          child: Column(
+            children: [
+              Row(
                 children: [
+                  Flexible(
+                    child: Container(
+                      width: getScreenWidth(context) / 2,
+                      padding: EdgeInsets.all(15),
+                      //color: blue3,
+                      child: Column(
+                        children: [
+                          Text(
+                            formatCurrency.format(deposits),
+                            style: textStyle(true, 25, black),
+                          ),
+                          Text(
+                            "Deposits",
+                            style: textStyle(false, 12, black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      width: getScreenWidth(context) / 2,
+                      //color: red,
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        children: [
+                          Text(
+                            formatCurrency.format(withdrawals),
+                            style: textStyle(true, 25, black),
+                          ),
+                          Text(
+                            "Withdrawals",
+                            style: textStyle(false, 12, black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              //addSpace(15),
+              addLine(.5, black.withOpacity(.2), 0, 5, 0, 5),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    formatCurrency.format(balance),
+                    style: textStyle(true, 40, green),
+                  ),
+                  Text(
+                    "Account Balance",
+                    style: textStyle(false, 12, black),
+                  ),
+                  addSpace(10),
                   Row(
                     children: [
                       Flexible(
-                        child: Container(
-                          width: getScreenWidth(context) / 2,
-                          padding: EdgeInsets.all(15),
-                          //color: blue3,
-                          child: Column(
-                            children: [
-                              Text(
-                                "\$${userModel.getDouble(ACCOUNT_DEPOSIT)}",
-                                style: textStyle(true, 25, black),
-                              ),
-                              Text(
-                                "Deposit",
-                                style: textStyle(false, 12, black),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Container(
-                          width: getScreenWidth(context) / 2,
-                          //color: red,
-                          padding: EdgeInsets.all(15),
-                          child: Column(
-                            children: [
-                              Text(
-                                "\$${userModel.getDouble(ACCOUNT_WITHDRAWN)}",
-                                style: textStyle(true, 25, black),
-                              ),
-                              Text(
-                                "Withdrawl",
-                                style: textStyle(false, 12, black),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  //addSpace(15),
-                  addLine(.5, black.withOpacity(.2), 0, 5, 0, 5),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "\$${userModel.getDouble(ACCOUNT_BALANCE)}",
-                        style: textStyle(true, 40, green),
-                      ),
-                      Text(
-                        "Account Balance",
-                        style: textStyle(false, 12, black),
-                      ),
-                      addSpace(10),
-                      FlatButton(
-                        onPressed: () {
-                          if (userModel.getDouble(ACCOUNT_BALANCE) == 0) {
-                            showMessage(
-                                context,
-                                Icons.warning,
-                                red,
-                                "Insufficent Funds",
-                                "Sorry you have insufficant funds in your account to proceed with this transaction");
-                            return;
-                          }
-
-                          if (selectedMode == -1) {
-                            showMessage(
-                                context,
-                                Icons.warning,
-                                red,
-                                "Select Option",
-                                "Please select a mode in which you would want your funds sent to you");
-                            return;
-                          }
-
-                          pushAndResult(context, WithdrawDialog(),
-                              result: (List _) {
-                            showMessage(
-                                context,
-                                Icons.check,
-                                green,
-                                "Request Successful!",
-                                "Your withdrawal was successful");
-                          }, depend: false);
-                        },
-                        color: green,
-                        //padding: EdgeInsets.all(20),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            side: BorderSide(color: white.withOpacity(.3))),
-                        child: Center(
-                          child: Text(
-                            "WITHDRAW",
-                            style: textStyle(true, 14, black),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-            Column(
-              children: List.generate(2, (p) {
-                bool active = selectedMode == p;
-                bool payPal = p == 0;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedMode = p;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(15),
-                    margin: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: black.withOpacity(.05),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (active)
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: blue3,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.check,
-                                  size: 16,
-                                  color: white,
-                                ),
-                                addSpaceWidth(5),
-                                Text(
-                                  "Active",
-                                  style: textStyle(true, 13, white),
-                                )
-                              ],
-                            ),
-                          ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    p == 0
-                                        ? userModel.getEmail()
-                                        : "IRS Bank of Africa",
-                                    style: textStyle(true, 18, black),
-                                  ),
-                                  Text(
-                                    p == 0
-                                        ? "PayPal Email Address"
-                                        : "Banking Information",
-                                    style: textStyle(false, 12, black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Image.asset(
-                              "assets/icons/${payPal ? "paypal.jpg" : "bank.png"}",
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
-                          ],
-                        ),
-                        FlatButton(
-                          onPressed: () {},
-                          color: AppConfig.appColor,
+                        child: FlatButton(
+                          onPressed: () {
+                            fundWallet(context, onProcessed: (b) {
+                              setState(() {});
+                            });
+                          },
+                          color: blue3,
                           //padding: EdgeInsets.all(20),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                               side: BorderSide(color: white.withOpacity(.3))),
                           child: Center(
                             child: Text(
-                              "EDIT ${payPal ? "PAYPAL" : "ACCOUNT"}",
-                              style: textStyle(true, 14, black),
+                              "FUND",
+                              style: textStyle(true, 14, white),
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            )
-          ],
-        )),
+                        ),
+                      ),
+                      addSpaceWidth(10),
+                      Flexible(
+                        child: FlatButton(
+                          onPressed: handleWithdraw,
+                          color: green,
+                          //padding: EdgeInsets.all(20),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              side: BorderSide(color: white.withOpacity(.3))),
+                          child: Center(
+                            child: Text(
+                              "WITHDRAW",
+                              style: textStyle(true, 14, white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  textField(controller, hint, {int max, bool isNum = false}) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: black.withOpacity(.05))),
-      child: TextField(
-        controller: controller,
-        maxLines: max,
-        keyboardType: isNum ? TextInputType.number : null,
-        decoration: InputDecoration(
-            labelText: hint,
-            labelStyle: textStyle(true, 12, black),
-            border: InputBorder.none,
-            fillColor: black.withOpacity(.05),
-            filled: true),
-      ),
+  payoutItem() {
+    String customerId = userModel.getString(STRIPE_ACCOUNT_ID);
+    String personId = userModel.getString(STRIPE_PERSON_ID);
+    bool payoutReady = userModel.getBoolean(STRIPE_PAYMENT_READY);
+    bool payoutTerms = userModel.getBoolean(STRIPE_TERMS_ACCEPTED);
+
+    String accountName = userModel.getString(ACCOUNT_NAME);
+    String accountNum = userModel.getString(ACCOUNT_NUMBER);
+    String bankName = userModel.getString(BANK_NAME);
+
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 8, right: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          //shape: BoxShape.circle,
+                          color: orange0,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Icon(
+                        Icons.account_balance,
+                        color: white,
+                        size: 15,
+                      )),
+                  addSpaceWidth(10),
+                  Text(
+                    "Payout Information",
+                    style: textStyle(true, 14, black.withOpacity(.9)),
+                  ),
+                ],
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: payoutReady ? green_dark : red03),
+                padding: EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Text(
+                      payoutReady ? "Ready" : "Needs Setup",
+                      style: textStyle(false, 14, white),
+                    ),
+                    addSpaceWidth(5),
+                    Icon(
+                      payoutReady ? Icons.check : Icons.warning,
+                      size: 15,
+                      color: white,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+              //borderRadius: BorderRadius.circular(5),
+              //color: black.withOpacity(.05),
+              border: Border(
+            //top: BorderSide(width: 10, color: black.withOpacity(.5)),
+            left: BorderSide(width: 10, color: black.withOpacity(.5)),
+          )),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              addSpace(10),
+              Text(
+                payoutReady ? bankName : "Bank Name",
+                style: textStyle(true, 18, black),
+              ),
+              Text(
+                payoutReady ? accountName : "Account Name",
+                style: textStyle(false, 14, black),
+              ),
+              Text(
+                payoutReady ? accountNum : "Account Number",
+                style: textStyle(false, 12, black),
+              ),
+              addSpace(10),
+              FlatButton(
+                onPressed: handlePayout,
+                color: AppConfig.appColor,
+                //padding: EdgeInsets.all(20),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    side: BorderSide(color: white.withOpacity(.3))),
+                child: Center(
+                  child: Text(
+                    payoutReady ? "EDIT" : "SETUP PAYOUT",
+                    style: textStyle(true, 14, black),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  selectorField(value, hint, onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(20),
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-            color: black.withOpacity(.05),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: black.withOpacity(.05))),
-        child: Row(
-          children: [
-            Flexible(
-              fit: FlexFit.tight,
-              child: Text(
-                value ?? hint,
-                style: textStyle(
-                    true, value == null ? 12 : 14, black.withOpacity(1)),
-              ),
-            ),
-            Icon(Icons.search)
-          ],
-        ),
-      ),
-    );
+  void handlePayout() async {
+    String customerId = userModel.getString(STRIPE_ACCOUNT_ID);
+    String personId = userModel.getString(STRIPE_PERSON_ID);
+    bool payoutReady = userModel.getBoolean(STRIPE_PAYMENT_READY);
+    bool payoutTerms = userModel.getBoolean(STRIPE_TERMS_ACCEPTED);
+
+    if (!payoutReady && customerId.isEmpty) {
+      showProgress(true, context, msg: "Preparing Connection...");
+      StripeService.createStripeCustomer(onResponse: (resp) async {
+        showProgress(false, context);
+        print(resp.message);
+        print(resp.body);
+        if (!resp.success) {
+          showMessage(context, Icons.error_outline, red, "Error", resp.message,
+              delayInMilli: 800);
+          return;
+        }
+        userModel
+          ..put(STRIPE_ACCOUNT_ID, resp.body["id"])
+          ..updateItems();
+        Future.delayed(Duration(milliseconds: 800), () {
+          pushAndResult(
+            context,
+            ShowStripeTC(),
+          );
+        });
+      });
+      return;
+    }
+    if (!payoutReady && customerId.isNotEmpty && !payoutTerms) {
+      pushAndResult(
+        context,
+        ShowStripeTC(),
+      );
+      return;
+    }
+
+    pushAndResult(context, PayoutMain(), depend: false, result: (_) {
+      setState(() {});
+    });
+  }
+
+  void handleWithdraw() async {
+    bool payoutReady = userModel.getBoolean(STRIPE_PAYMENT_READY);
+
+    double accountBal = userModel.getDouble(ESCROW_BALANCE);
+
+    if (!payoutReady) {
+      showMessage(
+          context,
+          Icons.warning,
+          red,
+          "Payout SetUp",
+          " Oops! You have not set up your bank"
+              " account information that is "
+              "needed for a withdrawal.",
+          clickYesText: "Setup Payout", onClicked: (_) {
+        if (_) handlePayout();
+      });
+      return;
+    }
+
+    if (accountBal == 0) {
+      showMessage(
+          context,
+          Icons.warning,
+          red,
+          "Insufficient Funds",
+          "Oops! You do not have sufficient"
+              " funds in your wallet. Please"
+              " add funds to your wallet to proceed.",
+          clickYesText: "Fund Wallet", onClicked: (_) {
+        if (_)
+          fundWallet(context, onProcessed: () {
+            setState(() {});
+          });
+      });
+      return;
+    }
+
+    pushAndResult(context, AmountDialog(), depend: false,
+        result: (double amount) {
+      if (amount > accountBal) {
+        showMessage(
+            context,
+            Icons.warning,
+            red,
+            "Payout SetUp",
+            "Oops! You do not have sufficient"
+                " funds in your wallet. Please"
+                " add funds to your wallet to proceed.",
+            clickYesText: "Fund Wallet", onClicked: (_) {
+          if (_)
+            fundWallet(context, onProcessed: () {
+              setState(() {});
+            });
+        });
+        return;
+      }
+
+      yesNoDialog(context, "Request Withdrawal?",
+          "Are you sure you want to place a withdrawal request?", () {
+        showProgress(true, context, msg: "Processing Request...");
+        StripeService.createTransfer(
+            amount: amount,
+            onResponse: (resp) {
+              showProgress(false, context);
+              print(resp.message);
+              print(resp.body);
+              if (!resp.success) {
+                showMessage(context, Icons.error_outline, red, "Request Error",
+                    resp.message,
+                    delayInMilli: 800);
+                return;
+              }
+              BaseModel(items: resp.body)
+                ..put(OBJECT_ID, resp.body['id'])
+                ..saveItem(WITHDRAW_BASE, true, document: resp.body['id']);
+              userModel
+                ..put(ESCROW_BALANCE, accountBal - amount)
+                ..updateItems();
+              showMessage(context, Icons.check, green, "Request Received!",
+                  "Your withdrawal request has been received and is been processed, We will keep you updated",
+                  delayInMilli: 1200);
+            });
+      });
+    });
   }
 }

@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:Strokes/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/SimpleVideoPlayer.dart';
-import 'package:Strokes/assets.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/SimpleVideoPlayer.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
 
-//import 'package:Strokes/photo_picker/photo.dart';
-
+//import 'package:maugost_apps/photo_picker/photo.dart';
 
 class PreSendVideo extends StatefulWidget {
   File videoFile;
@@ -39,7 +38,9 @@ class _PreSendVideoState extends State<PreSendVideo> {
   @override
   Widget build(BuildContext c) {
     return Scaffold(
-        resizeToAvoidBottomInset: true, backgroundColor: AppConfig.appColor, body: page());
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppConfig.appColor,
+        body: page());
   }
 
   BuildContext con;
@@ -81,7 +82,8 @@ class _PreSendVideoState extends State<PreSendVideo> {
                   ),
                 ),
                 addSpaceWidth(10),
-                Container(width: 70,
+                Container(
+                  width: 70,
                   child: FlatButton(
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       shape: RoundedRectangleBorder(
@@ -90,11 +92,16 @@ class _PreSendVideoState extends State<PreSendVideo> {
                       onPressed: () {
                         Navigator.of(context).pop(videoDuration);
                       },
-                      child:/* Text(
+                      child:
+                          /* Text(
                         "SEND",
                         style: textStyle(true, 14, white),
                       )*/
-                  Icon(Icons.send,color:AppConfig.appColor,size: 16,)),
+                          Icon(
+                        Icons.send,
+                        color: AppConfig.appColor,
+                        size: 16,
+                      )),
                 ),
                 addSpaceWidth(15)
               ],

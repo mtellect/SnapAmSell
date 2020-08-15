@@ -1,10 +1,9 @@
-import 'package:Strokes/preinit.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/preinit.dart';
 
 import 'AppEngine.dart';
 import 'assets.dart';
-import 'main.dart';
 
 class AlarmTest extends StatefulWidget {
   @override

@@ -1,9 +1,9 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 class RecentlyViewed extends StatefulWidget {
   @override
@@ -37,11 +37,9 @@ class _RecentlyViewedState extends State<RecentlyViewed> {
           productLists.add(model);
         }
         hasSetup = true;
-        setState(() {});
+        if (mounted) setState(() {});
       });
     }
-
-    if (mounted) setState(() {});
   }
 
   @override

@@ -1,15 +1,14 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 import 'package:virtual_keyboard/virtual_keyboard.dart';
 
-import 'app_config.dart';
-import 'basemodel.dart';
+import 'AppConfig.dart';
 
 class ChatOfferDialog extends StatefulWidget {
   final double prevPrice;
   final String description;
-  const ChatOfferDialog(this.prevPrice,this.description);
+  const ChatOfferDialog(this.prevPrice, this.description);
   @override
   _ChatOfferDialogState createState() => _ChatOfferDialogState();
 }
@@ -61,22 +60,24 @@ class _ChatOfferDialogState extends State<ChatOfferDialog> {
                         type: VirtualKeyboardType.Numeric,
                         onKeyPress: _onKeyPress),
                   ),
-                  if(widget.prevPrice>0)Container(
-                      padding: EdgeInsets.all(15),
-                      alignment: Alignment.center,
-                      color: black.withOpacity(.02),
-                      child: Text.rich(
-                        TextSpan(children: [
-                          TextSpan(
-                            text: "${widget.description}",
-                            style: textStyle(false, 16, black.withOpacity(0.6)),
-                          ),
-                          TextSpan(
-                            text: "\$${widget.prevPrice}",
-                            style: textStyle(true, 20, black),
-                          )
-                        ]),
-                      )),
+                  if (widget.prevPrice > 0)
+                    Container(
+                        padding: EdgeInsets.all(15),
+                        alignment: Alignment.center,
+                        color: black.withOpacity(.02),
+                        child: Text.rich(
+                          TextSpan(children: [
+                            TextSpan(
+                              text: "${widget.description}",
+                              style:
+                                  textStyle(false, 16, black.withOpacity(0.6)),
+                            ),
+                            TextSpan(
+                              text: "\$${widget.prevPrice}",
+                              style: textStyle(true, 20, black),
+                            )
+                          ]),
+                        )),
                   Container(
                     padding: EdgeInsets.all(15),
                     child: Row(
@@ -166,6 +167,6 @@ class _ChatOfferDialogState extends State<ChatOfferDialog> {
   }
 
   void sendOffer() {
-    Navigator.pop(context,text);
+    Navigator.pop(context, text);
   }
 }

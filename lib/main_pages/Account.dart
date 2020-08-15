@@ -1,16 +1,13 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/app.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/login_page.dart';
-import 'package:Strokes/auth/signUp_page.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/main_pages/RecentlyViewed.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:photo/photo.dart';
-import 'package:photo_manager/photo_manager.dart';
-import 'package:video_compress/video_compress.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/app/app.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/login_page.dart';
+import 'package:maugost_apps/auth/signUp_page.dart';
+import 'package:maugost_apps/main_pages/RecentlyViewed.dart';
+import 'package:maugost_apps/main_pages/Wallet.dart';
 
 import 'EditProfile.dart';
 
@@ -209,6 +206,7 @@ class _AccountState extends State<Account> {
                 fieldItem(Icons.visibility, brown, "Recently Viewed", () {
                   pushAndResult(context, RecentlyViewed(), depend: false);
                 }),
+                fieldItem(Icons.link, blue1, "Purchase Orders", () {}),
                 fieldItem(Icons.person, green, "Edit Profile", () {
                   pushAndResult(
                       context,
@@ -217,16 +215,10 @@ class _AccountState extends State<Account> {
                       ),
                       depend: false);
                 }),
-                fieldItem(Icons.account_balance, orange0, "Wallet Setup", () {
-                  pushAndResult(
-                      context,
-                      EditProfile(
-                        modeEdit: true,
-                      ),
-                      depend: false);
+                fieldItem(Icons.account_balance, orange0, "Wallet Settings",
+                    () {
+                  pushAndResult(context, Wallet(), depend: false);
                 }),
-                fieldItem(Icons.headset_mic, blue1, "Support", () {}),
-                fieldItem(Icons.help, black.withOpacity(.5), "Help", () {}),
               ],
             ),
           ),
@@ -237,8 +229,8 @@ class _AccountState extends State<Account> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              fieldItem(
-                  Icons.notifications_active, blue1, "Notifications", () {}),
+              fieldItem(Icons.headset_mic, blue1, "Support", () {}),
+              fieldItem(Icons.help, black.withOpacity(.5), "Help", () {}),
               fieldItem(
                   Icons.lock, black.withOpacity(.5), "Privacy Policy", () {}),
               fieldItem(Icons.person, blue, "Tell a friend", () {}),
@@ -303,32 +295,32 @@ class _AccountState extends State<Account> {
 
   void pickAssets(String s) async {
 //    final photos = s == "normal" ? profilePhotos : hookUpPhotos;
-    PhotoPicker.pickAsset(
-            context: context, provider: I18nProvider.english, rowCount: 3)
-        .then((value) async {
-      if (value == null) return;
-      for (var a in value) {
-        String path = (await a.originFile).path;
-        bool isVideo = a.type == AssetType.video;
-        BaseModel model = BaseModel();
-        model.put(OBJECT_ID, a.id);
-        model.put(IMAGE_URL, path);
-        model.put(IS_VIDEO, isVideo);
-        if (isVideo) {
-          model.put(THUMBNAIL_URL,
-              (await VideoCompress().getThumbnailWithFile(path)).path);
-        }
-//        int p = photos.indexWhere((e) => e.getObjectId() == a.id);
-//        if (p != -1) {
-//          photos[p] = model;
-//        } else {
-//          photos.add(model);
+//    PhotoPicker.pickAsset(
+//            context: context, provider: I18nProvider.english, rowCount: 3)
+//        .then((value) async {
+//      if (value == null) return;
+//      for (var a in value) {
+//        String path = (await a.originFile).path;
+//        bool isVideo = a.type == AssetType.video;
+//        BaseModel model = BaseModel();
+//        model.put(OBJECT_ID, a.id);
+//        model.put(IMAGE_URL, path);
+//        model.put(IS_VIDEO, isVideo);
+//        if (isVideo) {
+//          model.put(THUMBNAIL_URL,
+//              (await VideoCompress().getThumbnailWithFile(path)).path);
 //        }
-//        uploadPhotos(model, s, a.id);
-      }
-
-      setState(() {});
-    }).catchError((e) {});
+////        int p = photos.indexWhere((e) => e.getObjectId() == a.id);
+////        if (p != -1) {
+////          photos[p] = model;
+////        } else {
+////          photos.add(model);
+////        }
+////        uploadPhotos(model, s, a.id);
+//      }
+//
+//      setState(() {});
+//    }).catchError((e) {});
 
     /// Use assetList to do something.
   }

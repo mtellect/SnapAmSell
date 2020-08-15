@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/ChatMain.dart';
-import 'package:Strokes/MainAdmin.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/auth/login_page.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/listDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/ChatMain.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/auth/login_page.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/listDialog.dart';
 
 PageController chatPageController = new PageController();
 List<BaseModel> notifyList = List();

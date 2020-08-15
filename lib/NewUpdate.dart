@@ -1,14 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
 
-//import 'package:Strokes/photo_picker/photo.dart';
-
-
+//import 'package:maugost_apps/photo_picker/photo.dart';
 
 class NewUpdate extends StatefulWidget {
   @override
@@ -32,7 +29,6 @@ class _NewUpdateState extends State<NewUpdate> {
     featuresController.text = featuresController.text.replaceAll("\n*", ",");
     mustUpdate = appSettingsModel.getBoolean(MUST_UPDATE);
     super.initState();
-
   }
 
   @override
@@ -154,12 +150,10 @@ class _NewUpdateState extends State<NewUpdate> {
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     contentPadding:
-                                    EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                        EdgeInsets.fromLTRB(10, 10, 10, 10),
                                     hintText: "",
-                                    hintStyle:
-                                    textStyle(false, 16, black.withOpacity(.2))
-
-                                ),
+                                    hintStyle: textStyle(
+                                        false, 16, black.withOpacity(.2))),
                                 style: textStyle(
                                   false,
                                   16,
@@ -193,14 +187,15 @@ class _NewUpdateState extends State<NewUpdate> {
                                   //post();
                                 },
                                 textInputAction: TextInputAction.newline,
-                                textCapitalization: TextCapitalization.sentences,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     contentPadding:
-                                    EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                        EdgeInsets.fromLTRB(10, 10, 10, 10),
                                     hintText: "",
-                                    hintStyle:
-                                    textStyle(false, 16, black.withOpacity(.2))),
+                                    hintStyle: textStyle(
+                                        false, 16, black.withOpacity(.2))),
                                 style: textStyle(false, 16, black),
                                 controller: featuresController,
                                 cursorColor: black,
@@ -210,11 +205,10 @@ class _NewUpdateState extends State<NewUpdate> {
                                 keyboardType: TextInputType.text,
                               ),
                             ),
-
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 setState(() {
-                                  mustUpdate=!mustUpdate;
+                                  mustUpdate = !mustUpdate;
                                 });
                               },
                               child: Container(
@@ -222,39 +216,42 @@ class _NewUpdateState extends State<NewUpdate> {
                                 margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: blue0, width: 2),color: transparent,
+                                    border: Border.all(color: blue0, width: 2),
+                                    color: transparent,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
                                     Flexible(
-                                      flex: 1,
-                                      fit: FlexFit.tight,
-                                      child: Text("MUST UPDATE",style: textStyle(true, 16, blue0),)
-                                    ),
+                                        flex: 1,
+                                        fit: FlexFit.tight,
+                                        child: Text(
+                                          "MUST UPDATE",
+                                          style: textStyle(true, 16, blue0),
+                                        )),
                                     addSpaceWidth(10),
                                     Container(
                                       width: 20,
                                       height: 20,
                                       decoration: BoxDecoration(
                                           color: mustUpdate ? blue0 : blue09,
-                                          border: Border.all(color: blue0, width: 1),
+                                          border: Border.all(
+                                              color: blue0, width: 1),
                                           shape: BoxShape.circle),
-                                      child:mustUpdate
+                                      child: mustUpdate
                                           ? Center(
-                                          child: Icon(
-                                            Icons.check,
-                                            color: white,
-                                            size: 15,
-                                          ))
+                                              child: Icon(
+                                              Icons.check,
+                                              color: white,
+                                              size: 15,
+                                            ))
                                           : Container(),
                                     )
                                   ],
                                 ),
                               ),
                             ),
-
                             addSpace(50),
                           ]),
                     ),
@@ -268,7 +265,6 @@ class _NewUpdateState extends State<NewUpdate> {
     });
   }
 
-
   void post() {
     String code = codeController.text.trim();
     String feature = featuresController.text.trim();
@@ -280,11 +276,10 @@ class _NewUpdateState extends State<NewUpdate> {
     }
 
     appSettingsModel.put(VERSION_CODE, int.parse(code));
-    appSettingsModel.put(NEW_FEATURE,feature);
+    appSettingsModel.put(NEW_FEATURE, feature);
     appSettingsModel.put(MUST_UPDATE, mustUpdate);
     appSettingsModel.updateItems();
 
     Navigator.pop(context);
   }
-
 }

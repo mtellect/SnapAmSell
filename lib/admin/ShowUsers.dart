@@ -1,9 +1,9 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/dialogs/listDialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/listDialog.dart';
 
 class ShowUsers extends StatefulWidget {
   final List<BaseModel> users;

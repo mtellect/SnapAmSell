@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:random_color/random_color.dart';
 import 'AppEngine.dart';
 import 'app/dotsIndicator.dart';
-import 'app_config.dart';
+import 'AppConfig.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 

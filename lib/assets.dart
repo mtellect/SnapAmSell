@@ -1,5 +1,5 @@
-import 'package:Strokes/basemodel.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/basemodel.dart';
 
 const String bid_hand = 'assets/icons/bid_hand.png';
 const String bid_hand1 = 'assets/icons/bid_hand1.png';
@@ -1507,10 +1507,6 @@ const String ADS_LOCATION = "adsLocation";
 const String IS_APPROVED = "isApproved";
 const String HAS_PAID = "hasPaid";
 
-const String STRIPE_IS_LIVE = "stripeIsLive";
-const String STRIPE_PUB_KEY = "stripePubKey";
-const String STRIPE_SEC_KEY = "stripeSecKey";
-
 const String SEND_GRID_KEY = "sendgridKey";
 
 const String TRANSACTION_BASE = "transactionBase";
@@ -1532,9 +1528,8 @@ const String QUANTITY = "quantity";
 const String SELLER_ID = "seller";
 const String SEEN_PRODUCTS = "seenProducts";
 
-const String ACCOUNT_DEPOSIT = "accountDeposit";
-const String ACCOUNT_WITHDRAWN = "accountWithdrawn";
-const String ACCOUNT_BALANCE = "accountBalance";
+const String DELIVERY_LOCATION = "deliveryLocation";
+const String ACTIVE_OFFER = "activeOffer";
 
 List productCategories = [
   "Hair",
@@ -1548,3 +1543,32 @@ List productCategories = [
   "Clearance",
   "Others"
 ];
+
+//Stripe and Payment assets
+
+const String STRIPE_PAYMENT_READY = "stripePaymentReady";
+const String STRIPE_ACCOUNT_ID = "stripeAccountId";
+const String STRIPE_PERSON_ID = "stripePersonId";
+const String STRIPE_ACCOUNT_SK = "stripeAccountSk";
+const String STRIPE_ACCOUNT_PK = "stripeAccountPk";
+const String STRIPE_VERIFICATION_TOKEN = "stripeVerificationToken";
+const String STRIPE_BANK_TOKEN = "stripeBankToken";
+const String STRIPE_TERMS_ACCEPTED = "stripeTermsAccepted";
+
+const String STRIPE_IS_LIVE = "stripeIsLive";
+const String STRIPE_PUB_KEY = "stripePubKey";
+const String STRIPE_SEC_KEY = "stripeSecKey";
+const String STRIPE_MODE = "stripeMode";
+const String STRIPE_MERCHANT_ANDROID = "stripeMerchantAndroid";
+const String STRIPE_MERCHANT_IOS = "stripeMerchantIOS";
+
+const String PAYOUT_INFO = "payoutInfo";
+const String BANK_NAME = "bankName";
+const String ACCOUNT_NAME = "accountName";
+const String ACCOUNT_NUMBER = "accountNumber";
+const String ROUTING_NUMBER = "routingNumber";
+const String SS_NUMBER = "ssNumber";
+
+const String ACCOUNT_DEPOSIT = "accountDeposit";
+const String ACCOUNT_WITHDRAWN = "accountWithdrawn";
+const String ESCROW_BALANCE = "escrowBalance";

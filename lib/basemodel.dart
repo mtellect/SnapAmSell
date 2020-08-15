@@ -1,5 +1,5 @@
-import 'package:Strokes/assets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:maugost_apps/assets.dart';
 
 import 'AppEngine.dart';
 
@@ -533,7 +533,7 @@ class BaseModel {
       Firestore.instance
           .collection(name)
           .document(document)
-          .setData(items,merge: true)
+          .setData(items, merge: true)
           .whenComplete(() {
         if (onComplete != null) onComplete();
       });

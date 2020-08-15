@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'AppEngine.dart';
 import 'MainAdmin.dart';
 import 'app/navigation.dart';
-import 'app_config.dart';
+import 'AppConfig.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 import 'payment_dialog.dart';

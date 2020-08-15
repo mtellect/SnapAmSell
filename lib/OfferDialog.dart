@@ -1,9 +1,9 @@
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 import 'package:virtual_keyboard/virtual_keyboard.dart';
 
-import 'app_config.dart';
+import 'AppConfig.dart';
 import 'basemodel.dart';
 
 class OfferDialog extends StatefulWidget {
@@ -19,7 +19,7 @@ class _OfferDialogState extends State<OfferDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    model= widget.model;
+    model = widget.model;
   }
 
   @override
@@ -173,12 +173,12 @@ class _OfferDialogState extends State<OfferDialog> {
     offer.put(SELLER_ID, model.getString(USER_ID));
     offer.put(PRODUCT_ID, model.getObjectId());
     offer.put(MY_BID, double.parse(text));
-    offer.put(PRICE,model.getDouble(PRICE));
-    offer.put(TITLE,model.getString(TITLE));
-    offer.put(DESCRIPTION,model.getString(DESCRIPTION));
+    offer.put(PRICE, model.getDouble(PRICE));
+    offer.put(TITLE, model.getString(TITLE));
+    offer.put(DESCRIPTION, model.getString(DESCRIPTION));
     offer.put(IMAGES, model.getList(IMAGES));
     offer.put(PARTIES, [userModel.getUserId(), widget.model.getUserId()]);
-    offer.saveItem(OFFER_IDS_BASE, true,document: offerId);
+    offer.saveItem(OFFER_IDS_BASE, true, document: offerId);
 
     BaseModel offerItem = BaseModel();
     offerItem.put(OFFER_ID, offerId);

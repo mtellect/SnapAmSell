@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/AppConfig.dart';
 
 import 'date_model.dart';
 import 'datetime_picker_theme.dart';

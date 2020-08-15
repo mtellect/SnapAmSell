@@ -1,14 +1,5 @@
 import 'dart:io';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app/dotsIndicator.dart';
-import 'package:Strokes/app/navigation.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
-import 'package:Strokes/basemodel.dart';
-import 'package:Strokes/date_picker/flutter_datetime_picker.dart';
-import 'package:Strokes/dialogs/inputDialog.dart';
-import 'package:Strokes/payment_subscription.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_bubble/chat_bubble.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +7,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:photo/photo.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/app/dotsIndicator.dart';
+import 'package:maugost_apps/app/navigation.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
+import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/date_picker/flutter_datetime_picker.dart';
+import 'package:maugost_apps/dialogs/inputDialog.dart';
+import 'package:maugost_apps/payment_subscription.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_compress/video_compress.dart';
 
@@ -975,26 +974,26 @@ class _AuthMainState extends State<AuthMain> {
   }
 
   void pickAssets(String s) async {
-    PhotoPicker.pickAsset(
-            context: context, provider: I18nProvider.english, rowCount: 3)
-        .then((value) async {
-      if (value == null) return;
-      for (var a in value) {
-        String path = (await a.originFile).path;
-        bool isVideo = a.type == AssetType.video;
-        BaseModel model = BaseModel();
-        model.put(OBJECT_ID, a.id);
-        model.put(IMAGE_URL, path);
-        model.put(IS_VIDEO, isVideo);
-        if (isVideo) {
-          model.put(THUMBNAIL_URL,
-              (await VideoCompress().getThumbnailWithFile(path)).path);
-        }
-        uploadPhotos(model, s, a.id);
-      }
-
-      setState(() {});
-    }).catchError((e) {});
+//    PhotoPicker.pickAsset(
+//            context: context, provider: I18nProvider.english, rowCount: 3)
+//        .then((value) async {
+//      if (value == null) return;
+//      for (var a in value) {
+//        String path = (await a.originFile).path;
+//        bool isVideo = a.type == AssetType.video;
+//        BaseModel model = BaseModel();
+//        model.put(OBJECT_ID, a.id);
+//        model.put(IMAGE_URL, path);
+//        model.put(IS_VIDEO, isVideo);
+//        if (isVideo) {
+//          model.put(THUMBNAIL_URL,
+//              (await VideoCompress().getThumbnailWithFile(path)).path);
+//        }
+//        uploadPhotos(model, s, a.id);
+//      }
+//
+//      setState(() {});
+//    }).catchError((e) {});
 
     /// Use assetList to do something.
   }

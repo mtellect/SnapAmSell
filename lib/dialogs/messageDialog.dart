@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/app_config.dart';
-import 'package:Strokes/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/assets.dart';
 
 class messageDialog extends StatelessWidget {
   var icon;
@@ -105,9 +105,8 @@ class messageDialog extends StatelessWidget {
                               iconPadding == null ? 0 : iconPadding),
                           decoration: BoxDecoration(
 //                            color: iconColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: iconColor,width: 4)
-                          ),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: iconColor, width: 4)),
                           child: (icon is String)
                               ? (Image.asset(
                                   icon,
@@ -155,7 +154,7 @@ class messageDialog extends StatelessWidget {
                           height: 40,
                           child: FlatButton(
                               materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
+                                  MaterialTapTargetSize.shrinkWrap,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25)),
                               color: blue3,

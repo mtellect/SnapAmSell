@@ -1,11 +1,8 @@
-import 'package:country_pickers/country.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:Strokes/AppEngine.dart';
-import 'package:Strokes/assets.dart';
-
-
+import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/assets.dart';
 
 class phoneDialog extends StatefulWidget {
   String title;
@@ -45,7 +42,7 @@ class _phoneDialogState extends State<phoneDialog> {
           int now = DateTime.now().millisecondsSinceEpoch;
           if ((now - clickBack) > 5000) {
             clickBack = now;
-            toastInAndroid( "Click back again to exit");
+            toastInAndroid("Click back again to exit");
             return;
           }
           Navigator.pop(context);
@@ -100,11 +97,11 @@ class _phoneDialogState extends State<phoneDialog> {
                     onPressed: () {
                       String text = editingController.text.trim();
                       if (countryCode.isEmpty) {
-                        toastInAndroid( "Choose country code");
+                        toastInAndroid("Choose country code");
                         return;
                       }
                       if (text.length < 3) {
-                        toastInAndroid( "Add phone number");
+                        toastInAndroid("Add phone number");
                         return;
                       }
 
@@ -153,7 +150,7 @@ class _phoneDialogState extends State<phoneDialog> {
                             addSpace(5),
                             InkWell(
                               onTap: () {
-                               /* pickCountry(context, (Country _) {
+                                /* pickCountry(context, (Country _) {
                                   countryCode = "+${_.phoneCode}";
                                   setState(() {});
                                 });*/
