@@ -8,8 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/app/navigation.dart';
 import 'package:maugost_apps/assets.dart';
@@ -18,38 +16,17 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
-import 'ChatMain.dart';
 import 'app/app.dart';
+import 'glam/MyOrdersPage.dart';
 import 'photo/photo_provider.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
-//FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-// Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-    BehaviorSubject<ReceivedNotification>();
 
 final BehaviorSubject<String> selectNotificationSubject =
     BehaviorSubject<String>();
 
 final galleryController = StreamController<List<String>>.broadcast();
 final galleryResultController = StreamController<List<dynamic>>.broadcast();
-
-class ReceivedNotification {
-  final int id;
-  final String title;
-  final String body;
-  final String payload;
-
-  ReceivedNotification(
-      {@required this.id,
-      @required this.title,
-      @required this.body,
-      @required this.payload});
-}
 
 void main() async {
 //  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -64,7 +41,6 @@ void main() async {
   } on CameraException catch (e) {
 //    logError(e.code, e.description);
   }
-  InAppPurchaseConnection.enablePendingPurchases();
   runApp(ChangeNotifierProvider<PhotoProvider>.value(
     value: provider,
     child: MyApp(),
@@ -98,7 +74,7 @@ class MyApp extends StatelessWidget {
           routeObserver,
           FirebaseAnalyticsObserver(analytics: analytics)
         ],
-        home: MainHome()
+        home: MyOrdersPage()
         // PostAd(),
         );
   }
@@ -117,43 +93,14 @@ class _MainHomeState extends State<MainHome> {
   @override
   void initState() {
     // TODO: implement initState
-
-    loadNotify();
     checkUser();
     loadSettings();
-//    EmailService.send();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return loadingLayout();
-  }
-
-  loadNotify() async {
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_notify');
-    var initializationSettingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification:
-            (int id, String title, String body, String payload) async {
-      didReceiveLocalNotificationSubject.add(ReceivedNotification(
-          id: id, title: title, body: body, payload: payload));
-    });
-    var initializationSettings = InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {
-      if (payload != null) {
-        debugPrint('notification payload: ' + payload);
-        pushAndResult(
-            context,
-            ChatMain(
-              payload,
-              otherPerson: null,
-            ));
-      }
-      selectNotificationSubject.add(payload);
-    });
   }
 
   checkUser() async {

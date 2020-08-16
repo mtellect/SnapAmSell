@@ -8,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
@@ -95,7 +94,6 @@ bool myProductSetup = false;
 List<BaseModel> cartLists = [];
 bool cartSetup = false;
 
-var notificationsPlugin = FlutterLocalNotificationsPlugin();
 
 //Color themeColors(bool dark) {
 //  if (dark) {
@@ -404,14 +402,7 @@ class _MainAdminState extends State<MainAdmin>
     String title = model.getString("title");
     String body = model.getString("message");
 
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'strock.maugost.nt', 'Maugost', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await notificationsPlugin.show(0, title, body, platformChannelSpecifics,
-        payload: 'item x');
+
 
     if (data != null) {
       String type = data[TYPE];
@@ -498,35 +489,7 @@ class _MainAdminState extends State<MainAdmin>
       userModel.updateItems();
     });
 
-    //local notifications
 
-    notificationsPlugin = FlutterLocalNotificationsPlugin();
-    var androidSettings = AndroidInitializationSettings('ic_notify');
-    var iosSettings = IOSInitializationSettings(
-        requestSoundPermission: false,
-        requestBadgePermission: false,
-        requestAlertPermission: false,
-        onDidReceiveLocalNotification:
-            (int id, String title, String body, String payload) async {
-          print(payload);
-        });
-
-    var initializationSettings =
-        InitializationSettings(androidSettings, iosSettings);
-    await notificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {});
-
-    if (Platform.isIOS) {
-      var result = await notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
-      print("Permission result $result");
-    }
   }
 
   void onPause() {

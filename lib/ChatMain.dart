@@ -6,7 +6,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -1136,63 +1135,6 @@ class _ChatMainState extends State<ChatMain>
     updateTyping(false);
   }
 
-  postChatDoc() async {
-    final path = await FilePicker.getFilePath();
-    String ext = "";
-    int dotPos = path.lastIndexOf('.');
-    if (dotPos != -1) {
-      ext = path.substring(dotPos + 1);
-    }
-
-    if (File(path).lengthSync() > 30000000) {
-      toastInAndroid("Document should not be more than 30MB");
-      return;
-    }
-
-    String fileExtension = ext.toLowerCase().trim();
-    File document = File(path);
-    String fileName = pathLib.basename(path);
-    String fileSize = filesize(File(path).lengthSync());
-
-    yesNoDialog(context, "Send File",
-        "Are you sure you want to send this file \"$fileName\"", () {
-      final String id = getRandomId();
-      final BaseModel model = new BaseModel();
-      model.put(CHAT_ID, chatId);
-      model.put(SHOW_DATE, showDate());
-      model.put(TYPE, CHAT_TYPE_DOC);
-
-      model.put(
-          PARTIES, [userModel.getObjectId(), otherPerson.getString(USER_ID)]);
-
-      model.put(FILE_PATH, document.path);
-      model.put(FILE_EXTENSION, fileExtension.toLowerCase());
-      model.put(FILE_SIZE, fileSize);
-      model.put(FILE_NAME, fileName);
-
-      model.put(OBJECT_ID, id);
-      model.put(DATABASE_NAME, CHAT_BASE);
-
-      //chatList.insert(0, model);
-
-      upOrDown.add(model.getObjectId());
-      if (replyModel != null) {
-        model.put(REPLY_DATA, replyModel.items);
-        replyModel = null;
-      }
-      model.saveItem(CHAT_BASE, true, document: id, onComplete: () {
-        saveChatFile(model, FILE_PATH, FILE_URL, () {
-          addChatToList(model);
-          setState(() {});
-          pushChat('sent a document');
-        });
-      });
-
-      addChatToList(model);
-      setState(() {});
-      scrollToBottom();
-    });
-  }
 
   bool showDate() {
     if (chatList.isEmpty) return true;

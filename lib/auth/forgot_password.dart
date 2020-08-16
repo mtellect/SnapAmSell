@@ -3,11 +3,9 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:maugost_apps/AppEngine.dart';
-import 'package:maugost_apps/app/navigation.dart';
 import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
-import 'package:maugost_apps/preinit.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -170,7 +168,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       showMessage(context, Icons.check, blue0, "Link Sent",
           "A link has been emailed to you, follow the link to reset your password",
           onClicked: (_) {
-        popUpUntil(context, PreInit());
+//        popUpUntil(context, PreInit());
       }, delayInMilli: 1000);
     }).catchError((error) {
       showProgress(false, context);

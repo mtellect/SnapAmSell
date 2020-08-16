@@ -1572,3 +1572,11 @@ const String SS_NUMBER = "ssNumber";
 const String ACCOUNT_DEPOSIT = "accountDeposit";
 const String ACCOUNT_WITHDRAWN = "accountWithdrawn";
 const String ESCROW_BALANCE = "escrowBalance";
+
+const List<String> CLOTH_SIZES = [
+  "Xtra Small",
+  "Small",
+  "Medium",
+  "Large",
+  "Xtra Large"
+];

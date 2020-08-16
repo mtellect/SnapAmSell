@@ -6,8 +6,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:country_pickers/country.dart';
-import 'package:country_pickers/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,13 +23,11 @@ import 'package:maugost_apps/ChatMain.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
-import 'package:maugost_apps/dialogs/countryDialog.dart';
 import 'package:maugost_apps/dialogs/inputDialog.dart';
 import 'package:maugost_apps/dialogs/listDialog.dart';
 import 'package:maugost_apps/dialogs/messageDialog.dart';
 import 'package:maugost_apps/dialogs/progressDialog.dart';
 import 'package:maugost_apps/payment_details.dart';
-import 'package:maugost_apps/preinit.dart';
 import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
@@ -41,7 +36,6 @@ import 'package:synchronized/synchronized.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-import 'package:video_compress/video_compress.dart';
 
 import 'AppConfig.dart';
 import 'MainAdmin.dart';
@@ -102,9 +96,9 @@ getSingleCroppedImage(BuildContext context,
 }
 
 getVideoThumbnail(String path) async {
-  return (await VideoCompress()
-          .getThumbnailWithFile(path, quality: 100, position: -1))
-      .path;
+//  return (await VideoCompress()
+//          .getThumbnailWithFile(path, quality: 100, position: -1))
+//      .path;
 }
 
 getSingleVideo(BuildContext context,
@@ -2194,11 +2188,7 @@ smallButton(icon, text, clicked) {
   );
 }
 
-pickCountry(context, onPicked(Country country)) {
-  pushAndResult(context, countryDialog(), result: (_) {
-    onPicked(_);
-  }, opaque: false);
-}
+
 
 List<String> getSearchString(String text) {
   text = text.toLowerCase().trim();
@@ -3764,26 +3754,6 @@ scheduleQuizNotification(BaseModel quizModel) async {
 }
 */
 
-getDayOfWeekInt(int d) {
-  if (d == DateTime.monday) return Day.Monday;
-  if (d == DateTime.tuesday) return Day.Tuesday;
-  if (d == DateTime.wednesday) return Day.Wednesday;
-  if (d == DateTime.thursday) return Day.Thursday;
-  if (d == DateTime.friday) return Day.Friday;
-  if (d == DateTime.saturday) return Day.Saturday;
-  return Day.Saturday;
-}
-
-getDayOfWeek(String d) {
-  if (d == "Mon") return Day.Monday;
-  if (d == "Tue") return Day.Tuesday;
-  if (d == "Wed") return Day.Wednesday;
-  if (d == "Thur") return Day.Thursday;
-  if (d == "Fri") return Day.Friday;
-  if (d == "Sat") return Day.Saturday;
-  return Day.Saturday;
-}
-
 calcResultAdmin(context, BaseModel model, int delay, {onComplete}) async {
   String quizId = model.getObjectId();
   showProgress(true, context,
@@ -4188,23 +4158,7 @@ String getPlayStoreLink() {
   return appLink;
 }
 
-getFlag(BaseModel personModel, {bool small = false}) {
-  if (personModel.getString(COUNTRY).isEmpty) return Container();
-  return Card(
-    clipBehavior: Clip.antiAlias,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-        side: BorderSide(color: white, width: 1),
-        borderRadius: BorderRadius.circular(5)),
-    child: Image.asset(
-      CountryPickerUtils.getFlagImageAssetPath(personModel.getString(COUNTRY)),
-      height: small ? 12 : 16.0,
-      width: small ? 17 : 25.0,
-      fit: BoxFit.fill,
-      package: "country_pickers",
-    ),
-  );
-}
+
 
 clickLogout(context) {
   yesNoDialog(context, "Logout?", "Are you sure you want to logout?", () {
@@ -4226,7 +4180,7 @@ clickLogout(context) {
       Future.delayed(Duration(seconds: 3), () {
         //showProgress(false, context);
         Future.delayed(Duration(seconds: 1), () {
-          popUpUntil(context, PreInit());
+          //popUpUntil(context, PreInit());
         });
       });
     });
@@ -4396,7 +4350,7 @@ inputTextView(String title, controller,
                       width: 18,
                       color: black.withOpacity(.3),
                     )
-                  : Icon(priceIcon, size: 18, color: black.withOpacity(.3)),
+                  : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
             Flexible(
               child: new TextField(
                 onSubmitted: (_) {
@@ -4735,10 +4689,6 @@ SnackBar getSnack(context, String text, {bool useWife = false}) {
     backgroundColor: black,
     duration: Duration(seconds: 2),
   );
-}
-
-getWifeColor() {
-  return isWife ? pink3 : blue0;
 }
 
 Widget getAssetImage(String asset) {
