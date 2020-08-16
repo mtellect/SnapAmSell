@@ -17,7 +17,6 @@ import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
 import 'app/app.dart';
-import 'glam/MyOrdersPage.dart';
 import 'photo/photo_provider.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -74,7 +73,7 @@ class MyApp extends StatelessWidget {
           routeObserver,
           FirebaseAnalyticsObserver(analytics: analytics)
         ],
-        home: MyOrdersPage()
+        home: MainHome()
         // PostAd(),
         );
   }
