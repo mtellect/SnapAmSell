@@ -339,7 +339,8 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 widget.isSubscription
                     ? "Your account has been upgraded to a Premium User Account, Enjoy Unlimited Job Posting!"
                     : 'You have successfully added funds to your wallet!',
-                delayInMilli: 1200, onClicked: (_) {
+                delayInMilli: 1200,
+                cancellable: false, onClicked: (_) {
               if (_) Navigator.pop(context, model);
             });
           });

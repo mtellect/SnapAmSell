@@ -10,6 +10,8 @@ import 'package:maugost_apps/auth/login_page.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'EditProfile.dart';
+
 class OfferItem extends StatefulWidget {
   //final int position;
   OfferItem();
@@ -195,6 +197,7 @@ class _OfferItemState extends State<OfferItem>
     String otherPersonId = getOtherPersonId(model);
 
     BaseModel offer = offerInfo[offerId];
+    BaseModel product = otherProductInfo[offer.getString(PRODUCT_ID)];
     BaseModel bidder = otherPeronInfo[otherPersonId];
     bool accepted = offer.getBoolean(ACCEPTED);
     bool hasPaid = offer.getBoolean(HAS_PAID);
@@ -382,6 +385,16 @@ class _OfferItemState extends State<OfferItem>
                     margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
                     child: RaisedButton(
                       onPressed: () {
+                        if (!userModel.signUpCompleted) {
+                          pushAndResult(
+                              context,
+                              EditProfile(
+                                modeEdit: true,
+                              ),
+                              depend: false);
+                          return;
+                        }
+
                         double accountBal = userModel.getDouble(ESCROW_BALANCE);
                         double offerAmount = offer.getDouble(ACCEPTED_PRICE);
                         double leftOver = accountBal - offerAmount;
@@ -408,8 +421,10 @@ class _OfferItemState extends State<OfferItem>
                           });
                           return;
                         }
-                        fundSeller(context, bidder, offerAmount,
-                            onProcessed: () {
+
+                        //TODO handle order
+                        handleOrder(context, [product], offerAmount,
+                            onOfferSettled: () {
                           model
                             ..put(
                               HAS_PAID,
@@ -417,6 +432,17 @@ class _OfferItemState extends State<OfferItem>
                             )
                             ..updateItems();
                         });
+
+                        //TODO fund seller here
+                        /*fundSeller(context, bidder, offerAmount,
+                            onProcessed: () {
+                          model
+                            ..put(
+                              HAS_PAID,
+                              true,
+                            )
+                            ..updateItems();
+                        });*/
                       },
                       color: AppConfig.appColor,
                       shape: RoundedRectangleBorder(

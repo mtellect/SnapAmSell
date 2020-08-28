@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/app/app.dart';
@@ -153,14 +156,18 @@ class _AccountState extends State<Account> {
                         String title = "likes";
                         var icon = Icons.favorite;
 
+                        int count = userModel.getList(LIKES).length;
+
                         if (p == 1) {
                           title = "Views";
                           icon = Icons.visibility;
+                          count = userModel.getList(SEEN_BY).length;
                         }
 
                         if (p == 2) {
                           title = "Stars";
                           icon = Icons.star;
+                          count = userModel.getList(STARS).length;
                         }
 
                         return Container(
@@ -184,7 +191,7 @@ class _AccountState extends State<Account> {
                               ),
                               addSpace(5),
                               Text(
-                                "15 $title",
+                                "${formatToK(count)} $title",
                                 style: textStyle(false, 13, black),
                               ),
                             ],
@@ -206,7 +213,7 @@ class _AccountState extends State<Account> {
                 fieldItem(Icons.visibility, brown, "Recently Viewed", () {
                   pushAndResult(context, RecentlyViewed(), depend: false);
                 }),
-                fieldItem(Icons.link, blue1, "Purchase Orders", () {}),
+                //fieldItem(Icons.link, blue1, "Purchase Orders", () {}),
                 fieldItem(Icons.person, green, "Edit Profile", () {
                   pushAndResult(
                       context,
@@ -229,11 +236,30 @@ class _AccountState extends State<Account> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              fieldItem(Icons.headset_mic, blue1, "Support", () {}),
-              fieldItem(Icons.help, black.withOpacity(.5), "Help", () {}),
-              fieldItem(
-                  Icons.lock, black.withOpacity(.5), "Privacy Policy", () {}),
-              fieldItem(Icons.person, blue, "Tell a friend", () {}),
+              fieldItem(Icons.help, blue1, "Support", () {
+                String email = appSettingsModel.getString(SUPPORT_EMAIL);
+                if (email.isEmpty) return;
+                sendEmail(email);
+              }),
+              fieldItem(LineIcons.sticky_note, black.withOpacity(.5),
+                  "Terms & Conditions", () {
+                String link = appSettingsModel.getString(TERMS_LINK);
+                if (link.isEmpty) return;
+                openLink(link);
+              }),
+              fieldItem(Icons.lock, black.withOpacity(.5), "Privacy Policy",
+                  () {
+                String link = appSettingsModel.getString(PRIVACY_LINK);
+                if (link.isEmpty) return;
+                openLink(link);
+              }),
+              fieldItem(Icons.person, blue, "Tell a friend", () {
+                String appLink = appSettingsModel.getString(APP_LINK_IOS);
+                String message = appSettingsModel.getString(APP_SHARE_MESSAGE);
+                if (Platform.isAndroid)
+                  appLink = appSettingsModel.getString(APP_LINK_ANDROID);
+                shareApp(message: "$message\n $appLink");
+              }),
             ],
           ),
         ),
@@ -245,7 +271,9 @@ class _AccountState extends State<Account> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                fieldItem(Icons.exit_to_app, red, "Logout", () {}),
+                fieldItem(Icons.exit_to_app, red, "Logout", () {
+                  clickLogout(context);
+                }),
               ],
             ),
           ),

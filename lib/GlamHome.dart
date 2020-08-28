@@ -14,6 +14,10 @@ import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/glam/AddProduct.dart';
+import 'package:maugost_apps/glam/AddStory.dart';
+import 'package:maugost_apps/glam/LookBooks.dart';
+import 'package:maugost_apps/glam/StoriesPage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synchronized/synchronized.dart';
@@ -21,17 +25,14 @@ import 'package:synchronized/synchronized.dart';
 import 'AppConfig.dart';
 import 'AppEngine.dart';
 import 'ChatMain.dart';
-import 'PreAuth.dart';
 import 'ReportMain.dart';
-import 'main_pages/Account.dart';
-import 'main_pages/Chat.dart';
-import 'main_pages/Home.dart';
-import 'main_pages/Notifications.dart';
-import 'main_pages/OfferPage.dart';
-import 'main_pages/SellCamera.dart';
-import 'main_pages/ShowCart.dart';
-import 'main_pages/ShowStore.dart';
-import 'main_pages/Wallet.dart';
+import 'app/CustomData.dart';
+import 'app/GlamIcons.dart';
+import 'app/spear_menu.dart';
+import 'glam/AddMainPSL.dart';
+import 'glam/DesignersPage.dart';
+import 'glam/HomePage.dart';
+import 'glam/MyProfilePage.dart';
 
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
@@ -53,15 +54,13 @@ final progressController = StreamController<bool>.broadcast();
 final productController = StreamController<BaseModel>.broadcast();
 final cartController = StreamController<BaseModel>.broadcast();
 final offerController = StreamController<bool>.broadcast();
-final orderController = StreamController<bool>.broadcast();
+
 final modeController = StreamController<bool>.broadcast();
-final stateController = StreamController<bool>.broadcast();
 
 List connectCount = [];
 List<String> stopListening = List();
 List<BaseModel> lastMessages = List();
 List<BaseModel> lastOffers = List();
-List<BaseModel> nList = List();
 bool chatSetup = false;
 bool offerSetup = false;
 List showNewMessageDot = [];
@@ -70,7 +69,11 @@ bool showNewNotifyDot = false;
 List newStoryIds = [];
 String visibleChatId;
 bool itemsLoaded = false;
-bool notifySetup = false;
+List hookupList = [];
+bool strockSetup = false;
+
+List matches = [];
+bool matchSetup = false;
 
 Location location = new Location();
 GeoFirePoint myLocation;
@@ -84,9 +87,6 @@ bool adsSetup = false;
 
 List<BaseModel> productLists = [];
 bool productSetup = false;
-
-List<BaseModel> orderList = [];
-bool orderSetup = false;
 
 //List<BaseModel> offerLists = [];
 
@@ -107,12 +107,12 @@ bool cartSetup = false;
 //Color white_widget_color = darkMode?white:Colors.grey[850];
 //Color white_reverse = darkMode?Colors.grey[850]:white;//themeColors(false);
 
-class MainAdmin extends StatefulWidget {
+class GlamHome extends StatefulWidget {
   @override
-  _MainAdminState createState() => _MainAdminState();
+  _GlamHomeState createState() => _GlamHomeState();
 }
 
-class _MainAdminState extends State<MainAdmin>
+class _GlamHomeState extends State<GlamHome>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   PageController peoplePageController = PageController();
   List<StreamSubscription> subs = List();
@@ -187,12 +187,6 @@ class _MainAdminState extends State<MainAdmin>
     });
 
     var sub5 = cartController.stream.listen((bm) {
-      if (bm == null) {
-        cartLists.clear();
-        setState(() {});
-        return;
-      }
-
       BaseModel model = BaseModel(items: bm.items);
       String id = model.getObjectId();
       int p = cartLists.indexWhere((e) => e.getObjectId() == id);
@@ -224,21 +218,14 @@ class _MainAdminState extends State<MainAdmin>
     });*/
 
     var sub7 = FirebaseAuth.instance.onAuthStateChanged.listen((event) {
-      if (event != null) {
-        loadNotification();
-        loadMessages();
-        loadBids();
-        loadOrders();
-        setupPush();
-        loadBlocked();
-        if (mounted) setState(() {});
+      if (event == null) return;
+      if (event.uid == null) {
+        cartLists.clear();
+        lastMessages.clear();
+//        offerLists.clear();
         return;
       }
-      if (mounted) setState(() {});
-    });
-
-    var sub8 = stateController.stream.listen((show) {
-      setState(() {});
+      loadMessages();
     });
 
     subs.add(sub1);
@@ -248,7 +235,6 @@ class _MainAdminState extends State<MainAdmin>
     subs.add(sub5);
 //    subs.add(sub6);
     subs.add(sub7);
-    subs.add(sub8);
   }
 
   saveProducts(List<BaseModel> models, List<BaseModel> modelsUploaded,
@@ -280,7 +266,24 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
+  checkTip() {
+    if (!tipHandled &&
+        peopleCurrentPage != hookupList.length - 1 &&
+        hookupList.length > 1) {
+      tipHandled = true;
+      Future.delayed(Duration(seconds: 1), () async {
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        tipShown = pref.getBool("swipe_tipx") ?? false;
+        if (!tipShown) {
+          pref.setBool("swipe_tipx", true);
+          setState(() {});
+        }
+      });
+    }
+  }
+
   okLayout(bool manually) {
+    checkTip();
     itemsLoaded = true;
     if (mounted) setState(() {});
     Future.delayed(Duration(milliseconds: 1000), () {
@@ -373,7 +376,6 @@ class _MainAdminState extends State<MainAdmin>
 //          loadCarts();
 //          loadProducts();
           loadBids();
-          loadOrders();
           setupPush();
           loadBlocked();
           updatePackage();
@@ -511,7 +513,7 @@ class _MainAdminState extends State<MainAdmin>
     userModel.updateItems();
 
     Future.delayed(Duration(seconds: 2), () {
-      //setUpLocation();
+      setUpLocation();
       checkLaunch();
     });
   }
@@ -740,27 +742,6 @@ class _MainAdminState extends State<MainAdmin>
     });
   }
 
-  loadOrders() async {
-    Firestore.instance
-        .collection(ORDER_BASE)
-        .where(PARTIES, arrayContains: userModel.getUserId())
-        .getDocuments()
-        .then((shots) {
-      for (DocumentSnapshot doc in shots.documents) {
-        BaseModel model = BaseModel(doc: doc);
-        int p =
-            orderList.indexWhere((e) => e.getObjectId() == model.getObjectId());
-        if (p != -1) {
-          orderList[p] = model;
-        } else {
-          orderList.add(model);
-        }
-      }
-      orderSetup = true;
-      if (mounted) setState(() {});
-    });
-  }
-
   loadProducts() async {
     Firestore.instance
         .collection(PRODUCT_BASE)
@@ -810,6 +791,36 @@ class _MainAdminState extends State<MainAdmin>
       if (mounted) setState(() {});
     });
   }
+
+  /*loadOffers() async {
+    var lock = Lock();
+    await lock.synchronized(
+      () async {
+        Firestore.instance
+            .collection(OFFER_BASE)
+            .where(
+              USER_ID,
+              isEqualTo: userModel.getUserId(),
+            )
+            .limit(30)
+            .getDocuments()
+            .then((shots) {
+          for (DocumentSnapshot doc in shots.documents) {
+            BaseModel model = BaseModel(doc: doc);
+            int p = offerLists
+                .indexWhere((e) => e.getObjectId() == model.getObjectId());
+            if (p != -1) {
+              offerLists[p] = model;
+            } else {
+              offerLists.add(model);
+            }
+          }
+          offerSetup = true;
+          if (mounted) setState(() {});
+        });
+      },
+    );
+  }*/
 
   loadProductAt(String pID, {int delay = 0}) async {
     var lock = Lock();
@@ -884,13 +895,13 @@ class _MainAdminState extends State<MainAdmin>
       //toastInAndroid(shots.documents.length.toString());
       for (DocumentSnapshot d in shots.documents) {
         BaseModel model = BaseModel(doc: d);
-        int p =
-            nList.indexWhere((bm) => bm.getObjectId() == model.getObjectId());
+        /*int p = nList
+            .indexWhere((bm) => bm.getObjectId() == model.getObjectId());
         if (p == -1) {
           nList.add(model);
         } else {
           nList[p] = model;
-        }
+        }*/
 
         if (!model.getList(READ_BY).contains(userModel.getObjectId()) &&
             !model.myItem()) {
@@ -903,24 +914,26 @@ class _MainAdminState extends State<MainAdmin>
     });
 
     subs.add(sub);
-    notifySetup = true;
     if (mounted) setState(() {});
   }
 
-  List pageResource = [
-    {"title": "Home", "image": LineIcons.home, "asset": false},
-    {"title": "Chat", "image": ic_chat2, "asset": true},
-    //{"title": "Sell", "image": Icons.camera_alt, "asset": false},
-    {"title": "Offers", "image": ic_offer, "asset": true},
-    {"title": "Account", "image": Icons.person, "asset": false},
-  ];
+  List get pageResource => [
+        {"title": "Home", "image": LineIcons.home, "asset": false},
+        // {"title": "Events", "image": LineIcons.calendar, "asset": false},
+        {"title": "Designers", "image": GlamIcons.t_shirt, "asset": false},
+        {"title": "LookBooks", "image": Icons.dashboard, "asset": false},
+        {"title": "Stories", "image": GlamIcons.doc_text, "asset": false},
+      ];
 
   final vp = PageController();
   int currentPage = 0;
+  GlobalKey btnKey = GlobalKey();
+  List<CustomData> menuList = new List<CustomData>();
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    SpearMenu.context = context;
     return WillPopScope(
       onWillPop: () {
         //backThings();
@@ -928,54 +941,11 @@ class _MainAdminState extends State<MainAdmin>
         return;
       },
       child: Scaffold(
-        //backgroundColor: AppConfig.appColor,
+        backgroundColor: black,
         body: Stack(
           children: [
             page(),
             bottomTab(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 100, right: 10),
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    MaterialButton(
-                      onPressed: () {
-                        pushAndResult(
-                          context,
-                          ShowCart(),
-                        );
-                      },
-                      color: black,
-                      padding: EdgeInsets.all(24),
-                      elevation: 12,
-                      shape: CircleBorder(
-                          //borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: black.withOpacity(.7))),
-                      child: Image.asset(
-                        ic_cart,
-                        height: 20,
-                        width: 20,
-                        color: white,
-                      ),
-                    ),
-                    if (cartLists.length > 0)
-                      Container(
-                        decoration: BoxDecoration(
-                            color: red,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: white_color, width: 1.5)),
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          cartLists.length.toString(),
-                          style: textStyle(false, 12, white_color),
-                        ),
-                      )
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -986,21 +956,21 @@ class _MainAdminState extends State<MainAdmin>
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: 80,
+        width: double.infinity,
+        height: 60,
+        padding: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
             color: black,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-        padding: EdgeInsets.all(15),
+            border: Border(top: BorderSide(color: white.withOpacity(.1)))),
+        margin: EdgeInsets.only(bottom: 0),
         child: Row(
           children: [
-            bottomTabItem(0, Icons.home, "Home"),
-            bottomTabItem(1, ic_chat2, "Chat"),
+            bottomTabItem(0, Icons.home),
+            bottomTabItem(1, GlamIcons.t_shirt),
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  pushAndResult(context, isLoggedIn ? SellCamera() : PreAuth(),
-                      depend: false);
+                  pushAndResult(context, AddMainPSL());
                 },
                 child: Container(
                   //key: btnKey,
@@ -1019,9 +989,65 @@ class _MainAdminState extends State<MainAdmin>
               ),
               fit: FlexFit.tight,
             ),
-            bottomTabItem(2, ic_offer, "Offers"),
-            bottomTabItem(3, LineIcons.user, "Account")
+            bottomTabItem(2, GlamIcons.dashboard),
+            bottomTabItem(3, GlamIcons.doc_text)
           ],
+        ),
+      ),
+    );
+
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        decoration: BoxDecoration(
+            color: black,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        padding: EdgeInsets.all(15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(5, (p) {
+            String title = pageResource[p]["title"];
+            bool asset = pageResource[p]["asset"];
+            final image = pageResource[p]["image"];
+            bool active = currentPage == p;
+            double size = active ? 25 : 20;
+            final color = white.withOpacity(active ? 1 : 0.7);
+            return Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  vp.jumpToPage(p);
+                },
+                child: Container(
+                  width: getScreenWidth(context) / 5,
+                  color: transparent,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (asset)
+                        Image.asset(
+                          image,
+                          height: size,
+                          width: size,
+                          color: color,
+                          fit: BoxFit.cover,
+                        )
+                      else
+                        Icon(
+                          image,
+                          size: size,
+                          color: color,
+                        ),
+//                      Text(
+//                        title,
+//                        style: textStyle(active, active ? 15 : 14, color),
+//                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );
@@ -1030,42 +1056,17 @@ class _MainAdminState extends State<MainAdmin>
   bottomTabItem(
     int index,
     icon,
-    title,
   ) {
-    bool isAsset = icon.toString().contains("asset");
-    bool active = currentPage == index;
-    double size = active ? 25 : 20;
-    final color = white.withOpacity(active ? 1 : (.4));
-
     return Flexible(
       child: GestureDetector(
         onTap: () {
-          if (!isLoggedIn && index > 0) {
-            pushAndResult(context, PreAuth(), depend: false);
-            return;
-          }
-
           vp.jumpToPage(index);
         },
         child: Container(
           color: transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isAsset)
-                Image.asset(
-                  icon,
-                  height: size,
-                  width: size,
-                  color: color,
-                )
-              else
-                Icon(icon, size: size, color: color),
-              Text(
-                title,
-                style: textStyle(active, active ? 15 : 14, color),
-              )
-            ],
+          child: Center(
+            child: Icon(icon,
+                color: white.withOpacity(currentPage == index ? 1 : (.4))),
           ),
         ),
       ),
@@ -1078,114 +1079,70 @@ class _MainAdminState extends State<MainAdmin>
       children: [
         Container(
           padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: white,
-          child: Stack(
+          color: black,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Align(
-                child: Text(
-                  pageResource[currentPage]["title"],
-                  style: textStyle(true, 22, black),
-                ),
+              Text(
+                pageResource[currentPage]["title"],
+                style: textStyle(true, 24, white),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  new Container(
-                    height: 30,
-                    //width: 50,
-                    child: new FlatButton(
-                        padding: EdgeInsets.all(0),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {
-                          // postChatDoc();
-                          pushAndResult(
-                            context,
-                            isLoggedIn ? Wallet() : PreAuth(),
-                          );
-                        },
-                        color: AppConfig.appColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Center(
-                            child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.account_balance,
-                              size: 16,
-                              color: black,
-                            ),
-                            addSpaceWidth(5),
-                            Text(
-                              "Wallet",
-                              style: textStyle(true, 13, black),
-                            )
-                          ],
-                        ))),
-                  ),
-                  Spacer(),
-                  new Container(
-                    height: 30,
-                    width: 60,
-                    child: new FlatButton(
-                        padding: EdgeInsets.all(0),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {
-                          pushAndResult(
-                            context,
-                            isLoggedIn ? Notifications() : PreAuth(),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 4),
-                                  child: Icon(
-                                    Icons.notifications_active,
-                                    size: 24,
-                                    color: black,
-                                  ),
-                                )),
-                            if (showNewNotifyDot)
-                              Container(
-                                // height: 10,
-                                // width: 10,
-                                padding: EdgeInsets.all(3),
-                                child: Text(
-                                  "New",
-                                  style: textStyle(false, 11, white),
-                                ),
-                                decoration: BoxDecoration(
-                                    color: red,
-                                    borderRadius: BorderRadius.circular(5)
-                                    //shape: BoxShape.circle
-                                    ),
-                              )
-                          ],
-                        )),
-                  ),
-                  //if (isLoggedIn)
-                  imageHolder(
-                    35,
-                    userModel.userImage,
-                    onImageTap: () {
-                      pushAndResult(
-                        context,
-                        isLoggedIn ? ShowStore(userModel) : PreAuth(),
-                      );
-                    },
-                    strokeColor: black,
-                    stroke: 2,
-                  )
-                ],
+              Spacer(),
+              new Container(
+                height: 30,
+                //width: 50,
+                child: new FlatButton(
+                    padding: EdgeInsets.all(0),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onPressed: () {},
+                    color: white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Center(
+                        child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          LineIcons.sort_alpha_desc,
+                          size: 16,
+                          color: black,
+                        ),
+                        addSpaceWidth(5),
+                        Text(
+                          "Filter",
+                          style: textStyle(true, 13, black),
+                        )
+                      ],
+                    ))),
+              ),
+              new Container(
+                height: 30,
+                width: 50,
+                child: new FlatButton(
+                    padding: EdgeInsets.all(0),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onPressed: () {},
+                    child: Center(
+                        child: Icon(
+                      LineIcons.search,
+                      //size: 20,
+                      color: white,
+                    ))),
+              ),
+              imageHolder(
+                35,
+                userModel.userImage,
+                onImageTap: () {
+                  pushAndResult(context, MyProfilePage(), depend: false);
+                },
+                strokeColor: white,
+                stroke: 2,
               )
             ],
           ),
         ),
         postingIndicator(),
-        Expanded(
+        Flexible(
           child: PageView(
             controller: vp,
             onPageChanged: (p) {
@@ -1193,11 +1150,59 @@ class _MainAdminState extends State<MainAdmin>
               setState(() {});
             },
             physics: NeverScrollableScrollPhysics(),
-            children: [Home(), Chat(), OfferPage(), Account()],
+            children: [
+              HomePage(),
+              //EventsPage(),
+              DesignersPage(),
+              LookBooks(),
+              StoriesPage(),
+              //Account()
+            ],
           ),
         ),
       ],
     );
+  }
+
+  void menuData() {
+    List<MenuItemProvider> setData = [
+      MenuItem(title: "New Product", icon: GlamIcons.t_shirt),
+      MenuItem(title: "New Story", icon: GlamIcons.doc_text),
+      MenuItem(title: "New Lookbook", icon: GlamIcons.dashboard)
+    ];
+
+    SpearMenu menu = SpearMenu(
+        //backgroundColor: Colors.teal,
+        // lineColor: Colors.tealAccent,
+        items: setData,
+        onClickMenu: (_) {
+          if (_.menuTitle == "New Product")
+            pushAndResult(context, AddProduct());
+          if (_.menuTitle == "New Story") pushAndResult(context, AddStory());
+        },
+        stateChanged: stateChanged,
+        onDismiss: onDismiss);
+    menu.show(widgetKey: btnKey);
+  }
+
+  void onClickMenu(MenuItemProvider item) {
+    menuList.map((element) {
+      if (item.menuTitle == element.name) {
+        element.isShow = true;
+      } else {
+        element.isShow = false;
+      }
+    }).toList();
+
+    print('Click menu -> ${item.menuTitle}');
+  }
+
+  void stateChanged(bool isShow) {
+    print('menu is ${isShow ? 'showing' : 'closed'}');
+  }
+
+  void onDismiss() {
+    print('Menu is dismiss');
   }
 
   postingIndicator() {
@@ -1287,6 +1292,30 @@ class _MainAdminState extends State<MainAdmin>
           blockedIds.add(deviceId);
       }
     }, timeout: Duration(seconds: 10));
+  }
+
+  getStackedImages(List list) {
+    List items = [];
+    int count = 0;
+    for (int i = 0; i < list.length; i++) {
+      if (count > 10) break;
+      BaseModel model = hookupList[i];
+      items.add(Container(
+        margin: EdgeInsets.only(left: double.parse((i * 20).toString())),
+        child: userImageItem(context, model, size: 40, padLeft: false),
+      ));
+      count++;
+    }
+    List<Widget> children = List.from(items.reversed);
+    return IgnorePointer(
+      ignoring: true,
+      child: Container(
+        height: 40,
+        child: Stack(
+          children: children,
+        ),
+      ),
+    );
   }
 
   @override

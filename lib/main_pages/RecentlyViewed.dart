@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 
@@ -115,7 +115,7 @@ class _RecentlyViewedState extends State<RecentlyViewed> {
               },
               itemCount: productLists.length,
               padding: EdgeInsets.all(7),
-              physics: NeverScrollableScrollPhysics(),
+              //physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
             );
           },

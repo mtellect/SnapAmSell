@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/main_pages/SellCamera.dart';
@@ -34,11 +34,8 @@ class _SellPageState extends State<SellPage> {
     model.put(IMAGES, widget.photos.map((e) => e.items).toList());
   }
 
-  snack(String text) {
-    Future.delayed(Duration(milliseconds: 500), () {
-      showSnack(scaffoldKey, text, useWife: true);
-    });
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +73,18 @@ class _SellPageState extends State<SellPage> {
               )
             ],
           ),
+        ),
+        AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          width: double.infinity,
+          height: errorText.isEmpty ? 0 : 40,
+          color: red0,
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Center(
+              child: Text(
+                errorText,
+                style: textStyle(true, 16, white),
+              )),
         ),
         Flexible(
           child: ListView(
@@ -330,28 +339,30 @@ class _SellPageState extends State<SellPage> {
     String description = descController.text;
 
     if (photos.isEmpty) {
-      snack("Add Product Images!");
+      showError("Add Product Images!");
       return;
     }
 
     if (null == selectedCategory) {
-      snack("Choose a category!");
+      showError("Choose a category!");
       return;
     }
     if (title.isEmpty) {
-      snack("Add Title!");
+      showError("Add Title!");
       return;
     }
     if (price.isEmpty) {
-      snack("Add Price!");
+      showError("Add Price!");
       return;
     }
     if (description.isEmpty) {
-      snack("Add Description!");
+      showError("Add Description!");
       return;
     }
 
     String id = getRandomId();
+
+    final search = getSearchString('$title $selectedCategory');
     model
       ..put(OBJECT_ID, id)
       ..put(STATUS, PENDING)
@@ -360,8 +371,21 @@ class _SellPageState extends State<SellPage> {
       ..put(TITLE, title)
       ..put(PRICE, double.parse(price))
       ..put(DESCRIPTION, description)
+      ..put(SEARCH, search)
       ..saveItem(PRODUCT_BASE, true, document: id);
+
     productController.add(model);
     Navigator.pop(context);
+  }
+
+  String errorText = "";
+  showError(String text, {bool wasLoading = false}) {
+    if (wasLoading) showProgress(false, context);
+    errorText = text;
+    setState(() {});
+    Future.delayed(Duration(seconds: 3), () {
+      errorText = "";
+      setState(() {});
+    });
   }
 }

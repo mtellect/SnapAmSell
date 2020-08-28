@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/SearchProduct.dart';
 import 'package:maugost_apps/app/app.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 
@@ -19,6 +24,8 @@ class _ShowStoreState extends State<ShowStore> {
   bool hasSetup = false;
   BaseModel model;
   BaseModel theUser;
+  bool isFavorite = false;
+  List<StreamSubscription> subs = [];
 
   @override
   initState() {
@@ -30,27 +37,44 @@ class _ShowStoreState extends State<ShowStore> {
     loadUser();
   }
 
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    for (var s in subs) s?.cancel();
+  }
+
   loadUser() async {
-    Firestore.instance
+    var sub = Firestore.instance
         .collection(USER_BASE)
         .document(widget.model.getUserId())
-        .get()
-        .then((value) {
+        .snapshots()
+        .listen((value) {
       theUser = BaseModel(doc: value);
+      if (!theUser.myItem())
+        theUser
+          ..putInList(SEEN_BY, userModel.getUserId(), true)
+          ..updateItems();
+      isFavorite = theUser.getList(LIKES).contains(userModel.getUserId());
       setState(() {});
     });
+    subs.add(sub);
   }
 
   loadProducts(bool isNew) async {
-    Firestore.instance
+    var sub = Firestore.instance
         .collection(PRODUCT_BASE)
         .where(
           USER_ID,
           isEqualTo: widget.model.getUserId(),
         )
         //.limit(30)
-        .getDocuments()
-        .then((shots) {
+        .snapshots()
+        .listen((shots) {
       for (DocumentSnapshot doc in shots.documents) {
         BaseModel model = BaseModel(doc: doc);
         int p = productLists
@@ -65,6 +89,7 @@ class _ShowStoreState extends State<ShowStore> {
       if (widget.model.myItem()) myProducts = productLists;
       if (mounted) setState(() {});
     });
+    subs.add(sub);
   }
 
   @override
@@ -90,6 +115,36 @@ class _ShowStoreState extends State<ShowStore> {
                 style: textStyle(true, 25, black),
               ),
               Spacer(),
+              GestureDetector(
+                onTap: () {
+                  theUser
+                    ..putInList(LIKES, userModel.getUserId(), !isFavorite)
+                    ..updateItems();
+
+                  setState(() {});
+                },
+                child: Container(
+                    //margin: EdgeInsets.only(right: 10),
+                    width: 35,
+                    height: 35,
+                    // decoration: BoxDecoration(
+                    //     color: green_dark, shape: BoxShape.circle),
+                    padding: EdgeInsets.all(6),
+                    child: FlareActor("assets/icons/Favorite.flr",
+                        shouldClip: false,
+                        color: isFavorite ? green_dark : black.withOpacity(.5),
+                        fit: BoxFit.cover,
+                        animation: isFavorite
+                            ? "Favorite"
+                            : "Unfavorite" //_animationName
+                        )),
+              ),
+              IconButton(
+                onPressed: () {
+                  pushAndResult(context, SearchProduct());
+                },
+                icon: Icon(LineIcons.search),
+              ),
             ],
           ),
         ),
@@ -159,7 +214,8 @@ class _ShowStoreState extends State<ShowStore> {
                     ],
                   ),
 //                      Spacer(),
-                  Container(
+                  if (null != theUser)
+                    Container(
 //                    decoration: BoxDecoration(
 //                        border: Border.all(color: black, width: 2),
 //                        color: black.withOpacity(.9),
@@ -167,54 +223,57 @@ class _ShowStoreState extends State<ShowStore> {
 //                      //shape: BoxShape.circle
 //                    ),
 //                    padding: EdgeInsets.all(5),
-                    //height: 70,
-                    //width: 70,
-                    alignment: Alignment.center,
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(3, (p) {
-                          String title = "likes";
-                          var icon = Icons.favorite;
+                      //height: 70,
+                      //width: 70,
+                      alignment: Alignment.center,
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(3, (p) {
+                            String title = "likes";
+                            var icon = Icons.favorite;
+                            int count = theUser.getList(LIKES).length;
 
-                          if (p == 1) {
-                            title = "Views";
-                            icon = Icons.visibility;
-                          }
+                            if (p == 1) {
+                              title = "Views";
+                              icon = Icons.visibility;
+                              count = theUser.getList(SEEN_BY).length;
+                            }
 
-                          if (p == 2) {
-                            title = "Stars";
-                            icon = Icons.star;
-                          }
+                            if (p == 2) {
+                              title = "Stars";
+                              icon = Icons.star;
+                              count = theUser.getList(STARS).length;
+                            }
 
-                          return Container(
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      color: AppConfig.appColor,
-                                      shape: BoxShape.circle),
-                                  child: Center(
-                                    child: Icon(
-                                      icon,
-                                      size: 18,
-                                      color: white_color,
+                            return Container(
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                        color: AppConfig.appColor,
+                                        shape: BoxShape.circle),
+                                    child: Center(
+                                      child: Icon(
+                                        icon,
+                                        size: 18,
+                                        color: white_color,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                addSpace(5),
-                                Text(
-                                  "15 $title",
-                                  style: textStyle(false, 13, black),
-                                ),
-                              ],
-                            ),
-                          );
-                        })),
-                  ),
+                                  addSpace(5),
+                                  Text(
+                                    "${formatToK(count)} $title",
+                                    style: textStyle(false, 13, black),
+                                  ),
+                                ],
+                              ),
+                            );
+                          })),
+                    ),
                 ],
               ),
             ),

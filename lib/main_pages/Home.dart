@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/SearchProduct.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -84,50 +85,42 @@ class _HomeState extends State<Home> {
     );
   }
 
+  //["All", "Cosmetics", "Free", "Others"]
+
   page() {
     return Column(
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Container(
-                height: 45,
-                margin: EdgeInsets.fromLTRB(10, 5, 0, 10),
-                decoration: BoxDecoration(
-                    color: default_white, //black.withOpacity(.1),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: black.withOpacity(.1), width: 1)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    addSpaceWidth(10),
-                    Icon(
-                      Icons.search,
-                      color: black.withOpacity(.5),
-                      size: 17,
-                    ),
-                    addSpaceWidth(10),
-                    Text(
-                      "Search products on Fetish",
-                      style: textStyle(false, 16, black.withOpacity(.6)),
-                    )
-                  ],
+        //addSpace(40),
+        GestureDetector(
+          onTap: () {
+            print("sfdf");
+            pushAndResult(context, SearchProduct());
+          },
+          child: Container(
+            height: 45,
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                color: default_white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: black.withOpacity(.1), width: 1)),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                addSpaceWidth(10),
+                Icon(
+                  Icons.search,
+                  color: black.withOpacity(.5),
+                  size: 17,
                 ),
-              ),
+                addSpaceWidth(10),
+                Text(
+                  "Search Products on Fetish",
+                  style: textStyle(false, 16, black.withOpacity(.6)),
+                )
+              ],
             ),
-            IconButton(
-              onPressed: () {
-                showListDialog(
-                    context, ["All", "Cosmetics", "Free", "Others"], (p) {});
-              },
-              icon: Icon(
-                Icons.dashboard,
-                color: black,
-              ),
-            )
-          ],
+          ),
         ),
         refresher()
       ],
@@ -206,9 +199,18 @@ class _HomeState extends State<Home> {
               childAspectRatio: 0.65),
           itemBuilder: (c, p) {
             BaseModel model = productLists[p];
-            return shopItem(context, model, () {
-              setState(() {});
-            });
+            return shopItem(
+                context,
+                model,
+                () {
+                  setState(() {});
+                },
+                isFavorite:
+                    model.getList(LIKED).contains(userModel.getUserId()),
+                onLiked: (m) {
+                  productLists[p] = m;
+                  setState(() {});
+                });
           },
           itemCount: productLists.length,
           padding: EdgeInsets.all(0),

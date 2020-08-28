@@ -12,12 +12,10 @@ import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/app/navigation.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
-import 'package:provider/provider.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'AppEngine.dart';
 import 'app/app.dart';
-import 'photo/photo_provider.dart';
 
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -40,17 +38,10 @@ void main() async {
   } on CameraException catch (e) {
 //    logError(e.code, e.description);
   }
-  runApp(ChangeNotifierProvider<PhotoProvider>.value(
-    value: provider,
-    child: MyApp(),
-  ));
+  runApp(MyApp());
 }
 
-final provider = PhotoProvider();
-
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
   FirebaseAnalytics analytics = FirebaseAnalytics();
   @override
   Widget build(BuildContext c) {
@@ -61,21 +52,19 @@ class MyApp extends StatelessWidget {
         color: white,
         theme: ThemeData(
           fontFamily: 'Averta',
-          primaryColor: white,
+          primaryColor: black,
           pageTransitionsTheme: PageTransitionsTheme(
             builders: <TargetPlatform, PageTransitionsBuilder>{
               TargetPlatform.iOS: createTransition(),
               TargetPlatform.android: createTransition(),
             },
           ),
-        ), //Futura//Nirmala
+        ),
         navigatorObservers: [
           routeObserver,
           FirebaseAnalyticsObserver(analytics: analytics)
         ],
-        home: MainHome()
-        // PostAd(),
-        );
+        home: MainHome());
   }
 
   PageTransitionsBuilder createTransition() {

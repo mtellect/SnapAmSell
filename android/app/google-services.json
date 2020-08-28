@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "485808555845-u3a7a4atq00okqsr1jc5ls11vekl9gqo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fetish",
+            "certificate_hash": "bcdb549de7eac63e3e4bea353e528c1ae7186896"
+          }
+        },
+        {
           "client_id": "485808555845-ms7ktrqijj31urhgn0b7s72if9in3g32.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

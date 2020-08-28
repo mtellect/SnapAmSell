@@ -5,6 +5,8 @@ import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/main_pages/OfferItem.dart';
 
+import 'OrderItem.dart';
+
 class OfferPage extends StatefulWidget {
   @override
   _OfferPageState createState() => _OfferPageState();
@@ -51,9 +53,9 @@ class _OfferPageState extends State<OfferPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
               child: Row(
-                children: List.generate(3, (p) {
+                children: List.generate(2, (p) {
                   String title =
-                      p == 0 ? "In-Progress" : p == 1 ? "Pending" : "Completed";
+                      p == 0 ? "In-Progress" : p == 1 ? "Orders" : "Completed";
                   bool selected = p == currentPage;
                   return Flexible(
                     child: GestureDetector(
@@ -107,11 +109,11 @@ class _OfferPageState extends State<OfferPage> {
             currentPage = p;
             setState(() {});
           },
-          children: List.generate(
-              3,
-              (p) => OfferItem(
-                  //type: p,
-                  )),
+          children: List.generate(2, (p) {
+            if (p == 0) return OfferItem();
+
+            return OrderItem();
+          }),
         )),
       ],
     );

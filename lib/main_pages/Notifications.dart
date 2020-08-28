@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'ShowOrder.dart';
 
 class Notifications extends StatefulWidget {
   @override
@@ -114,8 +118,8 @@ class _NotificationsState extends State<Notifications>
     return Flexible(
       child: SmartRefresher(
         controller: refreshController,
-        enablePullDown: true,
-        enablePullUp: listItems.length > 10,
+        enablePullDown: false,
+        enablePullUp: false,
         header: WaterDropHeader(),
         footer: ClassicFooter(
           noDataText: "Nothing more for now, check later...",
@@ -144,12 +148,12 @@ class _NotificationsState extends State<Notifications>
   body() {
     return Builder(
       builder: (ctx) {
-        if (!productSetup)
+        if (!notifySetup)
           return Container(
             height: getScreenHeight(context) * .9,
             child: loadingLayout(trans: true),
           );
-        if (listItems.isEmpty)
+        if (nList.isEmpty)
           return Container(
             height: getScreenHeight(context) * .9,
             child: Center(
@@ -173,23 +177,101 @@ class _NotificationsState extends State<Notifications>
               ),
             ),
           );
-        return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 5,
-              mainAxisSpacing: 5,
-              childAspectRatio: 0.65),
-          itemBuilder: (c, p) {
-            BaseModel model = listItems[p];
-            return shopItem(context, model, () {
-              setState(() {});
+
+        return ListView.builder(
+            itemCount: nList.length,
+            padding: EdgeInsets.all(0),
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (c, p) {
+              BaseModel model = nList[p];
+              bool myItem = model.myItem();
+              String message =
+                  'An order request for your product was requested!';
+              if (myItem)
+                message = 'You have placed an order request for a product!';
+
+              bool atEnd = p == nList.length - 1;
+              bool unRead =
+                  !model.getList(READ_BY).contains(userModel.getObjectId());
+              return InkWell(
+                onTap: () {
+                  print(model.getString(ORDER_ID));
+                  model
+                    ..putInList(READ_BY, userModel.getObjectId(), true)
+                    ..updateItems();
+                  pushAndResult(
+                      context,
+                      ShowOrder(
+                        orderId: model.getString(ORDER_ID),
+                      ));
+                },
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: black.withOpacity(unRead ? 0.03 : 0),
+                      border: Border(
+                          bottom: BorderSide(
+                              color: black.withOpacity(atEnd ? 0 : 0.1)))),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                  color: AppConfig.appColor,
+                                  shape: BoxShape.circle),
+                              child: Icon(LineIcons.shopping_cart)),
+                          addSpaceWidth(10),
+                          Flexible(
+                            child: Text(
+                              message,
+                              style: textStyle(true, 18, black),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!model.myItem())
+                        Container(
+                          margin: EdgeInsets.only(top: 4),
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              color: black.withOpacity(.05),
+                              border: Border.all(color: black.withOpacity(.08))
+                              /* border: Border(
+                                top: BorderSide(
+                                    width: 5, color: black.withOpacity(.5)),
+                                left: BorderSide(
+                                    width: 5, color: black.withOpacity(.5)),
+                              )*/
+                              ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              userImageItem(context, model,
+                                  size: 30, strokeSize: 1, padLeft: false),
+                              addSpaceWidth(5),
+                              Text(
+                                model.getString(NAME),
+                                style: textStyle(true, 12, black),
+                              ),
+                              addSpaceWidth(5),
+                            ],
+                          ),
+                        ),
+                      Text(
+                        getTimeAgo(model.getTime()),
+                        style: textStyle(false, 14, black.withOpacity(.5)),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             });
-          },
-          itemCount: listItems.length,
-          padding: EdgeInsets.all(0),
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-        );
       },
     );
   }

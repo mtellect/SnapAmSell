@@ -547,6 +547,7 @@ const String GPA_BASE = "gpaBase";
 const String MY_GPA_SYSTEM = "myGpaSystem";
 
 const String USER_BASE = "userBase";
+const String ORDER_BASE = "orderBase";
 const String ADS_BASE = "adsBase";
 const String SKILLS_BASE = "skillsBase";
 const String CATEGORIES_BASE = "categoriesBase3";
@@ -805,6 +806,7 @@ const String QUESTION_DURATION = "qDuration";
 const String QUESTION = "question";
 const String ANSWER = "answer";
 const String OPTIONS = "options";
+const String LIKES = "likes";
 const String STARS = "stars";
 const String REPLIES = "replies";
 const String OPINION_ID = "opinionId";
@@ -1175,6 +1177,10 @@ const String MCR_FREE = "mcrFree";
 const String MCR_IDS = "mcrIds";
 const String PROFILE_STATUS = "profileStatus";
 
+
+const String APP_SHARE_MESSAGE = "appShareMessage";
+const String APP_LINK_IOS = "appLinkAndroid";
+const String APP_LINK_ANDROID = "appLinkIOS";
 const String SUPPORT_EMAIL = "supportEmail";
 const String AUDIO_DURATION = "audioDuration";
 const String AUDIO_URL = "audioUrl";
@@ -1518,6 +1524,7 @@ const String LOCAL_ADS_COST = "localAdsCost";
 const String BASE_ADS_COST = "baseAdsCost";
 const String AMOUNT_TO_PAY = "amountToPay";
 
+const String ORDER_ID = "orderId";
 const String PRODUCT_ID = "productId";
 const String PRODUCT_BASE = "productBase";
 const String CART_BASE = "cartBase";
@@ -1572,6 +1579,14 @@ const String SS_NUMBER = "ssNumber";
 const String ACCOUNT_DEPOSIT = "accountDeposit";
 const String ACCOUNT_WITHDRAWN = "accountWithdrawn";
 const String ESCROW_BALANCE = "escrowBalance";
+
+const String SEARCH = "search";
+
+const String SETTLING_AMOUNT = "settlingAmount";
+const String ORDER_STATUS = "orderStatus";
+const int ORDER_STATUS_PENDING = 0;
+const int ORDER_STATUS_EN_ROUTE = 1;
+const int ORDER_STATUS_COMPLETED = 2;
 
 const List<String> CLOTH_SIZES = [
   "Xtra Small",

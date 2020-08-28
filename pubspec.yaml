@@ -10,7 +10,7 @@ description: Find your soul mate
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -27,7 +27,9 @@ dependencies:
   device_id: ^0.2.0
   cached_network_image: ^2.0.0
   timeago: ^2.0.22
-  photo_manager: 0.4.8
+#  photo_manager: 0.4.8
+  photo: ^0.5.0-dev.3
+  photo_manager: 0.5.2
   permission_handler: ^5.0.0+hotfix.3
   package_info: ^0.4.0+16
   ntp: ^1.0.4
@@ -67,8 +69,9 @@ dependencies:
   rect_getter: ^0.0.1
   video_player: 0.10.5+2
   google_fonts:
-  google_sign_in: ^4.4.6
-  flutter_facebook_auth: ^0.2.1
+  sign_in_with_apple: ^2.3.0
+  google_sign_in: ^4.5.1
+  flutter_login_facebook: ^0.2.0+1
   shimmer: ^1.1.1
   flutter_keyboard_size: ^0.1.2+2
   flutter_sound: ^4.0.0
@@ -93,6 +96,8 @@ dependencies:
   stripe_sdk: ^3.0.1+1
   latlong:
   geolocator:
+  flare_flutter: ^2.0.6
+
 
 dependency_overrides:
   uuid: ^2.0.4
@@ -116,6 +121,9 @@ dev_dependencies:
 flutter:
 
   fonts:
+       - family: GlamIcons
+         fonts:
+           - asset: assets/fonts/GlamIcons.ttf
        - family: Averta
          fonts:
            - asset: assets/fonts/Averta.otf

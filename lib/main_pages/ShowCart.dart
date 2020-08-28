@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/PreAuth.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/main_pages/EditProfile.dart';
 import 'package:maugost_apps/main_pages/ShowProduct.dart';
@@ -83,6 +84,11 @@ class _ShowCartState extends State<ShowCart> {
             padding: EdgeInsets.all(15),
             child: FlatButton(
               onPressed: () {
+                if (!isLoggedIn) {
+                  pushAndResult(context, PreAuth());
+                  return;
+                }
+
                 if (!userModel.signUpCompleted) {
                   pushAndResult(
                       context,
@@ -113,6 +119,23 @@ class _ShowCartState extends State<ShowCart> {
                   });
                   return;
                 }
+                showProgress(true, context, msg: "Checking Out...");
+                handleOrder(context, cartLists, getTotalCost,
+                    onOfferSettled: () {
+                  showProgress(false, context);
+                  showMessage(
+                      context,
+                      Icons.check,
+                      green_dark,
+                      "Order CheckedOut",
+                      "Your order has been checked out and it's being processed.\n"
+                          "We'd keep you posted on the status of order or visit the"
+                          " offer tab to see the progress",
+                      cancellable: false, onClicked: (_) {
+                    cartController.add(null);
+                    Navigator.pop(context);
+                  }, delayInMilli: 1500);
+                });
               },
               color: AppConfig.appColor,
               padding: EdgeInsets.all(20),
@@ -121,7 +144,7 @@ class _ShowCartState extends State<ShowCart> {
                   side: BorderSide(color: white)),
               child: Center(
                 child: Text(
-                  "CHECKOUT (Total \$$getTotalCost)",
+                  "CHECKOUT (TOTAL \$$getTotalCost)",
                   style: textStyle(true, 16, white),
                 ),
               ),

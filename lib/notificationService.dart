@@ -6,7 +6,7 @@ class NotificationService {
   static final Client client = Client();
 
   static const String serverKey =
-      "AAAAcRxyR0U:APA91bGFclir9ZA2djETfX2jFEcgFPCSbIcasQ5I-hdoQvnpPS0SVq0QUPBLT4okNQf2JB6ozEWIXC7pmUsLvzoxBRE_B6W3M5t7R3s3lv9hhQ-cYXRdLQWkA_n7Fouu97_nqBMV5PG4";
+      'AAAAcRxyR0U:APA91bGFclir9ZA2djETfX2jFEcgFPCSbIcasQ5I-hdoQvnpPS0SVq0QUPBLT4okNQf2JB6ozEWIXC7pmUsLvzoxBRE_B6W3M5t7R3s3lv9hhQ-cYXRdLQWkA_n7Fouu97_nqBMV5PG4';
 
   static sendPush({
     String topic,

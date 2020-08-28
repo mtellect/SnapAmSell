@@ -1,12 +1,15 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:masked_controller/mask.dart';
 import 'package:masked_controller/masked_controller.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/SearchPlace.dart';
+import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+import 'package:photo/photo.dart';
 
 class EditProfile extends StatefulWidget {
   final bool modeEdit;
@@ -72,6 +75,18 @@ class _EditProfileState extends State<EditProfile> {
             ],
           ),
         ),
+        AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          width: double.infinity,
+          height: errorText.isEmpty ? 0 : 40,
+          color: red0,
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Center(
+              child: Text(
+            errorText,
+            style: textStyle(true, 16, white),
+          )),
+        ),
         Flexible(
             child: ListView(
           padding: EdgeInsets.all(0),
@@ -114,9 +129,10 @@ class _EditProfileState extends State<EditProfile> {
               ),
             ),
             Container(
-              color: black.withOpacity(.05),
+              //color: black.withOpacity(.05),
               padding: EdgeInsets.all(15),
               margin: EdgeInsets.only(top: 10, bottom: 10),
+
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -125,17 +141,29 @@ class _EditProfileState extends State<EditProfile> {
                     style: textStyle(false, 16, black),
                   ),
                   addSpace(10),
-                  textField(
-                    fullName,
-                    "First Name",
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border(
+                      left: BorderSide(width: 10, color: black.withOpacity(.5)),
+                    )),
+                    padding: EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        textField(
+                          fullName,
+                          "First Name",
+                        ),
+                        addSpace(10),
+                        textField(number, "Mobile Number", isNum: true)
+                      ],
+                    ),
                   ),
-                  addSpace(10),
-                  textField(number, "Mobile Number", isNum: true)
                 ],
               ),
             ),
             Container(
-              color: black.withOpacity(.05),
+              //color: black.withOpacity(.05),
               padding: EdgeInsets.all(15),
               margin: EdgeInsets.only(top: 10, bottom: 10),
               child: Column(
@@ -146,17 +174,31 @@ class _EditProfileState extends State<EditProfile> {
                     style: textStyle(false, 16, black),
                   ),
                   addSpace(10),
-                  selectorField(selectedAddress, "Search Address", () {
-                    pushAndResult(context, SearchPlace(), result: (_) {
-                      placeModel = _;
-                      selectedAddress = placeModel.getString(PLACE_NAME);
-                      setState(() {});
-                    }, depend: false);
-                  }),
-                  addSpace(10),
-                  textField(address, "Residential Address"),
-                  addSpace(10),
-                  textField(landMark, "LandMark Description", max: 4)
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border(
+                      left: BorderSide(width: 10, color: black.withOpacity(.5)),
+                    )),
+                    padding: EdgeInsets.only(left: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        selectorField(
+                            selectedAddress.isEmpty ? null : selectedAddress,
+                            "Search Address", () {
+                          pushAndResult(context, SearchPlace(), result: (_) {
+                            placeModel = _;
+                            selectedAddress = placeModel.getString(PLACE_NAME);
+                            setState(() {});
+                          }, depend: false);
+                        }),
+                        addSpace(10),
+                        textField(address, "Residential Address"),
+                        addSpace(10),
+                        textField(landMark, "LandMark Description", max: 4)
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -166,15 +208,14 @@ class _EditProfileState extends State<EditProfile> {
           padding: EdgeInsets.all(15),
           child: FlatButton(
             onPressed: saveProfile,
-            color: AppConfig.appColor,
+            color: black,
             padding: EdgeInsets.all(20),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: black.withOpacity(.3))),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
             child: Center(
               child: Text(
                 "SAVE",
-                style: textStyle(true, 16, black),
+                style: textStyle(true, 16, white),
               ),
             ),
           ),
@@ -236,32 +277,32 @@ class _EditProfileState extends State<EditProfile> {
     String landM = landMark.text;
 
     if (profilePhoto.isEmpty) {
-      snack("Add Profile Photo");
+      showError("Add Profile Photo");
       return;
     }
 
     if (name.isEmpty) {
-      snack("Add Full Name");
+      showError("Add Full Name");
       return;
     }
 
     if (num.isEmpty) {
-      snack("Add Mobile Number");
+      showError("Add Mobile Number");
       return;
     }
 
     if (placeModel.items.isEmpty) {
-      snack("Pick delivery location");
+      showError("Pick delivery location");
       return;
     }
 
     if (address.text.isEmpty) {
-      snack("Add delivery address");
+      showError("Add delivery address");
       return;
     }
 
     if (landM.isEmpty) {
-      snack("Add delivery landMark");
+      showError("Add delivery landMark");
       return;
     }
 
@@ -274,40 +315,36 @@ class _EditProfileState extends State<EditProfile> {
       ..put(SIGNUP_COMPLETED, true)
       ..updateItems();
     Future.delayed(Duration(milliseconds: 10), () {
-      snack("Profile Updated!");
-    });
-  }
-
-  snack(String text) {
-    Future.delayed(Duration(milliseconds: 500), () {
-      showSnack(scaffoldKey, text, useWife: true);
+      showError("Profile Updated!");
     });
   }
 
   void pickAssets() async {
-//    PhotoPicker.pickAsset(
-//            maxSelected: 1,
-//            thumbSize: 250,
-//            context: context,
-//            provider: I18nProvider.english,
-//            pickType: PickType.onlyImage,
-//            themeColor: AppConfig.appColor,
-//            rowCount: 3)
-//        .then((value) async {
-//      if (value == null) return;
-//      String path = (await value[0].originFile).path;
-//      uploadFile(File(path), (res, e) {
-//        if (null != e) {
-//          return;
-//        }
-//        profilePhoto = res;
-//        userModel
-//          ..put(USER_IMAGE, res)
-//          ..updateItems();
-//        setState(() {});
-//      });
-//    }).catchError((e) {});
+    openGallery(context, singleMode: true, type: PickType.onlyImage,
+        onPicked: (_) async {
+      if (_ == null) return;
+      String path = (_[0].file).path;
+      uploadFile(File(path), (res, e) {
+        if (null != e) {
+          return;
+        }
+        profilePhoto = res;
+        userModel
+          ..put(USER_IMAGE, res)
+          ..updateItems();
+        setState(() {});
+      });
+    });
+  }
 
-    /// Use assetList to do something.
+  String errorText = "";
+  showError(String text, {bool wasLoading = false}) {
+    if (wasLoading) showProgress(false, context);
+    errorText = text;
+    setState(() {});
+    Future.delayed(Duration(seconds: 3), () {
+      errorText = "";
+      setState(() {});
+    });
   }
 }

@@ -4,17 +4,14 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/ChatMain.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/auth/login_page.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/dialogs/listDialog.dart';
-
-PageController chatPageController = new PageController();
-List<BaseModel> notifyList = List();
 
 class Chat extends StatefulWidget {
   final bool showBar;

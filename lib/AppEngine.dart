@@ -13,11 +13,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:maugost_apps/ChatMain.dart';
 import 'package:maugost_apps/app/app.dart';
@@ -28,7 +29,6 @@ import 'package:maugost_apps/dialogs/listDialog.dart';
 import 'package:maugost_apps/dialogs/messageDialog.dart';
 import 'package:maugost_apps/dialogs/progressDialog.dart';
 import 'package:maugost_apps/payment_details.dart';
-import 'package:ntp/ntp.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -40,9 +40,7 @@ import 'package:uuid/uuid.dart';
 import 'AppConfig.dart';
 import 'MainAdmin.dart';
 import 'SimpleVideoPlayer.dart';
-import 'app/navigation.dart';
 import 'dialogs/OfferDialog.dart';
-import 'main_pages/Chat.dart';
 import 'main_pages/ShowProduct.dart';
 import 'main_pages/ShowStore.dart';
 import 'notificationService.dart';
@@ -2188,8 +2186,6 @@ smallButton(icon, text, clicked) {
   );
 }
 
-
-
 List<String> getSearchString(String text) {
   text = text.toLowerCase().trim();
   if (text.isEmpty) return List();
@@ -4158,99 +4154,26 @@ String getPlayStoreLink() {
   return appLink;
 }
 
-
-
 clickLogout(context) {
   yesNoDialog(context, "Logout?", "Are you sure you want to logout?", () {
-    showProgress(true, context, msg: "Logging Out");
     userModel.put(IS_ONLINE, false);
     userModel.updateItems();
     for (String s in userModel.getList(TOPICS))
       firebaseMessaging.unsubscribeFromTopic(s);
     userModel = BaseModel();
     lastMessages.clear();
-    notifyList.clear();
-    hookupList.clear();
-    matches.clear();
-    strockSetup = false;
-    matchSetup = false;
+    lastOffers.clear();
+    nList.clear();
+    orderList.clear();
+    orderSetup = false;
+    offerSetup = false;
+    chatSetup = false;
+    isLoggedIn = false;
     FirebaseAuth.instance.signOut().then((value) async {
       await GoogleSignIn().signOut();
-      await FacebookAuth.instance.logOut();
-      Future.delayed(Duration(seconds: 3), () {
-        //showProgress(false, context);
-        Future.delayed(Duration(seconds: 1), () {
-          //popUpUntil(context, PreInit());
-        });
-      });
+      await FacebookLogin().logOut();
     });
   });
-}
-
-updatePlanTime(BaseModel user) {
-  DateTime _currentTime = DateTime.now().toLocal();
-  NTP.getNtpOffset(localTime: _currentTime).then((offset) {
-    int _ntpOffset = offset;
-    int nowMilli = _currentTime
-        .add(Duration(milliseconds: _ntpOffset))
-        .millisecondsSinceEpoch;
-
-    user.put(PLAN_START_TIME, nowMilli);
-    user.updateItems();
-  }).catchError((error) {
-    updatePlanTime(user);
-  });
-}
-
-String getPlanName(int planCode) {
-  return planCode == 0
-      ? "Bronze Plan"
-      : planCode == 1 ? "Silver Plan" : "Gold Plan";
-}
-
-getPlanColor(int planCode) {
-  return planCode == 0 ? bronze : planCode == 1 ? silver : gold;
-}
-
-handleActivation(context, int planCode, BaseModel user, onComplete) {
-  int p = planCode;
-
-  user.put(PLAN_COUNT, getPlanCount(p));
-  user.put(LIB_ACTIVE, true);
-  user.put(CURRENT_PLAN, p);
-  user.put(LAST_DOWNLOAD_TIME, 0);
-  user.put(MY_DOWNLOAD_COUNT, 0);
-  user.put(PLAN_START_TIME, DateTime.now().millisecondsSinceEpoch);
-  user.updateItems();
-  updatePlanTime(user);
-
-  if (user.myItem()) refreshPlan = true;
-
-  createNotification(
-      [user.getObjectId()],
-      "Your library has been activated on \"${getPlanName(planCode)}\"",
-      null,
-      ITEM_TYPE_PLAN);
-  if (onComplete != null) onComplete();
-}
-
-int getPlanCost(int currentPage) {
-  String country = userModel.getString(COUNTRY);
-  bool inUsd = !country.contains("NG");
-
-  int cost = appSettingsModel.getInt(currentPage == 0
-      ? (inUsd ? BRONZE_COST_USD : BRONZE_COST)
-      : currentPage == 1
-          ? (inUsd ? SILVER_COST_USD : SILVER_COST)
-          : (inUsd ? GOLD_COST_USD : GOLD_COST));
-  return cost;
-}
-
-int getPlanCount(int currentPage) {
-  int count = appSettingsModel.getInt(currentPage == 0
-      ? (BRONZE_COUNT)
-      : currentPage == 1 ? (SILVER_COUNT) : (GOLD_COUNT));
-  return count;
 }
 
 int getMyAge(BaseModel e) {
@@ -4305,7 +4228,9 @@ inputTextView(String title, controller,
     int maxLine = 1,
     priceFormatted,
     onTipClicked,
-    priceIcon}) {
+    priceIcon,
+    bool selectorMode = false,
+    onSelected}) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -4332,76 +4257,89 @@ inputTextView(String title, controller,
         ],
       ),
       addSpace(10),
-      Container(
-        //height: 45,
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
-        decoration: BoxDecoration(
+      GestureDetector(
+        onTap: () {
+          if (null != onSelected) onSelected();
+        },
+        child: Container(
+          //height: 45,
+          margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+          decoration: BoxDecoration(
 //            color: blue09,
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: black, width: 2)),
-        child: Row(
-          children: <Widget>[
-            if (priceIcon != null) addSpaceWidth(15),
-            if (priceIcon != null)
-              priceIcon is String
-                  ? Image.asset(
-                      priceIcon,
-                      height: 18,
-                      width: 18,
-                      color: black.withOpacity(.3),
-                    )
-                  : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
-            Flexible(
-              child: new TextField(
-                onSubmitted: (_) {
-                  //postHeadline();
-                },
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(color: black, width: 2)),
+          child: Row(
+            children: <Widget>[
+              if (priceIcon != null) addSpaceWidth(15),
+              if (priceIcon != null)
+                priceIcon is String
+                    ? Image.asset(
+                        priceIcon,
+                        height: 18,
+                        width: 18,
+                        color: black.withOpacity(.3),
+                      )
+                    : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
+              Flexible(
+                child: new TextField(
+                  onSubmitted: (_) {
+                    //postHeadline();
+                  },
 //                textInputAction: maxLine==1?TextInputAction.done:TextInputAction.newline,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.fromLTRB(
-                        (priceIcon != null) ? 5 : 10, 10, 10, 10),
-                    hintText: "",
-                    hintStyle: textStyle(false, 18, black.withOpacity(.2)),
-                    counter: null
-                    /*counterStyle: textStyle(true, 0, white)*/
-                    ),
-                style: textStyle(
-                  false,
-                  18,
-                  black,
-                ),
-                controller: controller,
-                cursorColor: black,
-                cursorWidth: 1,
+                  textCapitalization: TextCapitalization.sentences,
+                  enabled: !selectorMode,
+
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.fromLTRB(
+                          (priceIcon != null) ? 5 : 10, 10, 10, 10),
+                      hintText: "",
+                      hintStyle: textStyle(false, 18, black.withOpacity(.2)),
+                      counter: null
+                      /*counterStyle: textStyle(true, 0, white)*/
+                      ),
+                  style: textStyle(
+                    false,
+                    18,
+                    black,
+                  ),
+                  controller: controller,
+                  cursorColor: black,
+                  cursorWidth: 1,
 //                          maxLength: 50,
-                maxLines: maxLine,
-                keyboardType:
-                    isNum ? (TextInputType.number) : TextInputType.text,
-                scrollPadding: EdgeInsets.all(0),
-                onChanged: (String s) {
-                  if (priceFormatted == null) return;
-                  if (checking || s.trim().length < 4) {
-                    priceFormatted();
-                    return;
-                  }
-                  checking = true;
+                  maxLines: maxLine,
+                  keyboardType:
+                      isNum ? (TextInputType.number) : TextInputType.text,
+                  scrollPadding: EdgeInsets.all(0),
+                  onChanged: (String s) {
+                    if (priceFormatted == null) return;
+                    if (checking || s.trim().length < 4) {
+                      priceFormatted();
+                      return;
+                    }
+                    checking = true;
 
-                  controller.text = formatAmount(s);
-                  priceFormatted();
-
-                  Future.delayed(Duration(milliseconds: 100), () {
-                    final val =
-                        TextSelection.collapsed(offset: controller.text.length);
-                    controller.selection = val;
-                    checking = false;
+                    controller.text = formatAmount(s);
                     priceFormatted();
-                  });
-                },
+
+                    Future.delayed(Duration(milliseconds: 100), () {
+                      final val = TextSelection.collapsed(
+                          offset: controller.text.length);
+                      controller.selection = val;
+                      checking = false;
+                      priceFormatted();
+                    });
+                  },
+                ),
               ),
-            ),
-          ],
+              if (selectorMode)
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Icon(Icons.arrow_drop_down_circle,
+                      size: 20, color: black.withOpacity(.5)),
+                )
+            ],
+          ),
         ),
       ),
     ],
@@ -5294,6 +5232,10 @@ String getChatTime(int milli) {
   return formatter.format(date);
 }
 
+String getTimeAgo(int sec) {
+  return timeAgo.format(DateTime.fromMillisecondsSinceEpoch(sec));
+}
+
 userImageItem(
   context,
   BaseModel model, {
@@ -5328,7 +5270,7 @@ userImageItem(
               ? Center(
                   child: Text(
                     getInitials(model.getString(NAME)),
-                    style: textStyle(true, 18, white),
+                    style: textStyle(true, 14, white),
                   ),
                 )
               : Card(
@@ -5406,13 +5348,14 @@ getInitials(String name) {
     return ("${parts[0].substring(0, 1)}${parts[1].substring(0, 1)}")
         .toUpperCase();
   }
-  if (name.length >= 2) {
-    return (name.substring(0, 2)).toUpperCase();
-  }
+  // if (name.length >= 2) {
+  //   return (name.substring(0, 2)).toUpperCase();
+  // }
   return name.substring(0, 1).toUpperCase();
 }
 
-shopItem(BuildContext context, BaseModel model, setState) {
+shopItem(BuildContext context, BaseModel model, setState,
+    {onLiked(BaseModel model), bool isFavorite = false}) {
   String id = model.getObjectId();
   String image = getFirstPhoto(model.images);
   String category = model.getString(CATEGORY);
@@ -5420,7 +5363,7 @@ shopItem(BuildContext context, BaseModel model, setState) {
   double price = model.getDouble(PRICE);
   int p = cartLists.indexWhere((e) => e.getObjectId() == id);
   bool isInCart = p != -1;
-//  bool isInCart = cartLists.contains(model.getObjectId());
+  //bool isFavorite = model.getList(LIKED).contains(userModel.getUserId());
 
   return GestureDetector(
     onTap: () {
@@ -5452,8 +5395,6 @@ shopItem(BuildContext context, BaseModel model, setState) {
               alignment: Alignment.bottomCenter,
               child: Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-//                decoration: BoxDecoration(
-//                    borderRadius: BorderRadius.circular(5), color: white),
                 child: Card(
                   clipBehavior: Clip.antiAlias,
                   color: white,
@@ -5511,19 +5452,47 @@ shopItem(BuildContext context, BaseModel model, setState) {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                decoration: BoxDecoration(color: white, shape: BoxShape.circle),
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.all(8),
-                child: Icon(
-                  Icons.favorite,
-                  size: 17,
-                  color: black.withOpacity(.7),
-                ),
-              ),
-            )
+            // Align(
+            //   alignment: Alignment.topRight,
+            //   child: GestureDetector(
+            //     onTap: () {
+            //       int p = productLists.indexWhere(
+            //           (e) => e.getObjectId() == model.getObjectId());
+            //       if (p == -1) return;
+            //
+            //       print("okkk");
+            //
+            //       productLists[p]
+            //         ..putInList(LIKES, userModel.getUserId(), true)
+            //         ..updateItems();
+            //       setState();
+            //       print("model>>> ${model.getList(LIKED)}");
+            //       //onLiked(model);
+            //
+            //     },
+            //     child: Container(
+            //       decoration:
+            //           BoxDecoration(color: white, shape: BoxShape.circle),
+            //       padding: EdgeInsets.all(10),
+            //       margin: EdgeInsets.all(8),
+            //       height: 35,
+            //       width: 35,
+            //       // child: Icon(
+            //       //   Icons.favorite,
+            //       //   size: 17,
+            //       //   color: black.withOpacity(.7),
+            //       // ),
+            //       child: FlareActor("assets/icons/Favorite.flr",
+            //           shouldClip: false,
+            //           color: isFavorite ? green_dark : black.withOpacity(.5),
+            //           fit: BoxFit.cover,
+            //           animation: isFavorite
+            //               ? "Favorite"
+            //               : "Unfavorite" //_animationName
+            //           ),
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),
@@ -5815,5 +5784,70 @@ fundSeller(BuildContext context, BaseModel seller, double amount,
       ..put(ESCROW_BALANCE, addToSeller)
       ..updateItems();
     if (null != onProcessed) onProcessed();
+  });
+}
+
+void handleOrder(
+    BuildContext context, List<BaseModel> products, double offerAmount,
+    {onOfferSettled}) {
+  showMessage(context, LineIcons.shopping_cart, green_dark, "CheckOut?",
+      "Are you sure want to proceed to checkout and process products?",
+      clickNoText: "Go Back", clickYesText: "CheckOut", onClicked: (_) {
+    if (!_) return;
+    //TODO 1. Deduct funds from my wallet and move into order created
+    //TODO 2. (Migrate) products into Order with status ORDER_PENDING
+    //TODO 3. Create a push notification to the seller
+
+    //TODO 1.
+    List idsNotified = [];
+    double accountBal = userModel.getDouble(ESCROW_BALANCE);
+    double leftOver = accountBal - offerAmount;
+    userModel
+      ..put(ESCROW_BALANCE, leftOver)
+      ..updateItems();
+
+    //TODO 2.
+    String orderId = getRandomId();
+    for (var product in products) {
+      String id = getRandomId();
+      String productId = product.getObjectId();
+      String sellerId = product.getUserId();
+      List grouped = products.where((e) => e.getUserId() == sellerId).toList();
+      int count = grouped.length;
+      List parties = [userModel.getObjectId(), sellerId];
+      product
+        ..put(OBJECT_ID, id)
+        ..put(ORDER_ID, orderId)
+        ..put(SETTLING_AMOUNT, offerAmount)
+        ..put(PARTIES, parties)
+        ..saveItem(ORDER_BASE, true, document: id);
+
+      //TODO 3.
+      BaseModel notifyModel = BaseModel();
+      String message = 'An order request for your product was requested!';
+      if (count > 1)
+        message = 'An order request for your products was requested!';
+      notifyModel
+        //..put(MESSAGE, message)
+        ..put(ORDER_ID, orderId)
+        ..put(PRODUCT_ID, productId)
+        ..put(PARTIES, [sellerId])
+        ..saveItem(NOTIFY_BASE, true);
+      if (idsNotified.contains(sellerId)) continue;
+      Firestore.instance
+          .collection(USER_BASE)
+          .document(sellerId)
+          .get()
+          .then((value) {
+        BaseModel seller = BaseModel(doc: value);
+        notifyModel..remove(UPDATED_AT)..remove(CREATED_AT);
+        NotificationService.sendPush(
+            title: "Product Ordered!",
+            data: notifyModel.items,
+            token: seller.getString(TOKEN));
+        idsNotified.add(sellerId);
+      });
+      onOfferSettled();
+    }
   });
 }

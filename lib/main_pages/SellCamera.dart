@@ -8,6 +8,7 @@ import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:photo/photo.dart';
 
 import 'SellPage.dart';
 
@@ -796,6 +797,26 @@ class _SellCameraState extends State<SellCamera>
 //
 //      setState(() {});
 //    }).catchError((e) {});
+
+    openGallery(context, maxSelection: 10, type: PickType.onlyImage,
+        onPicked: (_) async {
+      if (_ == null) return;
+      for (var a in _) {
+        String path = a.file.path;
+        bool isVideo = a.isVideo;
+        BaseModel model = BaseModel();
+        model.put(OBJECT_ID, a.galleryId);
+        model.put(IMAGE_PATH, path);
+        model.put(IS_VIDEO, isVideo);
+        // if (isVideo) {
+        //   // model.put(THUMBNAIL_URL,
+        //   //     (await VideoCompress().getThumbnailWithFile(path)).path);
+        // }
+        addToList(model);
+      }
+
+      setState(() {});
+    });
 
     /// Use assetList to do something.
   }

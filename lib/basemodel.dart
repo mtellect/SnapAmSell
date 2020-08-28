@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:maugost_apps/assets.dart';
 
-import 'AppEngine.dart';
-
 class BaseModel {
   Map<String, Object> items = new Map();
   Map<String, Object> itemUpdate = new Map();
@@ -497,9 +495,9 @@ class BaseModel {
     items[CREATED_AT] = FieldValue.serverTimestamp();
     items[TIME] = DateTime.now().millisecondsSinceEpoch;
     items[TIME_UPDATED] = DateTime.now().millisecondsSinceEpoch;
-    if (name != (USER_BASE) &&
-        name != (APP_SETTINGS_BASE) &&
-        name != (NOTIFY_BASE)) {
+    if (name != (USER_BASE) && name != (APP_SETTINGS_BASE)
+        //&& name != (NOTIFY_BASE)
+        ) {
       if (addMyInfo) addMyDetails(addMyInfo);
     }
 
@@ -510,16 +508,14 @@ class BaseModel {
 
   void addMyDetails(bool addMyInfo) {
     items[USER_ID] = userModel.getUserId();
-    items[USER_IMAGE] = getFirstPhoto(userModel.getList(PROFILE_PHOTOS));
-    items[USERNAME] = userModel.getUserName();
+    items[USER_IMAGE] = userModel.userImage;
     items[NAME] = userModel.getString(NAME);
-//    items[LAST_NAME] = userModel.getString(LAST_NAME);
     items[BY_ADMIN] = userModel.isAdminItem();
     items[GENDER] = userModel.getInt(GENDER);
-//    items[CITY] = userModel.getString(CITY);
     items[EMAIL] = userModel.getString(EMAIL);
     items[PHONE_NUMBER] = userModel.getString(PHONE_NUMBER);
     items[DEVICE_ID] = userModel.getString(DEVICE_ID);
+    items[TOKEN] = userModel.getString(TOKEN);
   }
 
   void saveItem(String name, bool addMyInfo, {document, onComplete}) {
@@ -591,8 +587,6 @@ class BaseModel {
   List<BaseModel> get hookUpPhotos => getListModel(HOOKUP_PHOTOS);
   List<BaseModel> get images => getListModel(IMAGES);
 
-  bool get isHookUps => selectedQuickHookUp == 0;
-
   bool get emailNotification => getBoolean(EMAIL_NOTIFICATION);
   bool get pushNotification => getBoolean(PUSH_NOTIFICATION);
   bool get isVideo => getBoolean(IS_VIDEO);
@@ -609,18 +603,6 @@ class BaseModel {
   String get userImage => getString(USER_IMAGE);
   String get firstName => getString(NAME).split(" ")[0];
 
-  String get gender => genderType[selectedGender];
-  String get ethnicity => ethnicityType[selectedEthnicity];
-  String get preference => preferenceType[selectedPreference];
-  String get relationship => relationshipType[selectedRelationship];
-  String get quickHookUp => quickHookUps[selectedQuickHookUp];
-
-  int get selectedGender => get(GENDER) == null ? -1 : getInt(GENDER);
-  int get selectedEthnicity => get(ETHNICITY) == null ? -1 : getInt(ETHNICITY);
-  int get selectedPreference =>
-      get(PREFERENCE) == null ? -1 : getInt(PREFERENCE);
-  int get selectedRelationship =>
-      get(RELATIONSHIP) == null ? -1 : getInt(RELATIONSHIP);
-  int get selectedQuickHookUp =>
-      get(QUICK_HOOKUP) == null ? -1 : getInt(QUICK_HOOKUP);
+  List get followers => getList(FOLLOWERS);
+  List get followings => getList(FOLLOWING);
 }
