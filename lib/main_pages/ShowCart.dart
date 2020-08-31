@@ -62,7 +62,7 @@ class _ShowCartState extends State<ShowCart> {
                         color: AppConfig.appColor,
                       ),
                       Text(
-                        "Nothing in Cart Yet",
+                        "Your Cart is Empty",
                         style: textStyle(true, 20, black),
                         textAlign: TextAlign.center,
                       ),
@@ -132,9 +132,11 @@ class _ShowCartState extends State<ShowCart> {
                           "We'd keep you posted on the status of order or visit the"
                           " offer tab to see the progress",
                       cancellable: false, onClicked: (_) {
-                    cartController.add(null);
-                    Navigator.pop(context);
-                  }, delayInMilli: 1500);
+                    if (_) {
+                      Navigator.pop(context);
+                      cartController.add(null);
+                    }
+                  }, delayInMilli: 2000);
                 });
               },
               color: AppConfig.appColor,

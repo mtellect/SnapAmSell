@@ -580,7 +580,7 @@ class BaseModel {
   }
 
   List<BaseModel> getListModel(String key) {
-    return getList(key).map((e) => BaseModel(items: e)).toList();
+    return List.from(getList(key).map((e) => BaseModel(items: e)).toList());
   }
 
   List<BaseModel> get profilePhotos => getListModel(PROFILE_PHOTOS);

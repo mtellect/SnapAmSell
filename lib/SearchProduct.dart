@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 
 import 'AppConfig.dart';
 import 'AppEngine.dart';
+import 'ShowCategories.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 import 'main_pages/ShowProduct.dart';
@@ -37,25 +38,27 @@ class _SearchProductState extends State<SearchProduct> {
         String username = model.getUserName().toLowerCase();
         String name = model.getString(NAME).toLowerCase();
         final search = getSearchString('$username $name');
-        model
-          ..put(SEARCH, search)
-          ..updateItems(delaySeconds: 2);
-      }
-      print("<<<done>>> fix applied!");
-    });
+        String token = model.getString(TOKEN);
 
-    // Firestore.instance.collection(PRODUCT_BASE).getDocuments().then((value) {
-    //   for (var doc in value.documents) {
-    //     BaseModel model = BaseModel(doc: doc);
-    //     String title = model.getString(TITLE).toLowerCase();
-    //     String category = model.getString(CATEGORY).toLowerCase();
-    //     final search = getSearchString('$title $category');
-    //     model
-    //       ..put(SEARCH, search)
-    //       ..updateItems(delaySeconds: 2);
-    //   }
-    //   print("<<<done>>> fix applied!");
-    // });
+        Firestore.instance
+            .collection(PRODUCT_BASE)
+            .where(USER_ID, isEqualTo: model.getUserId())
+            .getDocuments()
+            .then((value) {
+          for (var doc in value.documents) {
+            BaseModel model = BaseModel(doc: doc);
+            String title = model.getString(TITLE).toLowerCase();
+            String category = model.getString(CATEGORY).toLowerCase();
+            final search = getSearchString('$title $category');
+            model
+              ..put(TOKEN, token)
+              ..updateItems(delaySeconds: 2);
+          }
+        });
+      }
+
+      print("doneeeeee");
+    });
   }
 
   listener() async {
@@ -132,53 +135,73 @@ class _SearchProductState extends State<SearchProduct> {
       children: [
         Container(
           padding: EdgeInsets.only(top: 30, right: 10, left: 10, bottom: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: BackButton(),
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+          child: Row(
             children: [
-              BackButton(),
+              Expanded(
+                child: Container(
+                    padding: EdgeInsets.only(left: 15, right: 15),
+                    decoration: BoxDecoration(
+                        color: black.withOpacity(.04),
+                        border: Border.all(
+                          color: black.withOpacity(.09),
+                        ),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search,
+                          color: black.withOpacity(.4),
+                          size: 20,
+                        ),
+                        addSpaceWidth(5),
+                        Expanded(
+                          child: TextField(
+                            controller: searchController,
+                            cursorColor: black,
+                            decoration: InputDecoration(
+                                hintText: "Search ", border: InputBorder.none),
+                          ),
+                        ),
+                        if (showCancel)
+                          GestureDetector(
+                            onTap: () {
+                              searchController.clear();
+                              result.clear();
+                              showCancel = false;
+                              setState(() {});
+                            },
+                            child: Icon(
+                              LineIcons.close,
+                              color: black.withOpacity(.5),
+                            ),
+                          ),
+                      ],
+                    )),
+              ),
+              addSpaceWidth(10),
+              FlatButton(
+                onPressed: () {
+                  pushAndResult(context, ShowCategories());
+                },
+                shape: CircleBorder(),
+                minWidth: 45,
+                padding: EdgeInsets.zero,
+                child: Container(
+                  child: Center(child: Icon(LineIcons.sort_alpha_desc)),
+                  height: 45,
+                  width: 45,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: black.withOpacity(.1))),
+                ),
+              )
             ],
           ),
         ),
-        Container(
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            padding: EdgeInsets.only(left: 15, right: 15),
-            decoration: BoxDecoration(
-                color: black.withOpacity(.04),
-                border: Border.all(
-                  color: black.withOpacity(.09),
-                ),
-                borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.search,
-                  color: black.withOpacity(.4),
-                  size: 20,
-                ),
-                addSpaceWidth(5),
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    cursorColor: black,
-                    decoration: InputDecoration(
-                        hintText: "Search ", border: InputBorder.none),
-                  ),
-                ),
-                if (showCancel)
-                  GestureDetector(
-                    onTap: () {
-                      searchController.clear();
-                      result.clear();
-                      showCancel = false;
-                      setState(() {});
-                    },
-                    child: Icon(
-                      LineIcons.close,
-                      color: black.withOpacity(.5),
-                    ),
-                  ),
-              ],
-            )),
         AnimatedContainer(
           duration: Duration(milliseconds: 400),
           child: LinearProgressIndicator(

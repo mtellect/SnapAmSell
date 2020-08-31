@@ -67,6 +67,7 @@ bool offerSetup = false;
 List showNewMessageDot = [];
 List showNewMessageOffer = [];
 bool showNewNotifyDot = false;
+List unreadCount = [];
 List newStoryIds = [];
 String visibleChatId;
 bool itemsLoaded = false;
@@ -171,11 +172,19 @@ class _MainAdminState extends State<MainAdmin>
       uploadingController.add("Uploading Product");
       progressController.add(true);
       final images = model.images;
+
       List<BaseModel> uploadModels = [];
       saveProducts(images, uploadModels, (_) {
         model
           ..put(IMAGES, _.map((e) => e.items).toList())
           ..updateItems();
+        int p = productLists
+            .indexWhere((e) => e.getObjectId() == model.getObjectId());
+        if (p != -1) {
+          productLists[p] = model;
+        } else {
+          productLists.add(model);
+        }
       });
     });
 
@@ -881,9 +890,13 @@ class _MainAdminState extends State<MainAdmin>
         .orderBy(TIME_UPDATED, descending: true)
         .snapshots()
         .listen((shots) {
-      //toastInAndroid(shots.documents.length.toString());
-      for (DocumentSnapshot d in shots.documents) {
-        BaseModel model = BaseModel(doc: d);
+      for (var d in shots.documentChanges) {
+        BaseModel model = BaseModel(doc: d.document);
+
+        if (d.type == DocumentChangeType.removed) {
+          nList.removeWhere((bm) => bm.getObjectId() == model.getObjectId());
+          continue;
+        }
         int p =
             nList.indexWhere((bm) => bm.getObjectId() == model.getObjectId());
         if (p == -1) {
@@ -894,6 +907,7 @@ class _MainAdminState extends State<MainAdmin>
 
         if (!model.getList(READ_BY).contains(userModel.getObjectId()) &&
             !model.myItem()) {
+          unreadCount.add(model.getObjectId());
           showNewNotifyDot = true;
           setState(() {});
         }
@@ -1111,7 +1125,7 @@ class _MainAdminState extends State<MainAdmin>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.account_balance,
+                              Icons.account_balance_wallet_outlined,
                               size: 16,
                               color: black,
                             ),
@@ -1148,13 +1162,13 @@ class _MainAdminState extends State<MainAdmin>
                                     color: black,
                                   ),
                                 )),
-                            if (showNewNotifyDot)
+                            if (unreadCount.length > 0)
                               Container(
                                 // height: 10,
                                 // width: 10,
                                 padding: EdgeInsets.all(3),
                                 child: Text(
-                                  "New",
+                                  unreadCount.length.toString(),
                                   style: textStyle(false, 11, white),
                                 ),
                                 decoration: BoxDecoration(

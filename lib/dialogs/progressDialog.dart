@@ -97,7 +97,7 @@ class _progressDialogState extends State<progressDialog> {
       children: <Widget>[
         GestureDetector(
           onTap: () {
-//            if (cancelable) Navigator.pop(context);
+            if (cancelable) Navigator.pop(context);
           },
           child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),

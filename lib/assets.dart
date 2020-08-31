@@ -907,6 +907,7 @@ const String MY_SKILLS = "mySkills";
 const String LATITUDE = "latitude1";
 const String LONGITUDE = "longitude1";
 const String CATEGORY = "category";
+const String CATEGORIES = "categories";
 const String STORY_TAGS = "storyTags";
 const String TAG = "tag";
 const String ID_CARD = "idCard";
@@ -1176,7 +1177,6 @@ const String MCR = "mcr";
 const String MCR_FREE = "mcrFree";
 const String MCR_IDS = "mcrIds";
 const String PROFILE_STATUS = "profileStatus";
-
 
 const String APP_SHARE_MESSAGE = "appShareMessage";
 const String APP_LINK_IOS = "appLinkAndroid";
@@ -1585,8 +1585,10 @@ const String SEARCH = "search";
 const String SETTLING_AMOUNT = "settlingAmount";
 const String ORDER_STATUS = "orderStatus";
 const int ORDER_STATUS_PENDING = 0;
-const int ORDER_STATUS_EN_ROUTE = 1;
-const int ORDER_STATUS_COMPLETED = 2;
+const int ORDER_STATUS_PICKED = 1;
+const int ORDER_STATUS_EN_ROUTE = 2;
+const int ORDER_STATUS_CANCELED = 3;
+const int ORDER_STATUS_COMPLETED = 4;
 
 const List<String> CLOTH_SIZES = [
   "Xtra Small",

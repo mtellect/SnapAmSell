@@ -1,34 +1,40 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
-import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/SearchProduct.dart';
 import 'package:maugost_apps/ShowCategories.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'ShowProducts.dart';
-
-class Home extends StatefulWidget {
+class ShowProducts extends StatefulWidget {
+  final BaseModel category;
+  ShowProducts(this.category);
   @override
-  _HomeState createState() => _HomeState();
+  _ShowProductsState createState() => _ShowProductsState();
 }
 
-class _HomeState extends State<Home> {
+class _ShowProductsState extends State<ShowProducts> {
+  List<BaseModel> productLists = [];
+  bool hasSetup = false;
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
+
   @override
-  void initState() {
-    // TODO: implement initState
+  initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 1), () {
-      loadProducts(true);
-    });
+    loadProducts(false);
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
   }
 
   loadProducts(bool isNew) async {
@@ -43,8 +49,8 @@ class _HomeState extends State<Home> {
     List local = [];
     Firestore.instance
         .collection(PRODUCT_BASE)
-        //.where(PARTIES, arrayContains: userModel.getUserId())
-        .limit(16)
+        .where(CATEGORY, isEqualTo: widget.category.getString(CATEGORY))
+        .limit(30)
         .orderBy(CREATED_AT, descending: !isNew)
         .startAt(startFeedAt)
         .getDocuments()
@@ -65,21 +71,19 @@ class _HomeState extends State<Home> {
       if (isNew) {
         refreshController.refreshCompleted();
       } else {
-        /*int oldLength = productLists.length;
+        int oldLength = productLists.length;
         int newLength = local.length;
         if (newLength <= oldLength) {
           refreshController.loadNoData();
           canRefresh = false;
         } else {
           refreshController.loadComplete();
-        }*/
-        refreshController.loadComplete();
+        }
       }
-      productSetup = true;
-      if (mounted)
-        setState(() {
-          //myNotifications.sort((a, b) => b.time.compareTo(a.time));
-        });
+      hasSetup = true;
+      if (mounted) setState(() {});
+    }).catchError((e) {
+      checkError(context, e);
     });
   }
 
@@ -91,12 +95,28 @@ class _HomeState extends State<Home> {
     );
   }
 
-  //["All", "Cosmetics", "Free", "Others"]
-
   page() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //addSpace(40),
+        Container(
+          padding: EdgeInsets.only(top: 30, right: 10, left: 10, bottom: 0),
+          child: Row(
+            children: [
+              BackButton(),
+              Text.rich(TextSpan(children: [
+                TextSpan(
+                  text: 'Category ',
+                  style: textStyle(false, 18, black),
+                ),
+                TextSpan(
+                  text: '~${widget.category.getString(TITLE)}~',
+                  style: textStyle(true, 18, black),
+                )
+              ])),
+            ],
+          ),
+        ),
         Container(
           margin: EdgeInsets.all(10),
           child: Row(
@@ -180,10 +200,7 @@ class _HomeState extends State<Home> {
           shrinkWrap: true,
           //physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.only(left: 10, right: 10, bottom: 120),
-
           children: <Widget>[
-            categories(),
-            addSpace(15),
             body(),
           ],
         ),
@@ -191,87 +208,28 @@ class _HomeState extends State<Home> {
     );
   }
 
-  categories() {
-    if (null == appSettingsModel) return Container();
-    List<BaseModel> appCategories = appSettingsModel.getListModel(CATEGORIES);
-
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          childAspectRatio: 1.3),
-      itemBuilder: (c, p) {
-        BaseModel model = appCategories[p];
-        String categoryName = model.getString(TITLE);
-        String image = getFirstPhoto(model.images);
-
-        return GestureDetector(
-          onTap: () {
-            pushAndResult(context, ShowProducts(model));
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Stack(
-              children: [
-                CachedNetworkImage(
-                  imageUrl: image,
-                  height: double.infinity,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (c, s) {
-                    return Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      color: black.withOpacity(.09),
-                      child: Icon(
-                        LineIcons.image,
-                        color: white.withOpacity(.5),
-                      ),
-                    );
-                  },
-                ),
-                Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  color: black.withOpacity(.6),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    padding: EdgeInsets.all(5),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: AppConfig.appColor,
-                        borderRadius: BorderRadius.circular(6)),
-                    child: Text(
-                      categoryName,
-                      style: textStyle(false, 12, black),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-      itemCount: appCategories.length,
-      padding: EdgeInsets.all(0),
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-    );
-  }
-
   body() {
     return Builder(
       builder: (ctx) {
-        if (!productSetup)
+        if (!hasSetup)
           return Container(
-            height: 200,
+            height: getScreenHeight(context) * .7,
             child: loadingLayout(trans: true),
+          );
+
+        if (productLists.isEmpty)
+          return Container(
+            height: getScreenHeight(context) * .7,
+            child: Center(
+              child: emptyLayout(ic_product, 'Oops! Nothing Yet',
+                  'Modify your search and try again', clickText: 'Reload',
+                  click: () {
+                setState(() {
+                  hasSetup = false;
+                });
+                loadProducts(false);
+              }),
+            ),
           );
 
         return GridView.builder(

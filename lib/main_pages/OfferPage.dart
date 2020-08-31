@@ -55,7 +55,7 @@ class _OfferPageState extends State<OfferPage> {
               child: Row(
                 children: List.generate(2, (p) {
                   String title =
-                      p == 0 ? "In-Progress" : p == 1 ? "Orders" : "Completed";
+                      p == 0 ? "Negotiation" : p == 1 ? "Orders" : "Completed";
                   bool selected = p == currentPage;
                   return Flexible(
                     child: GestureDetector(

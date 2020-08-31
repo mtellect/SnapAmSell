@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/ShowCategories.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/dialogs/inputDialog.dart';
@@ -124,6 +125,15 @@ class _AppAdminState extends State<AppAdmin> {
           adsStatistics(),
           adsRevenue(),
           //subscriptionFeatures(),
+
+          ListTile(
+            onTap: () {
+              pushAndResult(context, ShowCategories());
+            },
+            title: Text("Product Categories"),
+            subtitle: Text("Add and Update Product Categories"),
+            trailing: Icon(Icons.navigate_next),
+          ),
 
           ListTile(
             onTap: () {

@@ -129,7 +129,7 @@ class _ShowStoreState extends State<ShowStore> {
                     height: 35,
                     // decoration: BoxDecoration(
                     //     color: green_dark, shape: BoxShape.circle),
-                    padding: EdgeInsets.all(6),
+                    padding: EdgeInsets.all(8),
                     child: FlareActor("assets/icons/Favorite.flr",
                         shouldClip: false,
                         color: isFavorite ? green_dark : black.withOpacity(.5),

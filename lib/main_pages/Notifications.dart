@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -186,8 +187,7 @@ class _NotificationsState extends State<Notifications>
             itemBuilder: (c, p) {
               BaseModel model = nList[p];
               bool myItem = model.myItem();
-              String message =
-                  'An order request for your product was requested!';
+              String message = 'A Buyer has placed a request for your product';
               if (myItem)
                 message = 'You have placed an order request for a product!';
 
@@ -200,6 +200,7 @@ class _NotificationsState extends State<Notifications>
                   model
                     ..putInList(READ_BY, userModel.getObjectId(), true)
                     ..updateItems();
+                  unreadCount.remove(model.getObjectId());
                   pushAndResult(
                       context,
                       ShowOrder(
@@ -207,7 +208,7 @@ class _NotificationsState extends State<Notifications>
                       ));
                 },
                 child: Container(
-                  padding: EdgeInsets.all(15),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: black.withOpacity(unRead ? 0.03 : 0),
                       border: Border(
@@ -219,54 +220,110 @@ class _NotificationsState extends State<Notifications>
                       Row(
                         children: [
                           Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                  color: AppConfig.appColor,
-                                  shape: BoxShape.circle),
-                              child: Icon(LineIcons.shopping_cart)),
+                            height: 54,
+                            width: 54,
+                            child: Stack(
+                              children: [
+                                Container(
+                                    height: 45,
+                                    width: 45,
+                                    decoration: BoxDecoration(
+                                        color: AppConfig.appColor,
+                                        shape: BoxShape.circle),
+                                    child: Icon(
+                                      LineIcons.shopping_cart,
+                                      size: 22,
+                                    )),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(28),
+                                    child: Container(
+                                      height: 28,
+                                      width: 28,
+                                      decoration: BoxDecoration(
+                                          color: white,
+                                          border: Border.all(
+                                              color: white, width: 1.5)),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(28),
+                                        child: CachedNetworkImage(
+                                          imageUrl: model.userImage,
+                                          fit: BoxFit.cover,
+                                          height: double.infinity,
+                                          width: double.infinity,
+                                          //width: 28,
+                                          placeholder: (c, s) {
+                                            return Container(
+                                              height: 28,
+                                              width: 28,
+                                              alignment: Alignment.center,
+                                              child: Icon(
+                                                LineIcons.user,
+                                                size: 16,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: black.withOpacity(.08),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                      color: white,
+                                                      width: 1.5)),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           addSpaceWidth(10),
-                          Flexible(
+                          Expanded(
                             child: Text(
                               message,
                               style: textStyle(true, 18, black),
                             ),
                           ),
+                          Text(
+                            getTimeAgo(model.getTime()),
+                            style: textStyle(false, 14, black.withOpacity(.5)),
+                          ),
                         ],
                       ),
-                      if (!model.myItem())
-                        Container(
-                          margin: EdgeInsets.only(top: 4),
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              color: black.withOpacity(.05),
-                              border: Border.all(color: black.withOpacity(.08))
-                              /* border: Border(
-                                top: BorderSide(
-                                    width: 5, color: black.withOpacity(.5)),
-                                left: BorderSide(
-                                    width: 5, color: black.withOpacity(.5)),
-                              )*/
-                              ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              userImageItem(context, model,
-                                  size: 30, strokeSize: 1, padLeft: false),
-                              addSpaceWidth(5),
-                              Text(
-                                model.getString(NAME),
-                                style: textStyle(true, 12, black),
-                              ),
-                              addSpaceWidth(5),
-                            ],
-                          ),
-                        ),
-                      Text(
-                        getTimeAgo(model.getTime()),
-                        style: textStyle(false, 14, black.withOpacity(.5)),
-                      ),
+                      // if (!model.myItem())
+                      //   Container(
+                      //     margin: EdgeInsets.only(top: 4),
+                      //     padding: EdgeInsets.all(2),
+                      //     decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(25),
+                      //         color: black.withOpacity(.05),
+                      //         border: Border.all(color: black.withOpacity(.08))
+                      //         /* border: Border(
+                      //           top: BorderSide(
+                      //               width: 5, color: black.withOpacity(.5)),
+                      //           left: BorderSide(
+                      //               width: 5, color: black.withOpacity(.5)),
+                      //         )*/
+                      //         ),
+                      //     child: Row(
+                      //       mainAxisSize: MainAxisSize.min,
+                      //       children: [
+                      //         userImageItem(context, model,
+                      //             size: 30, strokeSize: 1, padLeft: false),
+                      //         addSpaceWidth(5),
+                      //         Text(
+                      //           model.getString(NAME),
+                      //           style: textStyle(true, 12, black),
+                      //         ),
+                      //         addSpaceWidth(5),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // Text(
+                      //   getTimeAgo(model.getTime()),
+                      //   style: textStyle(false, 14, black.withOpacity(.5)),
+                      // ),
                     ],
                   ),
                 ),

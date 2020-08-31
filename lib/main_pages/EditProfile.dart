@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:masked_controller/mask.dart';
 import 'package:masked_controller/masked_controller.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/SearchPlace.dart';
 import 'package:maugost_apps/app/app.dart';
@@ -72,6 +73,16 @@ class _EditProfileState extends State<EditProfile> {
                 style: textStyle(true, 25, black),
               ),
               Spacer(),
+              RaisedButton(
+                color: AppConfig.appColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25)),
+                child: Text(
+                  "SAVE",
+                  style: textStyle(true, 16, black),
+                ),
+                onPressed: saveProfile,
+              )
             ],
           ),
         ),
@@ -136,17 +147,28 @@ class _EditProfileState extends State<EditProfile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Account Information",
-                    style: textStyle(false, 16, black),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: AppConfig.appColor,
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.person_outline_outlined,
+                          size: 15,
+                        ),
+                        addSpaceWidth(10),
+                        Text(
+                          "Account Information",
+                          style: textStyle(true, 13, black.withOpacity(.9)),
+                        ),
+                      ],
+                    ),
                   ),
                   addSpace(10),
                   Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                      left: BorderSide(width: 10, color: black.withOpacity(.5)),
-                    )),
-                    padding: EdgeInsets.only(left: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -169,17 +191,28 @@ class _EditProfileState extends State<EditProfile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Contact Information",
-                    style: textStyle(false, 16, black),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: AppConfig.appColor,
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.location_city,
+                          size: 15,
+                        ),
+                        addSpaceWidth(10),
+                        Text(
+                          "Delivery Information",
+                          style: textStyle(true, 13, black.withOpacity(.9)),
+                        ),
+                      ],
+                    ),
                   ),
                   addSpace(10),
                   Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                      left: BorderSide(width: 10, color: black.withOpacity(.5)),
-                    )),
-                    padding: EdgeInsets.only(left: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -204,22 +237,6 @@ class _EditProfileState extends State<EditProfile> {
             ),
           ],
         )),
-        Container(
-          padding: EdgeInsets.all(15),
-          child: FlatButton(
-            onPressed: saveProfile,
-            color: black,
-            padding: EdgeInsets.all(20),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-            child: Center(
-              child: Text(
-                "SAVE",
-                style: textStyle(true, 16, white),
-              ),
-            ),
-          ),
-        )
       ],
     );
   }

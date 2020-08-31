@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/admin/AppAdmin.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/auth/login_page.dart';
@@ -271,6 +272,9 @@ class _AccountState extends State<Account> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                fieldItem(Icons.support_agent, red, "Admin Portal", () {
+                  pushAndResult(context, AppAdmin());
+                }),
                 fieldItem(Icons.exit_to_app, red, "Logout", () {
                   clickLogout(context);
                 }),

@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/AppConfig.dart';
+import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
 
 class messageDialog extends StatelessWidget {
@@ -157,7 +157,7 @@ class messageDialog extends StatelessWidget {
                                   MaterialTapTargetSize.shrinkWrap,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25)),
-                              color: blue3,
+                              color: AppConfig.appColor,
                               onPressed: () {
                                 Navigator.pop(context, true);
                               },

@@ -6,7 +6,10 @@ import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/main_pages/ShowProduct.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'EditProfile.dart';
 
 class ShowOrder extends StatefulWidget {
   final String orderId;
@@ -23,7 +26,7 @@ class ShowOrder extends StatefulWidget {
 class _ShowOrderState extends State<ShowOrder> {
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
-  List listItems = [];
+  List<BaseModel> listItems = [];
   bool ready = false;
 
   @override
@@ -108,21 +111,123 @@ class _ShowOrderState extends State<ShowOrder> {
                   //color: white,
                   ),
               Text(
-                "My Order ",
+                "Orders ",
                 style: textStyle(true, 25, textColor),
               ),
               if (widget.date.isNotEmpty)
                 Text(
-                  "on ${widget.date}",
+                  "(on ${widget.date})",
                   style: textStyle(false, 16, textColor),
                 ),
               Spacer(),
             ],
           ),
         ),
-        refresher()
+        refresher(),
+        Container(
+          decoration:
+              BoxDecoration(color: red, borderRadius: BorderRadius.circular(8)),
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info,
+                color: white_color,
+              ),
+              addSpaceWidth(10),
+              Flexible(
+                child: Text(
+                  isDropOff
+                      ? "Note: Ensure the Product is ready, it would be PickedUp by a Driver from your location and Dropped Off at the Buyers location before funds would reflect in your wallet."
+                      : "Note: Requesting Pickup attracts extra Charges."
+                          "\n Your Order will be Picked from the different Sellers location to your own location (Buyer)",
+                  style: textStyle(false, 14, white_color),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(15),
+          child: FlatButton(
+            onPressed: () {
+              return;
+
+              if (!userModel.signUpCompleted) {
+                pushAndResult(
+                    context,
+                    EditProfile(
+                      modeEdit: true,
+                    ),
+                    depend: false);
+                return;
+              }
+
+              double accountBal = userModel.getDouble(ESCROW_BALANCE);
+              double offerAmount = getTotalCost;
+              double leftOver = accountBal - offerAmount;
+              if (accountBal == 0 || leftOver.isNegative) {
+                showMessage(
+                    context,
+                    Icons.warning,
+                    red,
+                    "Insufficient Funds",
+                    "Oops! You do not have sufficient"
+                        " funds in your wallet. Please"
+                        " add funds to your wallet to proceed.",
+                    clickYesText: "Fund Wallet", onClicked: (_) {
+                  if (_)
+                    fundWallet(context, onProcessed: () {
+                      setState(() {});
+                    });
+                });
+                return;
+              }
+              showProgress(true, context, msg: "Checking Out...");
+              handleOrder(context, cartLists, getTotalCost, onOfferSettled: () {
+                showProgress(false, context);
+                showMessage(
+                    context,
+                    Icons.check,
+                    green_dark,
+                    "Order CheckedOut",
+                    "Your order has been checked out and it's being processed.\n"
+                        "We'd keep you posted on the status of order or visit the"
+                        " offer tab to see the progress",
+                    cancellable: false, onClicked: (_) {
+                  if (_) {
+                    Navigator.pop(context);
+                    cartController.add(null);
+                  }
+                }, delayInMilli: 2000);
+              });
+            },
+            color: AppConfig.appColor,
+            padding: EdgeInsets.all(20),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: white)),
+            child: Center(
+              child: Text(
+                (isDropOff ? "Request DropOff" : "Request PickUp")
+                    .toUpperCase(),
+                style: textStyle(true, 16, white),
+              ),
+            ),
+          ),
+        )
       ],
     );
+  }
+
+  bool get isDropOff {
+    bool dropOff = false;
+    List sellers = listItems
+        .where((e) => e.getString(SELLER_ID) == userModel.getUserId())
+        .toList();
+    dropOff = sellers.length == listItems.length;
+    return dropOff;
   }
 
   refresher() {
@@ -196,7 +301,7 @@ class _ShowOrderState extends State<ShowOrder> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (c, p) {
-              return cartItem(p);
+              return item(p);
             });
       },
     );
@@ -204,7 +309,7 @@ class _ShowOrderState extends State<ShowOrder> {
 
   double get getTotalCost {
     double totalCost = 0.0;
-    for (var bm in cartLists) {
+    for (var bm in listItems) {
       int quantity = bm.getInt(QUANTITY);
       double price = bm.getDouble(PRICE) * quantity;
       totalCost = totalCost + price;
@@ -212,8 +317,8 @@ class _ShowOrderState extends State<ShowOrder> {
     return totalCost;
   }
 
-  cartItem(int p) {
-    final model = listItems[p];
+  item(int p) {
+    BaseModel model = listItems[p];
     int pos =
         cartLists.indexWhere((e) => e.getObjectId() == model.getObjectId());
     bool isInCart = pos != -1;
@@ -222,39 +327,51 @@ class _ShowOrderState extends State<ShowOrder> {
     String category = model.getString(CATEGORY);
     String title = model.getString(TITLE);
     int quantity = model.getInt(QUANTITY);
+    int status = model.getInt(ORDER_STATUS);
     double price = model.getDouble(PRICE) * quantity;
 
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.all(5),
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: white.withOpacity(.1)),
-              color: white.withOpacity(.05)),
-          child: Stack(
-            children: [
-              Row(
+    return InkWell(
+      onTap: () {
+        pushAndResult(
+            context,
+            ShowProduct(
+              model,
+              objectId: model.getString(PRODUCT_ID),
+              order: true,
+            ));
+      },
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(5),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: white.withOpacity(.1)),
+                  color: white.withOpacity(.05)),
+              child: Stack(
                 children: [
-                  Flexible(
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: CachedNetworkImage(
-                            imageUrl: image,
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        addSpaceWidth(15),
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                imageUrl: image,
+                                height: 120,
+                                width: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            addSpaceWidth(15),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
 //                            Text.rich(TextSpan(children: [
 //                              TextSpan(
 //                                  text: "Category ",
@@ -265,63 +382,87 @@ class _ShowOrderState extends State<ShowOrder> {
 //                                  style: textStyle(false, 12, black)),
 //                            ])),
 //                            addSpace(2),
-                              Text(
-                                title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: textStyle(true, 16, black),
+                                  Text(
+                                    title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textStyle(true, 16, black),
+                                  ),
+                                  addSpace(2),
+                                  Text(
+                                    '~$category~',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textStyle(false, 14, black),
+                                  ),
+                                  addSpace(2),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: black.withOpacity(.09),
+                                            width: 1),
+                                        color: AppConfig.appColor,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(
+                                      "\$$price",
+                                      style: textStyle(true, 12, black),
+                                    ),
+                                  ),
+                                  addSpace(5),
+                                  Row(
+                                    children: [
+                                      // Text(
+                                      //   "Status",
+                                      //   style: textStyle(false, 12, black),
+                                      // ),
+                                      // addSpaceWidth(10),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: black.withOpacity(.09),
+                                                width: 1),
+                                            color: statusColor(status),
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        padding: EdgeInsets.all(4),
+                                        child: Text(
+                                          statusText(status).toUpperCase(),
+                                          style: textStyle(false, 12, white),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              addSpace(2),
-                              Text(
-                                '~$category~',
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: textStyle(false, 14, black),
-                              ),
-                              addSpace(2),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: black.withOpacity(.09),
-                                        width: 1),
-                                    color: AppConfig.appColor,
-                                    borderRadius: BorderRadius.circular(8)),
-                                padding: EdgeInsets.all(8),
-                                child: Text(
-                                  "\$$price",
-                                  style: textStyle(true, 12, black),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    color: transparent,
-                    height: 100,
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: black,
-                            borderRadius: BorderRadius.circular(25)),
-                        padding: EdgeInsets.all(8),
-                        child: Row(
-                          children: [
-                            addSpaceWidth(5),
-                            Text(
-                              "$quantity ${quantity > 1 ? "Items" : "Item"}",
-                              style: textStyle(true, 15, white),
                             ),
-                            addSpaceWidth(5),
                           ],
                         ),
                       ),
-                    ),
+                      Container(
+                        color: transparent,
+                        height: 100,
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: black,
+                                borderRadius: BorderRadius.circular(25)),
+                            padding: EdgeInsets.all(8),
+                            child: Row(
+                              children: [
+                                addSpaceWidth(5),
+                                Text(
+                                  "$quantity ${quantity > 1 ? "Items" : "Item"}",
+                                  style: textStyle(true, 15, white),
+                                ),
+                                addSpaceWidth(5),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
 //                 Align(
 //                   alignment: Alignment.topRight,
 //                   child: GestureDetector(
@@ -346,11 +487,31 @@ class _ShowOrderState extends State<ShowOrder> {
 //                     ),
 //                   ),
 //                 )
-            ],
-          ),
+                ],
+              ),
+            ),
+            addLine(.5, black.withOpacity(.1), 10, 0, 10, 0)
+          ],
         ),
-        addLine(.5, black.withOpacity(.1), 10, 0, 10, 0)
-      ],
+      ),
     );
+  }
+
+  String statusText(int status) {
+    String t = isDropOff ? "Pending DropOff" : "Pending Pickup";
+    if (status == ORDER_STATUS_PICKED) t = "Picked Up";
+    if (status == ORDER_STATUS_EN_ROUTE) t = "Order EnRoute";
+    if (status == ORDER_STATUS_CANCELED) t = "Order Canceled";
+    if (status == ORDER_STATUS_COMPLETED) t = "Order Completed";
+    return t;
+  }
+
+  Color statusColor(int status) {
+    Color t = blue3;
+    if (status == ORDER_STATUS_PICKED) t = brown4;
+    if (status == ORDER_STATUS_EN_ROUTE) t = pink4;
+    if (status == ORDER_STATUS_CANCELED) t = red;
+    if (status == ORDER_STATUS_COMPLETED) t = green_dark;
+    return t;
   }
 }

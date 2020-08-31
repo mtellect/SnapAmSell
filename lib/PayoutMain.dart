@@ -306,7 +306,7 @@ class _PayoutMainState extends State<PayoutMain> {
               }
 
               String personId = userModel.getString(STRIPE_PERSON_ID);
-              showProgress(true, context, msg: "Uploadind Document...");
+              showProgress(true, context, msg: "Uploading Document...");
               StripeService.createStripePerson(
                   bDay: birthDate.split('-')[2],
                   bMonth: birthDate.split('-')[1],

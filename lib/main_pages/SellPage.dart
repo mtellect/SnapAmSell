@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/ShowCategories.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/main_pages/SellCamera.dart';
 
 class SellPage extends StatefulWidget {
   final List<BaseModel> photos;
-
-  const SellPage({Key key, this.photos}) : super(key: key);
+  final BaseModel model;
+  const SellPage({Key key, this.photos = const [], this.model})
+      : super(key: key);
   @override
   _SellPageState createState() => _SellPageState();
 }
@@ -30,12 +32,18 @@ class _SellPageState extends State<SellPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    photos = widget.photos;
-    model.put(IMAGES, widget.photos.map((e) => e.items).toList());
+    if (widget.model != null) {
+      model = widget.model;
+      photos = widget.model.getListModel(IMAGES);
+      titleController.text = model.getString(TITLE);
+      priceController.text = model.getDouble(PRICE).toString();
+      descController.text = model.getString(DESCRIPTION);
+      selectedCategory = model.getString(CATEGORY);
+    } else {
+      photos = widget.photos;
+      model.put(IMAGES, widget.photos.map((e) => e.items).toList());
+    }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +65,7 @@ class _SellPageState extends State<SellPage> {
                 color: black,
               ),
               Text(
-                "Sell Product",
+                widget.model != null ? "Edit Product" : "Sell Product",
                 style: textStyle(true, 25, black),
               ),
               Spacer(),
@@ -82,9 +90,9 @@ class _SellPageState extends State<SellPage> {
           padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: Center(
               child: Text(
-                errorText,
-                style: textStyle(true, 16, white),
-              )),
+            errorText,
+            style: textStyle(true, 16, white),
+          )),
         ),
         Flexible(
           child: ListView(
@@ -164,8 +172,9 @@ class _SellPageState extends State<SellPage> {
         children: [
           GestureDetector(
             onTap: () {
-              showListDialog(context, productCategories, (p) {
-                setState(productCategories[p]);
+              pushAndResult(context, ShowCategories(), result: (BaseModel _) {
+                if (null == _) return;
+                setState(_.getString(TITLE));
               });
             },
             child: Container(
@@ -373,7 +382,12 @@ class _SellPageState extends State<SellPage> {
       ..put(DESCRIPTION, description)
       ..put(SEARCH, search)
       ..saveItem(PRODUCT_BASE, true, document: id);
-
+    int p = productLists.indexWhere((e) => e.getObjectId() == id);
+    if (p != -1) {
+      productLists[p] = model;
+    } else {
+      productLists.add(model);
+    }
     productController.add(model);
     Navigator.pop(context);
   }

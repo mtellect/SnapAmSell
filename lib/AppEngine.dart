@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -547,7 +548,11 @@ addFlexible() {
 }
 
 emptyLayout(icon, String title, String text,
-    {click, clickText, bool trans = false}) {
+    {click,
+    clickText,
+    bool trans = false,
+    bool noIconBack = false,
+    iconColor = Colors.white}) {
   return Container(
     color: trans ? transparent : white,
     child: Center(
@@ -557,67 +562,29 @@ emptyLayout(icon, String title, String text,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new Container(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: <Widget>[
-                  new Container(
+            !(icon is String)
+                ? Icon(
+                    icon,
+                    size: 50,
+                    color: red0,
+                  )
+                : Image.asset(
+                    icon,
                     height: 50,
                     width: 50,
-                    decoration:
-                        BoxDecoration(color: black, shape: BoxShape.circle),
+                    color: red0,
                   ),
-                  new Center(
-                      child: !(icon is String)
-                          ? Icon(
-                              icon,
-                              size: 30,
-                              color: white,
-                            )
-                          : Image.asset(
-                              icon,
-                              height: 30,
-                              width: 30,
-                              color: white,
-                            )),
-                  /* new Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        addExpanded(),
-                        Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                              color: red3,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: white, width: 1)),
-                          child: Center(
-                            child: Text(
-                              "!",
-                              style: textStyle(true, 14, white),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )*/
-                ],
-              ),
-            ),
             addSpace(10),
             Text(
               title,
-              style: textStyle(true, 16, trans ? white : black),
+              style: textStyle(true, 20, trans ? white : black),
               textAlign: TextAlign.center,
             ),
             if (text.isNotEmpty) addSpace(5),
             if (text.isNotEmpty)
               Text(
                 text,
-                style: textStyle(false, 14,
+                style: textStyle(false, 16,
                     trans ? (white.withOpacity(.5)) : black.withOpacity(.5)),
                 textAlign: TextAlign.center,
               ),
@@ -626,15 +593,13 @@ emptyLayout(icon, String title, String text,
                 ? new Container()
                 : FlatButton(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(color: black, width: 2)),
-//                    color: blue3,
+                        borderRadius: BorderRadius.circular(25)),
+                    color: AppConfig.appColor,
                     onPressed: click,
                     child: Text(
                       clickText,
-                      style: textStyle(true, 16, black),
-                    )),
-            addSpace(40)
+                      style: textStyle(true, 16, white),
+                    ))
           ],
         ),
       ),
@@ -5355,6 +5320,146 @@ getInitials(String name) {
 }
 
 shopItem(BuildContext context, BaseModel model, setState,
+    {onLiked, bool isFavorite = false}) {
+  String id = model.getObjectId();
+  String image = getFirstPhoto(model.images);
+  String category = model.getString(CATEGORY);
+  String title = model.getString(TITLE);
+  double price = model.getDouble(PRICE);
+  int p = cartLists.indexWhere((e) => e.getObjectId() == id);
+  bool isInCart = p != -1;
+  int fP = productLists.indexWhere((e) => e.getObjectId() == id);
+  bool isFavorite = model.getList(LIKES).contains(userModel.getUserId());
+
+  return GestureDetector(
+    onTap: () {
+      pushAndResult(
+          context,
+          ShowProduct(
+            model,
+            objectId: id,
+          ),
+          depend: false);
+    },
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(color: black.withOpacity(.1)
+//            border: Border.all(color: white.withOpacity(0.1), width: 2)
+            ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: image,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (fP != -1)
+                          productLists[fP]
+                            ..putInList(
+                                LIKES, userModel.getUserId(), !isFavorite)
+                            ..updateItems();
+                        setState();
+                      },
+                      child: Container(
+                        decoration:
+                            BoxDecoration(color: white, shape: BoxShape.circle),
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(8),
+                        height: 35,
+                        width: 35,
+                        alignment: Alignment.center,
+                        /* child: Center(
+                    child: Icon(
+                      Icons.favorite,
+                      size: 15,
+                      color: isFavorite ? green_dark : black.withOpacity(.7),
+                    ),
+                  ),*/
+                        child: FlareActor("assets/icons/Favorite.flr",
+                            shouldClip: false,
+                            color:
+                                isFavorite ? green_dark : black.withOpacity(.5),
+                            fit: BoxFit.cover,
+                            animation: isFavorite
+                                ? "Favorite"
+                                : "Unfavorite" //_animationName
+                            ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.all(1),
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  )),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          style: textStyle(false, 14, black),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        addSpace(2),
+                        Text("\$$price",
+                            style: textStyle(true, 14, AppConfig.appColor)),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (!model.myItem()) cartController.add(model);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: isInCart ? red : AppConfig.appColor,
+                          shape: BoxShape.circle),
+                      padding: EdgeInsets.all(8),
+                      child: Image.asset(
+                        ic_cart,
+                        height: 15,
+                        width: 15,
+                        color: white,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+shopItemX(BuildContext context, BaseModel model, setState,
     {onLiked(BaseModel model), bool isFavorite = false}) {
   String id = model.getObjectId();
   String image = getFirstPhoto(model.images);
@@ -5811,6 +5916,8 @@ void handleOrder(
     for (var product in products) {
       String id = getRandomId();
       String productId = product.getObjectId();
+      String userImage = product.userImage;
+      String name = product.getString(NAME);
       String sellerId = product.getUserId();
       List grouped = products.where((e) => e.getUserId() == sellerId).toList();
       int count = grouped.length;
@@ -5818,6 +5925,8 @@ void handleOrder(
       product
         ..put(OBJECT_ID, id)
         ..put(ORDER_ID, orderId)
+        ..put(PRODUCT_ID, productId)
+        ..put(SELLER_ID, sellerId)
         ..put(SETTLING_AMOUNT, offerAmount)
         ..put(PARTIES, parties)
         ..saveItem(ORDER_BASE, true, document: id);
@@ -5832,7 +5941,10 @@ void handleOrder(
         ..put(ORDER_ID, orderId)
         ..put(PRODUCT_ID, productId)
         ..put(PARTIES, [sellerId])
-        ..saveItem(NOTIFY_BASE, true);
+        ..put(USER_IMAGE, userImage)
+        ..put(USER_ID, sellerId)
+        ..put(NAME, name)
+        ..saveItem(NOTIFY_BASE, false);
       if (idsNotified.contains(sellerId)) continue;
       Firestore.instance
           .collection(USER_BASE)
@@ -5848,6 +5960,40 @@ void handleOrder(
         idsNotified.add(sellerId);
       });
       onOfferSettled();
+    }
+  });
+}
+
+checkError(context, e, {bool indexErrorOnly = true}) {
+  String error = e.toString();
+
+  print(e);
+
+  if (error.contains("PRECONDITION") ||
+      error.contains('The query requires an index')) {
+    String link =
+        error.substring(error.indexOf("https://"), error.indexOf(", null"));
+    showMessage(context, Icons.error, blue0, "Index Needed", link,
+        clickYesText: "Create Index", onClicked: (_) {
+      if (_ == true) {
+        openLink(link);
+      }
+    });
+  } else {
+    if (!indexErrorOnly)
+      showErrorDialog(
+        context,
+        e.toString(),
+      );
+  }
+}
+
+showErrorDialog(context, String message,
+    {onOkClicked, bool cancellable = true}) {
+  showMessage(context, Icons.error, red0, "Oops!", message,
+      delayInMilli: 500, cancellable: cancellable, onClicked: (_) {
+    if (_ == true) {
+      if (onOkClicked != null) onOkClicked();
     }
   });
 }

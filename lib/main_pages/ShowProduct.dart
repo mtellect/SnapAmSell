@@ -17,10 +17,13 @@ import 'package:maugost_apps/app/dotsIndicator.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 
+import 'SellPage.dart';
+
 class ShowProduct extends StatefulWidget {
   final BaseModel theModel;
   final String objectId;
-  const ShowProduct(this.theModel, {this.objectId});
+  final bool order;
+  const ShowProduct(this.theModel, {this.objectId, this.order = false});
   @override
   _ShowProductState createState() => _ShowProductState();
 }
@@ -60,6 +63,7 @@ class _ShowProductState extends State<ShowProduct> {
   }
 
   loadProduct() async {
+    if (widget.objectId.isEmpty) return;
     var sub = Firestore.instance
         .collection(PRODUCT_BASE)
         .document(widget.objectId)
@@ -75,17 +79,18 @@ class _ShowProductState extends State<ShowProduct> {
   }
 
   loadUser() {
-    if (model.getUserId().isEmpty) return;
+    String id = widget.theModel.getUserId();
+    if (widget.order) id = widget.theModel.getString(SELLER_ID);
+    if (id.isEmpty) return;
     print(widget.theModel.getString(NAME));
     var sub = Firestore.instance
         .collection(USER_BASE)
-        .document(widget.theModel.getUserId())
+        .document(id)
         .snapshots()
         .listen((value) {
       theUser = BaseModel(doc: value);
       model.put(NAME, theUser.getString(NAME));
       model.put(USER_IMAGE, theUser.getString(USER_IMAGE));
-//      model.put(NAME, theUser.getString(NAME));
       setState(() {});
     });
     subs.add(sub);
@@ -128,7 +133,6 @@ class _ShowProductState extends State<ShowProduct> {
                   model
                     ..putInList(LIKES, userModel.getUserId(), !isFavorite)
                     ..updateItems();
-
                   setState(() {});
                 },
                 child: Container(
@@ -137,7 +141,7 @@ class _ShowProductState extends State<ShowProduct> {
                     height: 35,
                     // decoration: BoxDecoration(
                     //     color: green_dark, shape: BoxShape.circle),
-                    padding: EdgeInsets.all(6),
+                    padding: EdgeInsets.all(8),
                     child: FlareActor("assets/icons/Favorite.flr",
                         shouldClip: false,
                         color: isFavorite ? green_dark : black.withOpacity(.5),
@@ -153,6 +157,29 @@ class _ShowProductState extends State<ShowProduct> {
                 },
                 icon: Icon(LineIcons.search),
               ),
+              if (model.myItem())
+                IconButton(
+                  onPressed: () {
+                    pushAndResult(
+                        context,
+                        SellPage(
+                          model: model,
+                        ));
+                  },
+                  icon: Icon(Icons.edit),
+                ),
+              if (model.myItem())
+                IconButton(
+                  onPressed: () {
+                    yesNoDialog(context, "Delete Product?",
+                        "Are you sure you want to delete this product?", () {
+                      model.deleteItem();
+                      productLists.remove(model);
+                      Navigator.pop(context);
+                    });
+                  },
+                  icon: Icon(Icons.delete),
+                ),
             ],
           ),
         ),
@@ -166,12 +193,6 @@ class _ShowProductState extends State<ShowProduct> {
                       Container(
                         height: getScreenHeight(context) * .4,
                         margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-//              clipBehavior: Clip.antiAlias,
-////              padding: EdgeInsets.all(10),
-//              decoration: BoxDecoration(
-//                  color: black.withOpacity(.05),
-//                  border: Border.all(color: black.withOpacity(.09)),
-//                  borderRadius: BorderRadius.circular(10)),
                         child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: [
@@ -307,23 +328,23 @@ class _ShowProductState extends State<ShowProduct> {
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5))),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Description",
-                              style: textStyle(true, 16, black),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: AppConfig.appColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5))),
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                "Description",
+                                style: textStyle(true, 16, black),
+                              ),
                             ),
                             addSpace(10),
                             Container(
                               padding: EdgeInsets.only(left: 10, right: 10),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                left: BorderSide(
-                                    width: 10, color: black.withOpacity(.5)),
-                              )),
                               child: Text(
                                 model.getString(DESCRIPTION),
                                 style: textStyle(false, 18, black),
@@ -338,19 +359,21 @@ class _ShowProductState extends State<ShowProduct> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Seller",
-                              style: textStyle(true, 20, black),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: AppConfig.appColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5))),
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                "Seller",
+                                style: textStyle(true, 16, black),
+                              ),
                             ),
                             addSpace(10),
                             Container(
                               width: double.infinity,
                               padding: EdgeInsets.only(left: 10, right: 10),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                left: BorderSide(
-                                    width: 10, color: black.withOpacity(.5)),
-                              )),
                               child: Column(
                                 children: [
                                   userImageItem(context, theUser ?? model,
@@ -478,6 +501,40 @@ class _ShowProductState extends State<ShowProduct> {
                         ),
                       ),
                       addSpace(20),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        color: black.withOpacity(.05),
+                        child: Text(
+                          "Similar Products",
+                          style: textStyle(true, 20, black),
+                        ),
+                      ),
+                      GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 15,
+                            mainAxisSpacing: 15,
+                            childAspectRatio: 0.65),
+                        itemBuilder: (c, p) {
+                          BaseModel model = similarProducts[p];
+                          List likes = model.getList(LIKES);
+                          bool isFavorite =
+                              likes.contains(userModel.getUserId());
+                          //print('favorite $isFavorite');
+                          return shopItem(
+                            context,
+                            model,
+                            () {
+                              setState(() {});
+                            },
+                            isFavorite: isFavorite,
+                          );
+                        },
+                        itemCount: similarProducts.length,
+                        padding: EdgeInsets.all(10),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                      )
                     ],
                   )),
         if (setup)
@@ -635,5 +692,12 @@ class _ShowProductState extends State<ShowProduct> {
             )
       ],
     );
+  }
+
+  List<BaseModel> get similarProducts {
+    return productLists
+        .where((element) =>
+            element.getString(CATEGORY) == model.getString(CATEGORY))
+        .toList();
   }
 }

@@ -68,40 +68,35 @@ class _WalletState extends State<Wallet> {
     double withdrawals = userModel.getDouble(ACCOUNT_WITHDRAWN);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           margin: EdgeInsets.only(left: 8, right: 8),
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              color: AppConfig.appColor,
+              borderRadius: BorderRadius.all(Radius.circular(20))),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      //shape: BoxShape.circle,
-                      color: orange0,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Icon(
-                    Icons.account_balance_wallet,
-                    color: white,
-                    size: 15,
-                  )),
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 15,
+              ),
               addSpaceWidth(10),
               Text(
                 "Wallet Balance",
-                style: textStyle(true, 14, black.withOpacity(.9)),
+                style: textStyle(true, 13, black.withOpacity(.9)),
               ),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: EdgeInsets.all(10),
           margin: EdgeInsets.all(15),
           decoration: BoxDecoration(
-              //borderRadius: BorderRadius.circular(5),
-              //color: black.withOpacity(.05),
-              border: Border(
-            //top: BorderSide(width: 10, color: black.withOpacity(.5)),
-            left: BorderSide(width: 10, color: black.withOpacity(.5)),
-          )),
+              borderRadius: BorderRadius.circular(10),
+              color: black.withOpacity(.05)),
           child: Column(
             children: [
               Row(
@@ -228,25 +223,26 @@ class _WalletState extends State<Wallet> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          //shape: BoxShape.circle,
-                          color: orange0,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Icon(
-                        Icons.account_balance,
-                        color: white,
-                        size: 15,
-                      )),
-                  addSpaceWidth(10),
-                  Text(
-                    "Payout Information",
-                    style: textStyle(true, 14, black.withOpacity(.9)),
-                  ),
-                ],
+              Container(
+                margin: EdgeInsets.only(left: 8, right: 8),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: AppConfig.appColor,
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.account_balance_outlined,
+                      size: 15,
+                    ),
+                    addSpaceWidth(10),
+                    Text(
+                      "Payout Information",
+                      style: textStyle(true, 13, black.withOpacity(.9)),
+                    ),
+                  ],
+                ),
               ),
               Container(
                 decoration: BoxDecoration(
@@ -272,15 +268,11 @@ class _WalletState extends State<Wallet> {
           ),
         ),
         Container(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: EdgeInsets.all(10),
           margin: EdgeInsets.all(15),
           decoration: BoxDecoration(
-              //borderRadius: BorderRadius.circular(5),
-              //color: black.withOpacity(.05),
-              border: Border(
-            //top: BorderSide(width: 10, color: black.withOpacity(.5)),
-            left: BorderSide(width: 10, color: black.withOpacity(.5)),
-          )),
+              borderRadius: BorderRadius.circular(10),
+              color: black.withOpacity(.05)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
