@@ -4188,7 +4188,143 @@ shareButton(color, String text, icon, onTap, {width}) {
 
 String oldNumber = "";
 bool checking = false;
+
 inputTextView(String title, controller,
+    {@required isNum,
+    onEditted,
+    int maxLine = 1,
+    onTipClicked,
+    String errorText,
+    double corner = 5,
+    bool isAmount = false,
+    var priceIcon,
+    focusNode,
+    bool useCurrentCountry = false}) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      if (errorText != null)
+        Text(
+          errorText,
+          style: textStyle(true, 12, red0),
+        ),
+      if (errorText != null) addSpace(5),
+//      addSpace(10),
+      Container(
+        //height: 45,
+        constraints: BoxConstraints(maxHeight: 150),
+        margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+        decoration: BoxDecoration(
+            color: blue09,
+            borderRadius: BorderRadius.circular(corner),
+            border: Border.all(
+                color: errorText != null ? red0 : black.withOpacity(.1),
+                width: errorText != null ? 1 : .5)),
+        child: Row(
+          children: <Widget>[
+            // if (isAmount || icon != null) addSpaceWidth(10),
+            // if (isAmount)
+            //   Container(
+            //     margin: EdgeInsets.only(top: 2),
+            //     child: CachedNetworkImage(
+            //       imageUrl: getCurrencyLogo(
+            //           useCurrentCountry ? currentCountry : defaultCountry),
+            //       width: 14,
+            //       height: 14,
+            //       fit: BoxFit.cover,
+            //       color: black.withOpacity(.3),
+            //     ),
+            //   ),
+
+            if (isAmount != null) addSpaceWidth(15),
+            if (priceIcon != null)
+              priceIcon is String
+                  ? Image.asset(
+                priceIcon,
+                height: 18,
+                width: 18,
+                color: black.withOpacity(.3),
+              )
+                  : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
+
+            if (priceIcon != null)
+              priceIcon is String
+                  ? (Image.asset(
+                      priceIcon,
+                      height: 14,
+                      width: 14,
+                      color: black.withOpacity(.3),
+                    ))
+                  : (Icon(
+                      priceIcon,
+                      size: 14,
+                      color: black.withOpacity(.3),
+                    )),
+            Flexible(
+              child: new TextField(
+                onSubmitted: (_) {
+                  //postHeadline();
+                },
+//                textInputAction: maxLine==1?TextInputAction.done:TextInputAction.newline,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.fromLTRB(
+                      (isAmount || priceIcon != null) ? 10 : 15, 10, 15, 10),
+                  counter: null,
+                  labelText: title,
+                  labelStyle: textStyle(false, 18, black.withOpacity(.3)),
+                  /*counterStyle: textStyle(true, 0, white)*/
+                ),
+                style: textStyle(
+                  false,
+                  18,
+                  black,
+                ),
+                controller: controller, focusNode: focusNode,
+                cursorColor: black,
+                cursorWidth: 1,
+//                          maxLength: 50,
+                maxLines: maxLine > 1 ? null : maxLine,
+                keyboardType: isNum
+                    ? (TextInputType.number)
+                    : maxLine == 1
+                        ? TextInputType.text
+                        : TextInputType.multiline,
+                inputFormatters: [],
+                scrollPadding: EdgeInsets.all(0),
+                onChanged: (s) {
+                  onEditted();
+                },
+                /*onChanged: (String s) {
+                  if (!isAmount) {
+                    onEditted();
+                    return;}
+                  if (checking || s.trim().length<4) {
+                    onEditted();
+                    return;}
+                  checking = true;
+                  controller.text = formatAmount(s);
+                  onEditted();
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    final val =
+                    TextSelection.collapsed(offset: controller.text.length);
+                    controller.selection = val;
+                    checking = false;
+                    onEditted();
+                  });
+                },*/
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+inputTextViewX(String title, controller,
     {@required isNum,
     int maxLine = 1,
     priceFormatted,
@@ -5373,7 +5509,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                       child: Container(
                         decoration:
                             BoxDecoration(color: white, shape: BoxShape.circle),
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(12),
                         margin: EdgeInsets.all(8),
                         height: 35,
                         width: 35,
@@ -5387,8 +5523,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                   ),*/
                         child: FlareActor("assets/icons/Favorite.flr",
                             shouldClip: false,
-                            color:
-                                isFavorite ? green_dark : black.withOpacity(.5),
+                            color: isFavorite ? red : black.withOpacity(0.5),
                             fit: BoxFit.cover,
                             animation: isFavorite
                                 ? "Favorite"
@@ -5426,7 +5561,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                           maxLines: 1,
                         ),
                         addSpace(2),
-                        Text("\$$price",
+                        Text("\$${formatCurrency.format(price)}",
                             style: textStyle(true, 14, AppConfig.appColor)),
                       ],
                     ),
@@ -5437,7 +5572,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: isInCart ? red : AppConfig.appColor,
+                          color: isInCart ? red : black.withOpacity(.4),
                           shape: BoxShape.circle),
                       padding: EdgeInsets.all(8),
                       child: Image.asset(

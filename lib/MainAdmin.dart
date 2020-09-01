@@ -31,7 +31,6 @@ import 'main_pages/OfferPage.dart';
 import 'main_pages/SellCamera.dart';
 import 'main_pages/ShowCart.dart';
 import 'main_pages/ShowStore.dart';
-import 'main_pages/Wallet.dart';
 
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
@@ -947,7 +946,7 @@ class _MainAdminState extends State<MainAdmin>
           children: [
             page(),
             bottomTab(),
-            Align(
+            /*Align(
               alignment: Alignment.bottomRight,
               child: Container(
                 margin: EdgeInsets.only(bottom: 100, right: 10),
@@ -989,7 +988,7 @@ class _MainAdminState extends State<MainAdmin>
                   ],
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),
@@ -1025,7 +1024,7 @@ class _MainAdminState extends State<MainAdmin>
                       border: Border.all(color: white, width: 5)),
                   child: Center(
                     child: Icon(
-                      Icons.add,
+                      Icons.camera_enhance_outlined,
                       color: black,
                     ),
                   ),
@@ -1092,7 +1091,7 @@ class _MainAdminState extends State<MainAdmin>
       children: [
         Container(
           padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: white,
+          color: default_white_color,
           child: Stack(
             children: [
               Align(
@@ -1104,38 +1103,50 @@ class _MainAdminState extends State<MainAdmin>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  new Container(
-                    height: 30,
-                    //width: 50,
-                    child: new FlatButton(
-                        padding: EdgeInsets.all(0),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {
-                          // postChatDoc();
-                          pushAndResult(
-                            context,
-                            isLoggedIn ? Wallet() : PreAuth(),
-                          );
-                        },
-                        color: AppConfig.appColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Center(
-                            child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.account_balance_wallet_outlined,
-                              size: 16,
-                              color: black,
-                            ),
-                            addSpaceWidth(5),
-                            Text(
-                              "Wallet",
-                              style: textStyle(true, 13, black),
-                            )
-                          ],
-                        ))),
+                  // new Container(
+                  //   height: 30,
+                  //   //width: 50,
+                  //   child: new FlatButton(
+                  //       padding: EdgeInsets.all(0),
+                  //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  //       onPressed: () {
+                  //         // postChatDoc();
+                  //         pushAndResult(
+                  //           context,
+                  //           isLoggedIn ? Wallet() : PreAuth(),
+                  //         );
+                  //       },
+                  //       color: AppConfig.appColor,
+                  //       shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(15)),
+                  //       child: Center(
+                  //           child: Row(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: [
+                  //           Icon(
+                  //             Icons.account_balance_wallet_outlined,
+                  //             size: 16,
+                  //             color: black,
+                  //           ),
+                  //           addSpaceWidth(5),
+                  //           Text(
+                  //             "Wallet",
+                  //             style: textStyle(true, 13, black),
+                  //           )
+                  //         ],
+                  //       ))),
+                  // ),
+                  imageHolder(
+                    35,
+                    userModel.userImage,
+                    onImageTap: () {
+                      pushAndResult(
+                        context,
+                        isLoggedIn ? ShowStore(userModel) : PreAuth(),
+                      );
+                    },
+                    strokeColor: black,
+                    stroke: 2,
                   ),
                   Spacer(),
                   new Container(
@@ -1166,7 +1177,9 @@ class _MainAdminState extends State<MainAdmin>
                               Container(
                                 // height: 10,
                                 // width: 10,
-                                padding: EdgeInsets.all(3),
+                                padding: EdgeInsets.only(
+                                    left: 6, right: 6, top: 3, bottom: 3),
+                                margin: EdgeInsets.only(left: 6),
                                 child: Text(
                                   unreadCount.length.toString(),
                                   style: textStyle(false, 11, white),
@@ -1180,19 +1193,52 @@ class _MainAdminState extends State<MainAdmin>
                           ],
                         )),
                   ),
+                  new Container(
+                    height: 30,
+                    width: 60,
+                    child: new FlatButton(
+                        padding: EdgeInsets.all(0),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        onPressed: () {
+                          pushAndResult(
+                            context,
+                            isLoggedIn ? ShowCart() : PreAuth(),
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  margin: EdgeInsets.only(left: 4),
+                                  child: Image.asset(
+                                    ic_cart,
+                                    height: 20,
+                                    width: 20,
+                                    color: black,
+                                  ),
+                                )),
+                            if (cartLists.length > 0)
+                              Container(
+                                // height: 10,
+                                // width: 10,
+                                padding: EdgeInsets.only(
+                                    left: 6, right: 6, top: 3, bottom: 3),
+                                margin: EdgeInsets.only(left: 6),
+                                child: Text(
+                                  cartLists.length.toString(),
+                                  style: textStyle(false, 11, white),
+                                ),
+                                decoration: BoxDecoration(
+                                    color: red,
+                                    borderRadius: BorderRadius.circular(5)
+                                    //shape: BoxShape.circle
+                                    ),
+                              )
+                          ],
+                        )),
+                  ),
                   //if (isLoggedIn)
-                  imageHolder(
-                    35,
-                    userModel.userImage,
-                    onImageTap: () {
-                      pushAndResult(
-                        context,
-                        isLoggedIn ? ShowStore(userModel) : PreAuth(),
-                      );
-                    },
-                    strokeColor: black,
-                    stroke: 2,
-                  )
                 ],
               )
             ],

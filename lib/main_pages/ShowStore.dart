@@ -132,7 +132,7 @@ class _ShowStoreState extends State<ShowStore> {
                     padding: EdgeInsets.all(8),
                     child: FlareActor("assets/icons/Favorite.flr",
                         shouldClip: false,
-                        color: isFavorite ? green_dark : black.withOpacity(.5),
+                        color: isFavorite ? red : black.withOpacity(0.5),
                         fit: BoxFit.cover,
                         animation: isFavorite
                             ? "Favorite"

@@ -907,6 +907,7 @@ const String MY_SKILLS = "mySkills";
 const String LATITUDE = "latitude1";
 const String LONGITUDE = "longitude1";
 const String CATEGORY = "category";
+const String SUB_CATEGORY = "subCategory";
 const String CATEGORIES = "categories";
 const String STORY_TAGS = "storyTags";
 const String TAG = "tag";
@@ -1048,26 +1049,7 @@ const String ACTION_UPLOAD_FAILED = "actionUploadFailed";
 const String SEARCH_TYPE = "searchType";
 const String SEARCH_STRING = "searchString";
 
-const String BROADCAST_GROUP = "com.maugost.group";
-const String BROADCAST_CONVERSATION = "com.maugost.conv";
-const String BROADCAST_CATEGORY = "com.maugost.caty";
-const String BROADCAST_STORY = "com.maugost.story";
 
-const String BROADCAST_SCHOOLS = "com.maugost.schools";
-const String BROADCAST_STUDY = "com.maugost.study";
-const String BROADCAST_LEVELS = "com.maugost.levels";
-const String BROADCAST_HEADLINE = "com.maugost.headline";
-const String BROADCAST_COMMENTS = "com.maugost.comments";
-const String BROADCAST_POSTS = "com.maugost.posts";
-
-const String SCHOOL_NAME = "schoolName";
-const String SCHOOL_TYPE = "schoolType";
-const String SCHOOL_LOCATION = "schoolLocation";
-//const String SCHOOL_LAT_LONG = "schoolLatLong";
-const String SCHOOL_PHONE = "schoolPhone";
-const String SCHOOL_EMAIL = "schoolEmail";
-const String SCHOOL_WEBSITE = "schoolWebsite";
-const String SCHOOL_ABBRV = "schoolAbbreviation";
 
 const String PREVIOUS_FACES = "prevFaces";
 const String FACE_ITEM = "faceItem";

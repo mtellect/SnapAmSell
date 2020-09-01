@@ -144,7 +144,7 @@ class _ShowProductState extends State<ShowProduct> {
                     padding: EdgeInsets.all(8),
                     child: FlareActor("assets/icons/Favorite.flr",
                         shouldClip: false,
-                        color: isFavorite ? green_dark : black.withOpacity(.5),
+                        color: isFavorite ? red : black.withOpacity(0.5),
                         fit: BoxFit.cover,
                         animation: isFavorite
                             ? "Favorite"
@@ -310,18 +310,34 @@ class _ShowProductState extends State<ShowProduct> {
                               ],
                             ),
                             Spacer(),
-                            Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                  color: AppConfig.appColor,
-                                  borderRadius: BorderRadius.circular(25)),
-                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              child: Center(
-                                child: Text(
-                                  "\$${model.getDouble(PRICE)}",
-                                  style: textStyle(true, 22, black),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                      //color: AppConfig.appColor,
+                                      borderRadius: BorderRadius.circular(25)),
+                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                  child: Center(
+                                    child: Text(
+                                      "\$${formatCurrency.format(model.getDouble(PRICE))}",
+                                      style: textStyle(true, 22, black),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: AppConfig.appColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(5))),
+                                  padding: EdgeInsets.all(5),
+                                  child: Text(
+                                    "Price",
+                                    style: textStyle(true, 16, black),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

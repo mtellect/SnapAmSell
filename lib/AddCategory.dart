@@ -20,6 +20,7 @@ class AddCategory extends StatefulWidget {
 class _AddCategoryState extends State<AddCategory> {
   BaseModel model = BaseModel();
   final categoryName = TextEditingController();
+  final subCategories = TextEditingController();
   int selectedSize = 0;
   List<BaseModel> imagesUrl = [];
 
@@ -30,6 +31,8 @@ class _AddCategoryState extends State<AddCategory> {
     if (widget.model != null) {
       model = widget.model;
       imagesUrl = model.getListModel(IMAGES);
+      categoryName.text = model.getString(TITLE);
+      subCategories.text = model.getString(SUB_CATEGORY);
     }
   }
 
@@ -100,6 +103,7 @@ class _AddCategoryState extends State<AddCategory> {
           padding: EdgeInsets.all(10),
           children: [
             inputTextView("Category Name", categoryName, isNum: false),
+            inputTextView("Sub Category", subCategories, isNum: false),
             imagesView(),
             addSpace(10),
             /* Container(
@@ -288,9 +292,14 @@ class _AddCategoryState extends State<AddCategory> {
 
   handleSave() {
     String title = categoryName.text;
+    String subs = subCategories.text;
 
     if (title.isEmpty) {
       showError("Enter Category Name");
+      return;
+    }
+    if (subs.isEmpty) {
+      showError("Enter Sub Categories");
       return;
     }
 
@@ -310,6 +319,7 @@ class _AddCategoryState extends State<AddCategory> {
       if (widget.model != null) categoryId = widget.model.getObjectId();
       model.put(OBJECT_ID, categoryId);
       model.put(TITLE, title);
+      model.put(SUB_CATEGORY, subs);
       model.put(IMAGES, _.map((e) => e.items).toList());
       if (categories.isEmpty) {
         categories.add(model.items);

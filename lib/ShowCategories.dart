@@ -237,6 +237,20 @@ class _ShowCategoriesState extends State<ShowCategories> {
                 ],
               ),
             ),
+            if (isAdmin)
+              IconButton(
+                onPressed: () {
+                  pushAndResult(
+                      context,
+                      AddCategory(
+                        model: model,
+                      ), result: (_) {
+                    appCategories = appSettingsModel.getListModel(CATEGORIES);
+                    setState(() {});
+                  });
+                },
+                icon: Icon(Icons.edit),
+              )
           ],
         ),
       ),

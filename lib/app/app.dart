@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/app/currencies.dart';
@@ -133,3 +134,5 @@ class PhotoGallery {
     this.thumbFilePath,
   });
 }
+
+final formatCurrency = new NumberFormat.currency(decimalDigits: 2, symbol: "");

@@ -91,13 +91,13 @@ class _AddBioDataState extends State<AddBioData> {
           padding: EdgeInsets.all(10),
           children: [
             inputTextView("Full Name", fullName, isNum: false),
-            inputTextView("Gender", gender, isNum: false, selectorMode: true,
-                onSelected: () {
-              showListDialog(context, genderType, (_) {
-                gender.text = genderType[_];
-                setState(() {});
-              });
-            }),
+            // inputTextView("Gender", gender, isNum: false, selectorMode: true,
+            //     onSelected: () {
+            //   showListDialog(context, genderType, (_) {
+            //     gender.text = genderType[_];
+            //     setState(() {});
+            //   });
+            // }),
             inputTextView("Email", email, isNum: false),
             inputTextView("Phone Number", mobileNumber, isNum: false),
             inputTextView("Address", addressStreet, isNum: false),

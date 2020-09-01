@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: default_white_color,
       body: page(),
     );
   }
@@ -110,10 +110,10 @@ class _HomeState extends State<Home> {
                     height: 45,
                     //margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        color: default_white,
-                        borderRadius: BorderRadius.circular(10),
+                        color: white.withOpacity(.5),
+                        borderRadius: BorderRadius.circular(25),
                         border:
-                            Border.all(color: black.withOpacity(.1), width: 1)),
+                            Border.all(color: AppConfig.appColor, width: 2)),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,8 +121,8 @@ class _HomeState extends State<Home> {
                         addSpaceWidth(10),
                         Expanded(
                           child: Text(
-                            "Search in Fetish",
-                            style: textStyle(false, 16, black.withOpacity(.6)),
+                            "Search",
+                            style: textStyle(false, 16, black),
                           ),
                         ),
                         Icon(
@@ -146,8 +146,9 @@ class _HomeState extends State<Home> {
                   height: 45,
                   width: 45,
                   decoration: BoxDecoration(
+                      color: white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: black.withOpacity(.1))),
+                      border: Border.all(color: AppConfig.appColor, width: 2)),
                 ),
               )
             ],
@@ -212,48 +213,53 @@ class _HomeState extends State<Home> {
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Stack(
-              children: [
-                CachedNetworkImage(
-                  imageUrl: image,
-                  height: double.infinity,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (c, s) {
-                    return Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      color: black.withOpacity(.09),
-                      child: Icon(
-                        LineIcons.image,
-                        color: white.withOpacity(.5),
-                      ),
-                    );
-                  },
-                ),
-                Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  color: black.withOpacity(.6),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                    padding: EdgeInsets.all(5),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: black.withOpacity(.09))),
+              child: Stack(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: image,
+                    height: double.infinity,
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: AppConfig.appColor,
-                        borderRadius: BorderRadius.circular(6)),
-                    child: Text(
-                      categoryName,
-                      style: textStyle(false, 12, black),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                    ),
+                    fit: BoxFit.cover,
+                    placeholder: (c, s) {
+                      return Container(
+                        height: double.infinity,
+                        width: double.infinity,
+                        color: black.withOpacity(.09),
+                        child: Icon(
+                          LineIcons.image,
+                          color: white.withOpacity(.5),
+                        ),
+                      );
+                    },
                   ),
-                )
-              ],
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    color: black.withOpacity(.4),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      padding: EdgeInsets.all(5),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: AppConfig.appColor,
+                          borderRadius: BorderRadius.circular(6)),
+                      child: Text(
+                        categoryName,
+                        style: textStyle(false, 12, black),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );
