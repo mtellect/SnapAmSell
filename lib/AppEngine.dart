@@ -4324,6 +4324,61 @@ inputTextView(String title, controller,
   );
 }
 
+clickText(String title, String text, onClicked, {icon,double height:60,}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+//      if(text.isNotEmpty)Text(
+//        title,
+//        style: textStyle(true, 14, dark_green03),
+//      ),
+//      if(text.isNotEmpty)addSpace(10),
+      GestureDetector(
+        onTap: () {
+          onClicked();
+        },
+        child: Container(
+//          height: height,
+          width: double.infinity,constraints: BoxConstraints(minHeight: 60),
+          margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          decoration: BoxDecoration(
+              color: blue09,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: black.withOpacity(.1), width: .5)),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if(text.isNotEmpty)Text(title,style: textStyle(false, 12, black.withOpacity(.3)),),
+                Row(
+                  children: <Widget>[
+                    if (icon != null)
+                      Icon(
+                        icon,
+                        size: 18,
+                        color: black.withOpacity(.5),
+                      ),
+                    if (icon != null) addSpaceWidth(5),
+                    Flexible(
+                      child: new Text(
+                        text.isNotEmpty?text:title,
+                        style: textStyle(false, 18, text.isEmpty?black.withOpacity(.3):black),
+//                        maxLines: 1,overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 inputTextViewX(String title, controller,
     {@required isNum,
     int maxLine = 1,

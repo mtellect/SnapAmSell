@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/ShowAds.dart';
 import 'package:maugost_apps/admin/AppAdmin.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
@@ -226,6 +227,12 @@ class _AccountState extends State<Account> {
                 fieldItem(Icons.account_balance, orange0, "Wallet Settings",
                     () {
                   pushAndResult(context, Wallet(), depend: false);
+                }),
+                fieldItem(Icons.list, blue, "Manage Ads", () {
+                  pushAndResult(
+                    context,
+                    ShowAds(),
+                  );
                 }),
               ],
             ),

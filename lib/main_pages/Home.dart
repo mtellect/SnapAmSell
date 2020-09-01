@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +10,7 @@ import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/SearchProduct.dart';
 import 'package:maugost_apps/ShowCategories.dart';
+import 'package:maugost_apps/app/dotsIndicator.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -22,6 +25,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
+
+  int currentPage = 0;
+  final vp = PageController();
+  Timer timer;
+  bool reversing = false;
+  final _codeWheeler = CodeWheeler(milliseconds: 8000);
+
   @override
   void initState() {
     // TODO: implement initState
@@ -29,6 +39,60 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1), () {
       loadProducts(true);
     });
+    if (mounted) _codeWheeler.run(pageWheeler);
+  }
+
+  @override
+  dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  pageWheeler() {
+    int size = adsList.length;
+    if (size == 1) return;
+    if (null == vp || !mounted) return;
+    if (!vp.hasClients) return;
+    if (currentPage < size - 1 && !reversing) {
+      reversing = false;
+      if (mounted) setState(() {});
+      vp.nextPage(duration: Duration(milliseconds: 12), curve: Curves.ease);
+      return;
+    }
+    if (currentPage == size - 1 && !reversing) {
+      Future.delayed(Duration(seconds: 2), () {
+        reversing = true;
+        if (mounted) setState(() {});
+        vp.previousPage(
+            duration: Duration(milliseconds: 12), curve: Curves.ease);
+      });
+      return;
+    }
+    if (currentPage == 0 && reversing) {
+      Future.delayed(Duration(seconds: 2), () {
+        reversing = false;
+        if (mounted) setState(() {});
+        vp.nextPage(duration: Duration(milliseconds: 12), curve: Curves.ease);
+      });
+      return;
+    }
+
+    if (currentPage == 0 && !reversing) {
+      Future.delayed(Duration(seconds: 2), () {
+        reversing = false;
+        if (mounted) setState(() {});
+        vp.nextPage(duration: Duration(milliseconds: 12), curve: Curves.ease);
+      });
+      return;
+    }
+
+    if (currentPage > 0 && reversing) {
+      Future.delayed(Duration(seconds: 2), () {
+        vp.previousPage(
+            duration: Duration(milliseconds: 12), curve: Curves.ease);
+      });
+      return;
+    }
   }
 
   loadProducts(bool isNew) async {
@@ -185,9 +249,98 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             categories(),
             addSpace(15),
+            adsSlider(),
+            addSpace(15),
             body(),
           ],
         ),
+      ),
+    );
+  }
+
+  adsSlider() {
+    if (!adsSetup) return Container();
+
+    return Container(
+      height: getScreenHeight(context) * .22,
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      decoration: BoxDecoration(
+          border: Border(
+              top: BorderSide(width: 0.5, color: black.withOpacity(.09)),
+              bottom: BorderSide(width: 0.5, color: black.withOpacity(.09)))),
+      child: Stack(
+        children: [
+          PageView.builder(
+              controller: vp,
+              scrollDirection: Axis.horizontal,
+              onPageChanged: (p) {
+                currentPage = p;
+                setState(() {});
+              },
+              itemCount: adsList.length,
+              itemBuilder: (ctx, p) {
+                BaseModel model = adsList[p];
+                String imageUrl = getFirstPhoto(model.images);
+                String url = model.getString(ADS_URL);
+                String title = model.getString(TITLE);
+                //"https://tinyurl.com/y3pqgajd";
+                // if (p.isEven) imageUrl = "https://tinyurl.com/yxmafqng";
+                //if (p.isOdd) imageUrl = "https://tinyurl.com/y6neowmn";
+
+                return GestureDetector(
+                  onTap: () {
+                    openLink(url);
+                  },
+                  child: Container(
+                    height: getScreenHeight(context) * .22,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          height: getScreenHeight(context) * .22,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder: (c, s) {
+                            return placeHolder(getScreenHeight(context) * .22,
+                                width: double.infinity);
+                          },
+                        ),
+                        // Container(
+                        //   height: getScreenHeight(context) * .22,
+                        //   width: double.infinity,
+                        //   color: black.withOpacity(.3),
+                        //   alignment: Alignment.center,
+                        //   child: Text(
+                        //     title,
+                        //     style: textStyle(true, 30, white),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                );
+              }),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: black.withOpacity(.1),
+                  borderRadius: BorderRadius.circular(25)),
+              padding: EdgeInsets.all(2),
+              margin: EdgeInsets.all(5),
+              child: DotsIndicator(
+                dotsCount: adsList.length,
+                position: currentPage,
+                decorator: DotsDecorator(
+                    activeColor: AppConfig.appColor,
+                    spacing: EdgeInsets.all(3),
+                    activeSize: Size(10, 10),
+                    size: Size(5, 5)),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

@@ -387,6 +387,7 @@ class _MainAdminState extends State<MainAdmin>
           updatePackage();
           chkUpdate();
           setUpLocation();
+          loadAds();
         }
       }
     });
@@ -423,6 +424,36 @@ class _MainAdminState extends State<MainAdmin>
         }
       }
     }
+  }
+
+  loadAds() async {
+    var sub = Firestore.instance
+        .collection(ADS_BASE)
+        //.where(PARTIES, arrayContains: userModel.getUserId())
+        //.limit(1)
+        .orderBy(TIME_UPDATED, descending: true)
+        .snapshots()
+        .listen((shots) {
+      for (var d in shots.documentChanges) {
+        BaseModel model = BaseModel(doc: d.document);
+        bool hide = model.getInt(STATUS) == 123;
+        int p =
+            adsList.indexWhere((bm) => bm.getObjectId() == model.getObjectId());
+        if (d.type == DocumentChangeType.removed || hide) {
+          nList.removeWhere((bm) => bm.getObjectId() == model.getObjectId());
+          continue;
+        }
+        if (p == -1) {
+          adsList.add(model);
+        } else {
+          adsList[p] = model;
+        }
+        adsSetup = true;
+        setState(() {});
+      }
+    });
+    subs.add(sub);
+    if (mounted) setState(() {});
   }
 
   setUpLocation() async {

@@ -1049,8 +1049,6 @@ const String ACTION_UPLOAD_FAILED = "actionUploadFailed";
 const String SEARCH_TYPE = "searchType";
 const String SEARCH_STRING = "searchString";
 
-
-
 const String PREVIOUS_FACES = "prevFaces";
 const String FACE_ITEM = "faceItem";
 const String FACE_SETTINGS = "faceSettings";
@@ -1566,6 +1564,7 @@ const String SEARCH = "search";
 
 const String SETTLING_AMOUNT = "settlingAmount";
 const String ORDER_STATUS = "orderStatus";
+const String PROMOTE_WHERE = "promoteWhere";
 const int ORDER_STATUS_PENDING = 0;
 const int ORDER_STATUS_PICKED = 1;
 const int ORDER_STATUS_EN_ROUTE = 2;
@@ -1578,4 +1577,10 @@ const List<String> CLOTH_SIZES = [
   "Medium",
   "Large",
   "Xtra Large"
+];
+
+const List<String> PROMOTE_TYPE = [
+  "InApp Store",
+  "InApp Product",
+  "Website",
 ];
