@@ -70,7 +70,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               Text(
                 "${widget.modeEdit ? "Edit" : "Create"} Profile",
-                style: textStyle(true, 25, black),
+                style: textStyle(true, 20, black),
               ),
               Spacer(),
               RaisedButton(

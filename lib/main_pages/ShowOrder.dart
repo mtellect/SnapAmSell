@@ -112,7 +112,7 @@ class _ShowOrderState extends State<ShowOrder> {
                   ),
               Text(
                 "Orders ",
-                style: textStyle(true, 25, textColor),
+                style: textStyle(true, 20, textColor),
               ),
               if (widget.date.isNotEmpty)
                 Text(

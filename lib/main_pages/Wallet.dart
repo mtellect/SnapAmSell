@@ -45,7 +45,7 @@ class _WalletState extends State<Wallet> {
               ),
               Text(
                 "Account",
-                style: textStyle(true, 25, black),
+                style: textStyle(true, 20, black),
               ),
               Spacer(),
             ],

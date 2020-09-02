@@ -7,10 +7,13 @@ import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/PreAuth.dart';
 import 'package:maugost_apps/SearchProduct.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+
+import 'ShowCart.dart';
 
 class ShowStore extends StatefulWidget {
   final BaseModel model;
@@ -100,6 +103,12 @@ class _ShowStoreState extends State<ShowStore> {
     );
   }
 
+  String get storeName {
+    String store = (theUser == null ? model : theUser).getString(NAME);
+    store = "$store's Store";
+    return store;
+  }
+
   page() {
     return Column(
       children: [
@@ -111,10 +120,55 @@ class _ShowStoreState extends State<ShowStore> {
                 color: black,
               ),
               Text(
-                widget.model.myItem() ? "My Store" : "Store",
-                style: textStyle(true, 25, black),
+                widget.model.myItem() ? "My Store" : storeName,
+                style: textStyle(true, 20, black),
               ),
               Spacer(),
+              new Container(
+                height: 30,
+                width: 60,
+                child: new FlatButton(
+                    padding: EdgeInsets.all(0),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onPressed: () {
+                      pushAndResult(
+                        context,
+                        isLoggedIn ? ShowCart() : PreAuth(),
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              margin: EdgeInsets.only(left: 4),
+                              child: Image.asset(
+                                ic_cart,
+                                height: 20,
+                                width: 20,
+                                color: black,
+                              ),
+                            )),
+                        if (cartLists.length > 0)
+                          Container(
+                            // height: 10,
+                            // width: 10,
+                            padding: EdgeInsets.only(
+                                left: 6, right: 6, top: 3, bottom: 3),
+                            margin: EdgeInsets.only(left: 6),
+                            child: Text(
+                              cartLists.length.toString(),
+                              style: textStyle(false, 11, white),
+                            ),
+                            decoration: BoxDecoration(
+                                color: red,
+                                borderRadius: BorderRadius.circular(5)
+                                //shape: BoxShape.circle
+                                ),
+                          )
+                      ],
+                    )),
+              ),
               GestureDetector(
                 onTap: () {
                   theUser

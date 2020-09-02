@@ -40,7 +40,7 @@ class _ShowCartState extends State<ShowCart> {
                   ),
               Text(
                 "My Cart",
-                style: textStyle(true, 25, textColor),
+                style: textStyle(true, 20, textColor),
               ),
               Spacer(),
             ],

@@ -68,17 +68,15 @@ class _SliderWidgetState extends State<SliderWidget> {
                 child: SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                     activeTrackColor: Colors.white.withOpacity(1),
-                    inactiveTrackColor: Colors.white.withOpacity(.5),
-
+                    inactiveTrackColor: Colors.white.withOpacity(0.5),
+                    valueIndicatorColor: Colors.white,
                     trackHeight: 4.0,
-                    thumbShape: CustomSliderThumbCircle(
-                      thumbRadius: this.widget.sliderHeight * .4,
-                      min: this.widget.min,
-                      max: this.widget.max,
-                    ),
-
+                    thumbShape: CustomSliderThumbRect(
+                        thumbRadius: this.widget.sliderHeight * .4,
+                        min: this.widget.min,
+                        max: this.widget.max,
+                        thumbHeight: 50),
                     overlayColor: Colors.white.withOpacity(.4),
-                    //valueIndicatorColor: Colors.white,
                     activeTickMarkColor: Colors.white,
                     inactiveTickMarkColor: Colors.red.withOpacity(.7),
                   ),

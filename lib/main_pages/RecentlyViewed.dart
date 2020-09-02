@@ -62,7 +62,7 @@ class _RecentlyViewedState extends State<RecentlyViewed> {
               ),
               Text(
                 "Recently Viewed",
-                style: textStyle(true, 25, black),
+                style: textStyle(true, 20, black),
               ),
               Spacer(),
             ],

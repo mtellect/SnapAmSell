@@ -18,6 +18,7 @@ import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 
 import 'SellPage.dart';
+import 'ShowCart.dart';
 
 class ShowProduct extends StatefulWidget {
   final BaseModel theModel;
@@ -124,10 +125,55 @@ class _ShowProductState extends State<ShowProduct> {
                 },
               ),
               Text(
-                "Product",
-                style: textStyle(true, 25, black),
+                "Details",
+                style: textStyle(true, 20, black),
               ),
               Spacer(),
+              new Container(
+                height: 30,
+                width: 60,
+                child: new FlatButton(
+                    padding: EdgeInsets.all(0),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onPressed: () {
+                      pushAndResult(
+                        context,
+                        isLoggedIn ? ShowCart() : PreAuth(),
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              margin: EdgeInsets.only(left: 4),
+                              child: Image.asset(
+                                ic_cart,
+                                height: 20,
+                                width: 20,
+                                color: black,
+                              ),
+                            )),
+                        if (cartLists.length > 0)
+                          Container(
+                            // height: 10,
+                            // width: 10,
+                            padding: EdgeInsets.only(
+                                left: 6, right: 6, top: 3, bottom: 3),
+                            margin: EdgeInsets.only(left: 6),
+                            child: Text(
+                              cartLists.length.toString(),
+                              style: textStyle(false, 11, white),
+                            ),
+                            decoration: BoxDecoration(
+                                color: red,
+                                borderRadius: BorderRadius.circular(5)
+                                //shape: BoxShape.circle
+                                ),
+                          )
+                      ],
+                    )),
+              ),
               GestureDetector(
                 onTap: () {
                   model

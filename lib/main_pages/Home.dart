@@ -325,7 +325,7 @@ class _HomeState extends State<Home> {
             alignment: Alignment.bottomCenter,
             child: Container(
               decoration: BoxDecoration(
-                  color: black.withOpacity(.1),
+                  color: black.withOpacity(.4),
                   borderRadius: BorderRadius.circular(25)),
               padding: EdgeInsets.all(2),
               margin: EdgeInsets.all(5),
@@ -334,6 +334,7 @@ class _HomeState extends State<Home> {
                 position: currentPage,
                 decorator: DotsDecorator(
                     activeColor: AppConfig.appColor,
+                    color: white.withOpacity(.5),
                     spacing: EdgeInsets.all(3),
                     activeSize: Size(10, 10),
                     size: Size(5, 5)),
