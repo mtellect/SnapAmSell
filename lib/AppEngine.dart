@@ -4241,11 +4241,11 @@ inputTextView(String title, controller,
             if (priceIcon != null)
               priceIcon is String
                   ? Image.asset(
-                priceIcon,
-                height: 18,
-                width: 18,
-                color: black.withOpacity(.3),
-              )
+                      priceIcon,
+                      height: 18,
+                      width: 18,
+                      color: black.withOpacity(.3),
+                    )
                   : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
 
             if (priceIcon != null)
@@ -4324,7 +4324,13 @@ inputTextView(String title, controller,
   );
 }
 
-clickText(String title, String text, onClicked, {icon,double height:60,}) {
+clickText(
+  String title,
+  String text,
+  onClicked, {
+  icon,
+  double height: 60,
+}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
@@ -4339,7 +4345,7 @@ clickText(String title, String text, onClicked, {icon,double height:60,}) {
         },
         child: Container(
 //          height: height,
-          width: double.infinity,constraints: BoxConstraints(minHeight: 60),
+          width: double.infinity, constraints: BoxConstraints(minHeight: 60),
           margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
           padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
           decoration: BoxDecoration(
@@ -4349,9 +4355,14 @@ clickText(String title, String text, onClicked, {icon,double height:60,}) {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Column(
-              mainAxisSize: MainAxisSize.min,crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if(text.isNotEmpty)Text(title,style: textStyle(false, 12, black.withOpacity(.3)),),
+                if (text.isNotEmpty)
+                  Text(
+                    title,
+                    style: textStyle(false, 12, black.withOpacity(.3)),
+                  ),
                 Row(
                   children: <Widget>[
                     if (icon != null)
@@ -4363,8 +4374,9 @@ clickText(String title, String text, onClicked, {icon,double height:60,}) {
                     if (icon != null) addSpaceWidth(5),
                     Flexible(
                       child: new Text(
-                        text.isNotEmpty?text:title,
-                        style: textStyle(false, 18, text.isEmpty?black.withOpacity(.3):black),
+                        text.isNotEmpty ? text : title,
+                        style: textStyle(false, 18,
+                            text.isEmpty ? black.withOpacity(.3) : black),
 //                        maxLines: 1,overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -5586,7 +5598,36 @@ shopItem(BuildContext context, BaseModel model, setState,
                             ),
                       ),
                     ),
-                  )
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                        color: AppConfig.appColor,
+                      ),
+                      padding: EdgeInsets.all(6),
+                      //margin: EdgeInsets.all(8),
+                      height: 35,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.public_rounded,
+                            size: 15,
+                          ),
+                          addSpaceWidth(4),
+                          Text(
+                            "Sponsored",
+                            style: textStyle(false, 12, black),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
