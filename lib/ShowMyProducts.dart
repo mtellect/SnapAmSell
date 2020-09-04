@@ -1,30 +1,33 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:maugost_apps/AddAds.dart';
+import 'package:maugost_apps/main_pages/SellPage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'AddCategory.dart';
 import 'AppConfig.dart';
 import 'AppEngine.dart';
+import 'app/app.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 
-class ShowAds extends StatefulWidget {
+class ShowMyProducts extends StatefulWidget {
+  final bool popadsList;
+
+  const ShowMyProducts({Key key, this.popadsList = true}) : super(key: key);
   @override
-  _ShowAdsState createState() => _ShowAdsState();
+  _ShowMyProductsState createState() => _ShowMyProductsState();
 }
 
-class _ShowAdsState extends State<ShowAds> {
+class _ShowMyProductsState extends State<ShowMyProducts> {
   final searchController = TextEditingController();
   bool showCancel = false;
   bool searching = false;
+  //List<BaseModel> adsList = appSettingsModel.getListModel(CATEGORIES);
+  //List<BaseModel> mainList = appSettingsModel.getListModel(CATEGORIES);
   List<BaseModel> adsList = [];
   List<BaseModel> mainList = [];
-  int currentPage = 0;
-  final vp = PageController();
+
   bool setup = false;
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
@@ -32,8 +35,9 @@ class _ShowAdsState extends State<ShowAds> {
   @override
   initState() {
     super.initState();
+    searchController.addListener(listener);
     adsList.sort((a, b) => a.getString(TITLE).compareTo(b.getString(TITLE)));
-    loadProducts(false);
+    loadProducts(true);
   }
 
   loadProducts(bool isNew) async {
@@ -47,7 +51,7 @@ class _ShowAdsState extends State<ShowAds> {
 
     List local = [];
     Firestore.instance
-        .collection(ADS_BASE)
+        .collection(PRODUCT_BASE)
         .where(USER_ID, isEqualTo: userModel.getUserId())
         .limit(30)
         .orderBy(CREATED_AT, descending: !isNew)
@@ -134,26 +138,10 @@ class _ShowAdsState extends State<ShowAds> {
             children: [
               BackButton(),
               Text(
-                "Manage Advert",
+                "My Products",
                 style: textStyle(true, 16, black),
               ),
               Spacer(),
-              if (isAdmin)
-                RaisedButton(
-                  color: AppConfig.appColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25)),
-                  child: Text(
-                    "Create Ads",
-                    style: textStyle(true, 16, black),
-                  ),
-                  onPressed: () {
-                    pushAndResult(context, AddAds(), result: (_) {
-                      mainList = appSettingsModel.getListModel(CATEGORIES);
-                      setState(() {});
-                    });
-                  },
-                ),
             ],
           ),
         ),
@@ -181,7 +169,8 @@ class _ShowAdsState extends State<ShowAds> {
                       controller: searchController,
                       cursorColor: black,
                       decoration: InputDecoration(
-                          hintText: "Search in Ads ", border: InputBorder.none),
+                          hintText: "Search in Products ",
+                          border: InputBorder.none),
                     ),
                   ),
                   if (showCancel)
@@ -212,154 +201,58 @@ class _ShowAdsState extends State<ShowAds> {
           height: searching ? 2 : 0,
           margin: EdgeInsets.only(bottom: searching ? 5 : 0),
         ),
-        Container(
-          height: 45,
-          width: double.infinity,
-          margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: Card(
-            color: default_white,
-            elevation: 0,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25)),
-                side: BorderSide(color: black.withOpacity(.1), width: .5)),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
-              child: Row(
-                children: List.generate(4, (p) {
-                  String title = 'Pending';
-                  if (p == 1) title = "Active";
-                  if (p == 2) title = "Paused";
-                  if (p == 3) title = "Declined";
-                  bool selected = p == currentPage;
-                  return Flexible(
-                    child: GestureDetector(
-                      onTap: () {
-                        print(p);
-                        vp.jumpToPage(p);
-                      },
-                      child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: selected ? white : transparent,
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                  color: !selected
-                                      ? transparent
-                                      : black.withOpacity(.1),
-                                  width: .5)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-//                              if ((p == 1 && showNewMessageOffer.isNotEmpty) ||
-//                                  p == 2 && showNewMessageDot.isNotEmpty)
-//                                Container(
-//                                  height: 10,
-//                                  width: 10,
-//                                  decoration: BoxDecoration(
-//                                      border: Border.all(color: white),
-//                                      shape: BoxShape.circle,
-//                                      color: red),
-//                                ),
-                              Text(
-                                title,
-                                style: textStyle(selected, 14,
-                                    selected ? black : (black.withOpacity(.5))),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          )),
-                    ),
-                    fit: FlexFit.tight,
-                  );
-                }),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: PageView.builder(
-              controller: vp,
-              onPageChanged: (p) {
-                currentPage = p;
-                setState(() {});
-              },
-              itemCount: 4,
-              itemBuilder: (c, p) {
-                return refresher(p);
-              }),
-        )
+        refresher(),
       ],
     );
   }
 
-  refresher(int p) {
-    return SmartRefresher(
-      controller: refreshController,
-      enablePullDown: true,
-      enablePullUp: adsList.length > 6,
-      header: WaterDropHeader(),
-      footer: ClassicFooter(
-        noDataText: "Nothing more for now, check later...",
-        textStyle: textStyle(false, 12, black.withOpacity(.7)),
-      ),
-      onLoading: () {
-        loadProducts(false);
-      },
-      onRefresh: () {
-        loadProducts(true);
-      },
-      child: ListView(
-        //controller: scrollControllers[1],
-        shrinkWrap: true,
-        //physics: NeverScrollableScrollPhysics(),
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 120),
-        children: <Widget>[
-          body(),
-        ],
+  refresher() {
+    return Expanded(
+      child: SmartRefresher(
+        controller: refreshController,
+        enablePullDown: true,
+        enablePullUp: adsList.length > 6,
+        header: WaterDropHeader(),
+        footer: ClassicFooter(
+          noDataText: "Nothing more for now, check later...",
+          textStyle: textStyle(false, 12, black.withOpacity(.7)),
+        ),
+        onLoading: () {
+          loadProducts(false);
+        },
+        onRefresh: () {
+          loadProducts(true);
+        },
+        child: ListView(
+          //controller: scrollControllers[1],
+          shrinkWrap: true,
+          //physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 120),
+          children: <Widget>[
+            body(),
+          ],
+        ),
       ),
     );
-  }
-
-  String get currentTitle {
-    String title = 'Pending';
-    if (currentPage == 1) title = "Active";
-    if (currentPage == 2) title = "Paused";
-    if (currentPage == 3) title = "Declined";
-    return title;
-  }
-
-  List<BaseModel> get currentList {
-    Iterable<BaseModel> list = [];
-    if (currentPage == 0)
-      list = adsList.where((e) => e.getInt(STATUS) == PENDING);
-    if (currentPage == 1)
-      list = adsList.where((e) => e.getInt(STATUS) == APPROVED);
-    if (currentPage == 2)
-      list = adsList.where((e) => e.getInt(STATUS) == INACTIVE);
-    if (currentPage == 3)
-      list = adsList.where((e) => e.getInt(STATUS) == REJECTED);
-
-    return list.toList();
   }
 
   body() {
     return Builder(
       builder: (ctx) {
-        // if (!setup)
-        /*return*/ Container(
-          height: getScreenHeight(context) * .7,
-          child: loadingLayout(trans: true),
-        );
+        if (!setup)
+          return Container(
+            height: getScreenHeight(context) * .7,
+            child: loadingLayout(trans: true),
+          );
 
-        if (currentList.isEmpty)
+        if (adsList.isEmpty)
           return Container(
             height: getScreenHeight(context) * .7,
             child: Center(
               child: emptyLayout(
                 ic_product,
-                'No $currentTitle Ads Yet',
-                'Promote your Store, Product or Item',
+                'No Product Yet',
+                'Add Product to Promote',
               ),
             ),
           );
@@ -368,25 +261,28 @@ class _ShowAdsState extends State<ShowAds> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
-          children: List.generate(currentList.length, (index) {
-            return resultItem(index);
+          children: List.generate(adsList.length, (index) {
+            return item(index);
           }),
         );
       },
     );
   }
 
-  resultItem(int index) {
-    BaseModel model = currentList[index];
-    String categoryName = model.getString(TITLE);
+  item(int index) {
+    BaseModel model = adsList[index];
+    String title = model.getString(TITLE);
     String description = model.getString(DESCRIPTION);
     String category = model.getString(CATEGORY);
+    String subCategory = model.getString(SUB_CATEGORY);
+    if (subCategory.isNotEmpty) category = '$category $subCategory';
     String thumbnail = model.getString(THUMBNAIL_URL);
     String image = getFirstPhoto(model.images);
+    double price = model.getDouble(PRICE);
 
     return InkWell(
       onTap: () {
-        //Navigator.pop(context, model);
+        Navigator.pop(context, model);
       },
       child: Container(
         padding: EdgeInsets.all(5),
@@ -425,30 +321,29 @@ class _ShowAdsState extends State<ShowAds> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('~$category~', style: textStyle(true, 14, black)),
                   Text.rich(TextSpan(children: [
                     TextSpan(
-                        text: categoryName.substring(
-                            0, searchController.text.length),
+                        text: title.substring(0, searchController.text.length),
                         style: textStyle(true, 18, black)),
                     TextSpan(
-                        text: categoryName
-                            .substring(searchController.text.length),
+                        text: title.substring(searchController.text.length),
                         style: textStyle(false, 18, black))
                   ])),
+                  Text("\$${formatCurrency.format(price)}",
+                      style: textStyle(true, 14, AppConfig.appColor)),
                 ],
               ),
             ),
-            if (isAdmin)
+            if (isAdmin || model.myItem())
               IconButton(
                 onPressed: () {
                   pushAndResult(
                       context,
-                      AddCategory(
+                      SellPage(
                         model: model,
-                      ), result: (_) {
-                    mainList = appSettingsModel.getListModel(CATEGORIES);
-                    setState(() {});
-                  });
+                      ),
+                      result: (_) {});
                 },
                 icon: Icon(Icons.edit),
               )

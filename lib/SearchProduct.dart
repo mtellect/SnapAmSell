@@ -8,7 +8,7 @@ import 'AppEngine.dart';
 import 'ShowCategories.dart';
 import 'assets.dart';
 import 'basemodel.dart';
-import 'main_pages/ShowProduct.dart';
+import 'main_pages/ShowDetails.dart';
 import 'main_pages/ShowStore.dart';
 
 class SearchProduct extends StatefulWidget {
@@ -92,7 +92,7 @@ class _SearchProductState extends State<SearchProduct> {
       BaseModel model = BaseModel(doc: doc);
       String username = model.getUserName();
       if (username.isEmpty) username = model.get(NAME);
-      //if (!username.startsWith(text)) continue;
+      if (!username.startsWith(text)) continue;
       int p = result.indexWhere((e) => e.getObjectId() == model.getObjectId());
       if (p != -1)
         result[p] = model;
@@ -102,6 +102,8 @@ class _SearchProductState extends State<SearchProduct> {
 
     for (var doc in shots2.documents) {
       BaseModel model = BaseModel(doc: doc);
+      String category = model.getString(CATEGORY);
+      if (!category.startsWith(text)) continue;
       int p = result.indexWhere((e) => e.getObjectId() == model.getObjectId());
       if (p != -1)
         result[p] = model;
@@ -239,7 +241,7 @@ class _SearchProductState extends State<SearchProduct> {
         if (isProduct) {
           pushAndResult(
               context,
-              ShowProduct(
+              ShowDetails(
                 model,
                 objectId: model.getObjectId(),
               ),
@@ -276,8 +278,8 @@ class _SearchProductState extends State<SearchProduct> {
                         fit: BoxFit.cover,
                         placeholder: (c, s) {
                           return Container(
-                            height: 50,
-                            width: 50,
+                            height: 80,
+                            width: 80,
                             color: black.withOpacity(.09),
                             child: Icon(LineIcons.user),
                           );

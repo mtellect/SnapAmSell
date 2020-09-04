@@ -5,12 +5,14 @@ class SliderWidget extends StatefulWidget {
   final int min;
   final int max;
   final fullWidth;
+  final Function(int p) callBack;
 
   SliderWidget(
       {this.sliderHeight = 48,
       this.max = 10,
       this.min = 0,
-      this.fullWidth = false});
+      this.fullWidth = false,
+      this.callBack});
 
   @override
   _SliderWidgetState createState() => _SliderWidgetState();
@@ -85,6 +87,8 @@ class _SliderWidgetState extends State<SliderWidget> {
                       onChanged: (value) {
                         setState(() {
                           _value = value;
+                          //print("val ${getValue(value)}");
+                          widget.callBack(getValue(value));
                         });
                       }),
                 ),
@@ -106,6 +110,10 @@ class _SliderWidgetState extends State<SliderWidget> {
         ),
       ),
     );
+  }
+
+  int getValue(double value) {
+    return (widget.min + (widget.max - widget.min) * value).round();
   }
 }
 

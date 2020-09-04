@@ -172,9 +172,14 @@ class _SellPageState extends State<SellPage> {
         children: [
           GestureDetector(
             onTap: () {
-              pushAndResult(context, ShowCategories(), result: (BaseModel _) {
+              pushAndResult(context, ShowCategories(), result: (List _) {
                 if (null == _) return;
-                setState(_.getString(TITLE));
+                //BaseModel bm = _[0];
+                String cateory = _[0];
+                String subCategory = _[1];
+                //setState(_.getString(TITLE));
+                setState("$cateory");
+               if(subCategory.isNotEmpty) setState("$subCategory in $cateory");
               });
             },
             child: Container(

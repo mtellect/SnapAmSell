@@ -6,10 +6,10 @@ import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
-import 'package:maugost_apps/main_pages/ShowProduct.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'EditProfile.dart';
+import 'ShowDetails.dart';
 
 class ShowOrder extends StatefulWidget {
   final String orderId;
@@ -334,7 +334,7 @@ class _ShowOrderState extends State<ShowOrder> {
       onTap: () {
         pushAndResult(
             context,
-            ShowProduct(
+            ShowDetails(
               model,
               objectId: model.getString(PRODUCT_ID),
               order: true,

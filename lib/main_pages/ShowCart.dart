@@ -6,7 +6,7 @@ import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/PreAuth.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/main_pages/EditProfile.dart';
-import 'package:maugost_apps/main_pages/ShowProduct.dart';
+import 'package:maugost_apps/main_pages/ShowDetails.dart';
 
 class ShowCart extends StatefulWidget {
   @override
@@ -180,7 +180,7 @@ class _ShowCartState extends State<ShowCart> {
 
     return GestureDetector(
       onTap: () {
-        pushAndResult(context, ShowProduct(model), depend: false, result: (_) {
+        pushAndResult(context, ShowDetails(model), depend: false, result: (_) {
           setState(() {});
         });
       },

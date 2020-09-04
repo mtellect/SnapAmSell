@@ -10,8 +10,9 @@ import 'basemodel.dart';
 
 class ShowCategories extends StatefulWidget {
   final bool popResult;
+  final bool showSub;
 
-  const ShowCategories({Key key, this.popResult = true}) : super(key: key);
+  const ShowCategories({Key key, this.popResult = true, this.showSub=false}) : super(key: key);
   @override
   _ShowCategoriesState createState() => _ShowCategoriesState();
 }
@@ -26,6 +27,7 @@ class _ShowCategoriesState extends State<ShowCategories> {
   @override
   initState() {
     super.initState();
+    searchController.addListener(listener);
     result.sort((a, b) => a.getString(TITLE).compareTo(b.getString(TITLE)));
   }
 
@@ -94,16 +96,17 @@ class _ShowCategoriesState extends State<ShowCategories> {
                   },
                 ),
               addSpaceWidth(5),
-              RaisedButton(
-                color: AppConfig.appColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25)),
-                child: Text(
-                  "Select All",
-                  style: textStyle(true, 16, black),
+              if (widget.popResult)
+                RaisedButton(
+                  color: AppConfig.appColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25)),
+                  child: Text(
+                    "Select All",
+                    style: textStyle(true, 16, black),
+                  ),
+                  onPressed: () {},
                 ),
-                onPressed: () {},
-              ),
             ],
           ),
         ),
@@ -178,81 +181,134 @@ class _ShowCategoriesState extends State<ShowCategories> {
   resultItem(int index) {
     BaseModel model = result[index];
     String categoryName = model.getString(TITLE);
+    String sCategories = model.getString(SUB_CATEGORY);
+    List subCategories = [];
+    if (sCategories.isNotEmpty) subCategories = sCategories.split(',');
     String description = model.getString(DESCRIPTION);
     String category = model.getString(CATEGORY);
     String thumbnail = model.getString(THUMBNAIL_URL);
     String image = getFirstPhoto(model.images);
-
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context, model);
-      },
-      child: Container(
-        padding: EdgeInsets.all(5),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: black.withOpacity(.1))),
-                child: Stack(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: image,
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
-                      placeholder: (c, s) {
-                        return Container(
-                          height: 80,
-                          width: 80,
-                          color: black.withOpacity(.09),
-                          child: Icon(LineIcons.image),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            addSpaceWidth(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    bool empty = subCategories.isEmpty;
+    return Container(
+      padding: EdgeInsets.all(5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: black.withOpacity(.1))),
+              child: Stack(
                 children: [
-                  Text.rich(TextSpan(children: [
-                    TextSpan(
-                        text: categoryName.substring(
-                            0, searchController.text.length),
-                        style: textStyle(true, 18, black)),
-                    TextSpan(
-                        text: categoryName
-                            .substring(searchController.text.length),
-                        style: textStyle(false, 18, black))
-                  ])),
+                  CachedNetworkImage(
+                    imageUrl: image,
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.cover,
+                    placeholder: (c, s) {
+                      return Container(
+                        height: 80,
+                        width: 80,
+                        color: black.withOpacity(.09),
+                        child: Icon(LineIcons.image),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
-            if (isAdmin)
-              IconButton(
-                onPressed: () {
-                  pushAndResult(
-                      context,
-                      AddCategory(
-                        model: model,
-                      ), result: (_) {
-                    appCategories = appSettingsModel.getListModel(CATEGORIES);
-                    setState(() {});
-                  });
-                },
-                icon: Icon(Icons.edit),
-              )
-          ],
-        ),
+          ),
+          addSpaceWidth(10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (widget.popResult)
+                      Navigator.pop(context, [category, '']);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: black.withOpacity(empty ? 0 : 0.1),
+                                width: 1))),
+                    child: Text.rich(TextSpan(children: [
+                      TextSpan(
+                          text: categoryName.substring(
+                              0, searchController.text.length),
+                          style: textStyle(true, 18, black)),
+                      TextSpan(
+                          text: categoryName
+                              .substring(searchController.text.length),
+                          style: textStyle(false, 18, black))
+                    ])),
+                  ),
+                ),
+                if (subCategories.isNotEmpty && widget.showSub)
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border(
+                            left: BorderSide(
+                                color: AppConfig.appColor, width: 2))),
+                    //padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: List.generate(subCategories.length, (p) {
+                        return InkWell(
+                          onTap: () {
+                            if (widget.popResult)
+                              Navigator.pop(
+                                  context, [category, subCategories[p]]);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: black.withOpacity(.1),
+                                        width: 1))),
+                            alignment: Alignment.centerLeft,
+                            child: Text.rich(TextSpan(children: [
+                              TextSpan(
+                                  text: subCategories[p].substring(
+                                      0, searchController.text.length),
+                                  style: textStyle(true, 18, black)),
+                              TextSpan(
+                                  text: subCategories[p]
+                                      .substring(searchController.text.length),
+                                  style: textStyle(false, 18, black))
+                            ])),
+                          ),
+                        );
+                      }),
+                    ),
+                  )
+              ],
+            ),
+          ),
+          if (isAdmin)
+            IconButton(
+              onPressed: () {
+                pushAndResult(
+                    context,
+                    AddCategory(
+                      model: model,
+                    ), result: (_) {
+                  appCategories = appSettingsModel.getListModel(CATEGORIES);
+                  setState(() {});
+                });
+              },
+              icon: Icon(Icons.edit),
+            )
+        ],
       ),
     );
   }

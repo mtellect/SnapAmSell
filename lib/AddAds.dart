@@ -5,6 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/ShowMyProducts.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/app/sliderWidget.dart';
 import 'package:maugost_apps/assets.dart';
@@ -25,8 +26,12 @@ class _AddAdsState extends State<AddAds> {
   final titleController = TextEditingController();
   final urlController = TextEditingController();
   String promoteWhere = "";
+  String product = "";
+  BaseModel productModel;
   int promoteIndex = -1;
   List<BaseModel> imagesUrl = [];
+  int adDays = 1;
+  double adsPricePerDay = appSettingsModel.getDouble(ADS_PRICE);
 
   @override
   void initState() {
@@ -62,7 +67,7 @@ class _AddAdsState extends State<AddAds> {
                 Container(
                   margin: EdgeInsets.only(left: 15),
                   child: Text(
-                    widget.model != null ? "Edit Ads" : "New Ads",
+                    widget.model != null ? "Update Ads" : "New Ads",
                     style: textStyle(true, 25, black),
                   ),
                 )
@@ -90,7 +95,10 @@ class _AddAdsState extends State<AddAds> {
               padding: EdgeInsets.all(15),
               child: Center(
                   child: Text(
-                widget.model != null ? "UPDATE" : "PROMOTE",
+                widget.model != null
+                    ? "UPDATE"
+                    : "PROMOTE" +
+                        " (\$${(adsPricePerDay * adDays).roundToDouble()})",
                 style: textStyle(false, 18, white),
               )),
             ),
@@ -110,9 +118,21 @@ class _AddAdsState extends State<AddAds> {
               showListDialog(context, PROMOTE_TYPE, (_) {
                 promoteWhere = PROMOTE_TYPE[_];
                 promoteIndex = _;
+                if (_ != 1) {
+                  productModel = null;
+                  product = '';
+                }
                 setState(() {});
               });
             }),
+            if (promoteIndex == 1)
+              clickText("Choose Product", product, () {
+                pushAndResult(context, ShowMyProducts(), result: (BaseModel _) {
+                  productModel = _;
+                  product = _.getString(TITLE);
+                  setState(() {});
+                });
+              }),
             inputTextView("Ads Title", titleController, isNum: false),
             if (promoteIndex == 2)
               inputTextView(
@@ -126,14 +146,19 @@ class _AddAdsState extends State<AddAds> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "How long will Ads Run for?",
+                  "How many days would you like the Ad to Run?",
                   style: textStyle(false, 12, black.withOpacity(.8)),
                 ),
                 addSpace(4),
                 SliderWidget(
                   max: 30,
-                  min: 5,
+                  min: 1,
                   fullWidth: true,
+                  callBack: (v) {
+                    setState(() {
+                      adDays = v;
+                    });
+                  },
                 ),
               ],
             ),
@@ -338,6 +363,11 @@ class _AddAdsState extends State<AddAds> {
       return;
     }
 
+    if (promoteIndex == 1 && null == productModel) {
+      showError("Choose a Product to Promote?");
+      return;
+    }
+
     if (title.isEmpty) {
       showError("Add Title to Ads");
       return;
@@ -362,9 +392,38 @@ class _AddAdsState extends State<AddAds> {
     model.put(TITLE, title);
     model.put(ADS_URL, urlLink);
     model.put(PROMOTE_WHERE, promoteWhere);
-    //model.put(ADS_START_DATE, startAt);
-    //model.put(ADS_END_DATE, endAt);
+    model.put(PROMOTE_INDEX, promoteIndex);
+    if (productModel != null) {
+      model.put(PRODUCT_ID, productModel.getObjectId());
+      model.put(PRICE, productModel.getDouble(PRICE));
+      model.put(TITLE, productModel.getString(TITLE));
+      model.put(DESCRIPTION, productModel.getString(DESCRIPTION));
+      model.put(IMAGES, productModel.getList(IMAGES));
+    }
+    model.put(ADS_DAYS, adDays);
     model.put(STATUS, isAdmin ? APPROVED : PENDING);
+
+    double accountBal = userModel.getDouble(ESCROW_BALANCE);
+    double adsAmount = adsPricePerDay * adDays;
+    double leftOver = accountBal - adsAmount;
+
+    if (!isAdmin && accountBal == 0 || leftOver.isNegative) {
+      showMessage(
+          context,
+          Icons.warning,
+          red,
+          "Insufficient Funds",
+          "Oops! You do not have sufficient"
+              " funds in your wallet. Please"
+              " add funds to your wallet to proceed.",
+          clickYesText: "Fund Wallet", onClicked: (_) {
+        if (_)
+          fundWallet(context, onProcessed: () {
+            setState(() {});
+          });
+      });
+      return;
+    }
 
     showProgress(true, context,
         msg: "${widget.model != null ? "Saving" : "Adding"} Ads...");

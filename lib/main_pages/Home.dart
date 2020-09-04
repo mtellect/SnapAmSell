@@ -13,6 +13,8 @@ import 'package:maugost_apps/ShowCategories.dart';
 import 'package:maugost_apps/app/dotsIndicator.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/main_pages/ShowDetails.dart';
+import 'package:maugost_apps/main_pages/ShowStore.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'ShowProducts.dart';
@@ -36,10 +38,12 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) _codeWheeler.run(pageWheeler);
+    });
     Future.delayed(Duration(seconds: 1), () {
       loadProducts(true);
     });
-    if (mounted) _codeWheeler.run(pageWheeler);
   }
 
   @override
@@ -206,7 +210,7 @@ class _HomeState extends State<Home> {
                   pushAndResult(context, ShowCategories());
                 },
                 child: Container(
-                  child: Center(child: Icon(LineIcons.sort_alpha_desc)),
+                  child: Center(child: Icon(LineIcons.list_alt)),
                   height: 45,
                   width: 45,
                   decoration: BoxDecoration(
@@ -283,12 +287,29 @@ class _HomeState extends State<Home> {
                 String imageUrl = getFirstPhoto(model.images);
                 String url = model.getString(ADS_URL);
                 String title = model.getString(TITLE);
-                //"https://tinyurl.com/y3pqgajd";
-                // if (p.isEven) imageUrl = "https://tinyurl.com/yxmafqng";
-                //if (p.isOdd) imageUrl = "https://tinyurl.com/y6neowmn";
+                int promoteIndex = model.getInt(PROMOTE_INDEX);
 
                 return GestureDetector(
                   onTap: () {
+                    if (promoteIndex == 0) {
+                      pushAndResult(
+                          context,
+                          ShowStore(
+                            model,
+                          ));
+                      return;
+                    }
+
+                    if (promoteIndex == 1) {
+                      pushAndResult(
+                          context,
+                          ShowDetails(
+                            null,
+                            objectId: model.getString(PRODUCT_ID),
+                          ));
+                      return;
+                    }
+
                     openLink(url);
                   },
                   child: Container(

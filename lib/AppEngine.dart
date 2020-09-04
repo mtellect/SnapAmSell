@@ -42,7 +42,7 @@ import 'AppConfig.dart';
 import 'MainAdmin.dart';
 import 'SimpleVideoPlayer.dart';
 import 'dialogs/OfferDialog.dart';
-import 'main_pages/ShowProduct.dart';
+import 'main_pages/ShowDetails.dart';
 import 'main_pages/ShowStore.dart';
 import 'notificationService.dart';
 
@@ -5533,12 +5533,13 @@ shopItem(BuildContext context, BaseModel model, setState,
   bool isInCart = p != -1;
   int fP = productLists.indexWhere((e) => e.getObjectId() == id);
   bool isFavorite = model.getList(LIKES).contains(userModel.getUserId());
+  bool isPromoted = model.getBoolean(IS_PROMOTED);
 
   return GestureDetector(
     onTap: () {
       pushAndResult(
           context,
-          ShowProduct(
+          ShowDetails(
             model,
             objectId: id,
           ),
@@ -5599,7 +5600,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                       ),
                     ),
                   ),
-                  Align(
+                 if(isPromoted) Align(
                     alignment: Alignment.topLeft,
                     child: Container(
                       decoration: BoxDecoration(
@@ -5705,7 +5706,7 @@ shopItemX(BuildContext context, BaseModel model, setState,
     onTap: () {
       pushAndResult(
           context,
-          ShowProduct(
+          ShowDetails(
             model,
             objectId: id,
           ),

@@ -12,7 +12,7 @@ import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/OfferDialogg.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
-import 'package:maugost_apps/main_pages/ShowProduct.dart';
+import 'package:maugost_apps/main_pages/ShowDetails.dart';
 import 'package:maugost_apps/notificationService.dart';
 import 'package:maugost_apps/payment_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -416,7 +416,7 @@ class _OfferMainState extends State<OfferMain>
           onTap: () {
             pushAndResult(
                 context,
-                ShowProduct(
+                ShowDetails(
                   otherProductInfo[offerModel.getString(PRODUCT_ID)],
                   objectId: offerModel.getString(PRODUCT_ID),
                 ));

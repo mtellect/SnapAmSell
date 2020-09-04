@@ -128,10 +128,38 @@ class _AppAdminState extends State<AppAdmin> {
 
           ListTile(
             onTap: () {
-              pushAndResult(context, ShowCategories());
+              pushAndResult(
+                  context,
+                  ShowCategories(
+                    popResult: false,
+                    showSub: true,
+                  ));
             },
             title: Text("Product Categories"),
             subtitle: Text("Add and Update Product Categories"),
+            trailing: Icon(Icons.navigate_next),
+          ),
+
+          ListTile(
+            onTap: () {
+              pushAndResult(
+                  context,
+                  inputDialog(
+                    "Ads Price Per Day",
+                    hint: "Enter Ads Price Per Day",
+                    inputType: TextInputType.number,
+                    message: appSettingsModel.getString(ADS_PRICE),
+                  ), result: (_) {
+                if (null == _) return;
+                appSettingsModel
+                  ..put(ADS_PRICE, num.parse(_).toDouble())
+                  ..updateItems();
+                setState(() {});
+              }, depend: false);
+            },
+            title: Text(
+                "Ads Price Per Day (\$${appSettingsModel.getDouble(ADS_PRICE)})"),
+            subtitle: Text("Set and Update Ads Price Per Day Here"),
             trailing: Icon(Icons.navigate_next),
           ),
 

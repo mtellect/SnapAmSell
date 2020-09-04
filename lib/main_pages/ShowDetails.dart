@@ -20,16 +20,16 @@ import 'package:maugost_apps/basemodel.dart';
 import 'SellPage.dart';
 import 'ShowCart.dart';
 
-class ShowProduct extends StatefulWidget {
+class ShowDetails extends StatefulWidget {
   final BaseModel theModel;
   final String objectId;
   final bool order;
-  const ShowProduct(this.theModel, {this.objectId, this.order = false});
+  const ShowDetails(this.theModel, {this.objectId, this.order = false});
   @override
-  _ShowProductState createState() => _ShowProductState();
+  _ShowDetailsState createState() => _ShowDetailsState();
 }
 
-class _ShowProductState extends State<ShowProduct> {
+class _ShowDetailsState extends State<ShowDetails> {
   BaseModel model;
   final vp = PageController();
   int currentPage = 0;

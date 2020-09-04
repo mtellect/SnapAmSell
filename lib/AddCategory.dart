@@ -58,7 +58,7 @@ class _AddCategoryState extends State<AddCategory> {
                 Container(
                   margin: EdgeInsets.only(left: 15),
                   child: Text(
-                    widget.model != null ? "Edit Category" : "New Category",
+                    widget.model != null ? "Update Category" : "New Category",
                     style: textStyle(true, 25, black),
                   ),
                 )
@@ -104,6 +104,28 @@ class _AddCategoryState extends State<AddCategory> {
           children: [
             inputTextView("Category Name", categoryName, isNum: false),
             inputTextView("Sub Category", subCategories, isNum: false),
+            addSpace(10),
+            Container(
+              decoration: BoxDecoration(
+                  color: red, borderRadius: BorderRadius.circular(8)),
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info,
+                    color: white,
+                  ),
+                  addSpaceWidth(10),
+                  Flexible(
+                    child: Text(
+                      "Note: For Sub Category,Separate each new category by a comma ",
+                      style: textStyle(false, 14, white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             imagesView(),
             addSpace(10),
             /* Container(

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
-import 'package:maugost_apps/ShowAds.dart';
+import 'package:maugost_apps/MainAdmin.dart';
+import 'package:maugost_apps/ManageAds.dart';
+import 'package:maugost_apps/ManageProducts.dart';
 import 'package:maugost_apps/admin/AppAdmin.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
@@ -31,6 +33,8 @@ class _AccountState extends State<Account> {
   }
 
   page() {
+    bool push = userModel.getBoolean(PUSH_NOTIFICATION);
+
     return ListView(
       padding: EdgeInsets.all(0),
       children: [
@@ -228,12 +232,28 @@ class _AccountState extends State<Account> {
                     () {
                   pushAndResult(context, Wallet(), depend: false);
                 }),
+                fieldItem(Icons.view_list, blue, "Manage Products", () {
+                  pushAndResult(
+                    context,
+                    ManageProducts(),
+                  );
+                }),
                 fieldItem(Icons.list, blue, "Manage Ads", () {
                   pushAndResult(
                     context,
-                    ShowAds(),
+                    ManageAds(),
                   );
                 }),
+                fieldItem(Icons.notifications_active_outlined,
+                    AppConfig.appColor, "Push Notifications", () {
+                  push = !push;
+                  userModel.put(PUSH_NOTIFICATION, push);
+                  userModel.updateItems();
+                  setState(() {});
+                },
+                    checkField: true,
+                    subTitle: push ? "Enabled" : "Disabled",
+                    selected: push),
               ],
             ),
           ),
@@ -293,7 +313,18 @@ class _AccountState extends State<Account> {
     );
   }
 
-  fieldItem(icon, color, title, onPressed) {
+  // settingsItemCheck("Push Notifications",
+  // push ? "Enabled" : "Disabled", push, () {
+  // push = !push;
+  // userModel.put(PUSH_NOTIFICATION, push);
+  // userModel.updateItems();
+  // setState(() {});
+  //
+  // handleTopics();
+  // }),
+
+  fieldItem(icon, color, title, onPressed,
+      {bool checkField = false, bool selected = false, String subTitle}) {
     return Column(
       children: [
         GestureDetector(
@@ -319,10 +350,47 @@ class _AccountState extends State<Account> {
                       size: 18,
                     )),
                 addSpaceWidth(10),
-                Text(
-                  title,
-                  style: textStyle(false, 16, black),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: textStyle(false, 16, black),
+                      ),
+                      if (checkField)
+                        Text(
+                          subTitle,
+                          style: textStyle(false, 12, black.withOpacity(.8)),
+                        ),
+                    ],
+                  ),
                 ),
+                if (checkField)
+                  new Container(
+                    //padding: EdgeInsets.all(2),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: blue09,
+                          border: Border.all(
+                              color: white.withOpacity(.7), width: 1)),
+                      child: Container(
+                        width: 25,
+                        height: 25,
+                        margin: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: selected ? white : transparent,
+                        ),
+                        child: Icon(
+                          Icons.check,
+                          size: 15,
+                          color: selected ? black : transparent,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -362,5 +430,17 @@ class _AccountState extends State<Account> {
 //    }).catchError((e) {});
 
     /// Use assetList to do something.
+  }
+
+  handleTopics() {
+    bool subscribe = userModel.getBoolean(PUSH_NOTIFICATION);
+    List topics = userModel.getList(TOPICS);
+    for (String s in topics) {
+      if (subscribe) {
+        firebaseMessaging.subscribeToTopic(s);
+      } else {
+        firebaseMessaging.unsubscribeFromTopic(s);
+      }
+    }
   }
 }

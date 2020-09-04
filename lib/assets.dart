@@ -1487,6 +1487,7 @@ const String ADS_TITLE = "adsTitle";
 const String ADS_URL = "adsUrl";
 const String ADS_START_DATE = "adsStartDate";
 const String ADS_END_DATE = "adsEndDate";
+const String ADS_DAYS = "adsDays";
 const String ADS_STATUS = "adsStatus";
 const String ADS_IMAGE = "adsImage";
 const String ADS_LOCATION = "adsLocation";
@@ -1565,6 +1566,8 @@ const String SEARCH = "search";
 const String SETTLING_AMOUNT = "settlingAmount";
 const String ORDER_STATUS = "orderStatus";
 const String PROMOTE_WHERE = "promoteWhere";
+const String PROMOTE_INDEX = "promoteIndex";
+const String IS_PROMOTED = "isPromoted";
 const int ORDER_STATUS_PENDING = 0;
 const int ORDER_STATUS_PICKED = 1;
 const int ORDER_STATUS_EN_ROUTE = 2;
@@ -1580,7 +1583,7 @@ const List<String> CLOTH_SIZES = [
 ];
 
 const List<String> PROMOTE_TYPE = [
-  "InApp Store",
-  "InApp Product",
+  "In-App Store",
+  "In-App Product",
   "Website",
 ];
