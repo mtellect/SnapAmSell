@@ -84,7 +84,7 @@ class _AmountDialogState extends State<AmountDialog> {
                 Flexible(
                   fit: FlexFit.loose,
                   child: Container(
-                    color: default_white,
+                    color: white,
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(15, 20, 15, 10),
@@ -98,7 +98,8 @@ class _AmountDialogState extends State<AmountDialog> {
                                   flex: 2,
                                   child: inputTextView(
                                       "Enter Amount", amountController,
-                                      isNum: true,   priceIcon: Icons.monetization_on),
+                                      isNum: true,
+                                      priceIcon: Icons.monetization_on),
                                   fit: FlexFit.tight,
                                 ),
 //                                addSpaceWidth(10),

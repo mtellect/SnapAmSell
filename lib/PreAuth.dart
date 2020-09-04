@@ -275,12 +275,12 @@ class _PreAuthState extends State<PreAuth> {
   }
 
   authItem(int p) {
-    String headerText = "Sign up for Fetish!";
+    String headerText = "Sign up for SnapAmSell!";
     String description =
         "Create a profile, Post,Buy and Sell. Be your own Boss...!";
 
     if (p == 1) {
-      headerText = "Log in to Fetish!";
+      headerText = "Log in to SnapAmSell!";
       description =
           "Manage your account, check notifications, offers,orders and more...!";
     }
@@ -370,41 +370,43 @@ class _PreAuthState extends State<PreAuth> {
           ),
           addSpace(10),
         ],
-        Container(
-          padding:
-              EdgeInsets.only(left: 20, right: 20), //width: double.infinity,
-          child: FlatButton(
-            color: white,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    "assets/icons/google.png",
-                    height: 20,
-                    width: 20,
-                    //color: white,
-                  ),
-                  addSpaceWidth(5),
-                  Text(
-                    'CONTINUE WITH GOOGLE',
-                    style: textStyle(true, 14, black),
-                  ),
-                ],
+        if (Platform.isAndroid) ...[
+          Container(
+            padding:
+                EdgeInsets.only(left: 20, right: 20), //width: double.infinity,
+            child: FlatButton(
+              color: white,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      "assets/icons/google.png",
+                      height: 20,
+                      width: 20,
+                      //color: white,
+                    ),
+                    addSpaceWidth(5),
+                    Text(
+                      'CONTINUE WITH GOOGLE',
+                      style: textStyle(true, 14, black),
+                    ),
+                  ],
+                ),
               ),
+              onPressed: () {
+                handleSignIn("google");
+              },
+              padding: EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: black.withOpacity(0.5), width: 1),
+                  borderRadius: BorderRadius.circular(8)),
+              //color: Color(0xFFf4c20d),
             ),
-            onPressed: () {
-              handleSignIn("google");
-            },
-            padding: EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: black.withOpacity(0.5), width: 1),
-                borderRadius: BorderRadius.circular(8)),
-            //color: Color(0xFFf4c20d),
           ),
-        ),
-        addSpace(10),
+          addSpace(10),
+        ],
         Container(
           padding: EdgeInsets.only(left: 20, right: 20),
           //width: 160,

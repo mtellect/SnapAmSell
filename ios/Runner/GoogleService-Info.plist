@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1026557853833-huj5o1ga5nf9k9v1dkkkajh2r2b28d7u.apps.googleusercontent.com</string>
+	<string>574208664558-e6gco67i9bl6fchdpcogjfqrn5idqi0o.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1026557853833-huj5o1ga5nf9k9v1dkkkajh2r2b28d7u</string>
+	<string>com.googleusercontent.apps.574208664558-e6gco67i9bl6fchdpcogjfqrn5idqi0o</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>1026557853833-ujgdpg9oq2lt65picsf17sqjni8ck189.apps.googleusercontent.com</string>
+	<string>574208664558-sinboe3hnqohtfkm69jl6afi5hfmct36.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA769PaTGEjAFE4gY-6vTXp2_qI5H7jRv8</string>
+	<string>AIzaSyDAQpVeV3CxGr8048-6vfN_AZuX2qzTlvI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1026557853833</string>
+	<string>574208664558</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.snapamsell</string>
+	<string>com.snapam</string>
 	<key>PROJECT_ID</key>
-	<string>snapamsell</string>
+	<string>snapam-3ca01</string>
 	<key>STORAGE_BUCKET</key>
-	<string>snapamsell.appspot.com</string>
+	<string>snapam-3ca01.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1026557853833:ios:3614aea77eb3e1829c0658</string>
+	<string>1:574208664558:ios:d0fb2952e47e3150f3a4ff</string>
 	<key>DATABASE_URL</key>
-	<string>https://snapamsell.firebaseio.com</string>
+	<string>https://snapam-3ca01.firebaseio.com</string>
 </dict>
 </plist>

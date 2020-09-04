@@ -118,7 +118,7 @@ class _PriceMainState extends State<PriceMain> with TickerProviderStateMixin {
                         "",
                       )
                     : Container(
-                        color: default_white,
+                        color: white,
                         child: Scrollbar(
                           child: new ListView.builder(
                             shrinkWrap: true,

@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
 
@@ -45,7 +46,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: black,
+        backgroundColor: AppConfig.appColor,
         key: _scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
@@ -80,7 +81,6 @@ class _SignUpState extends State<SignUp> {
                       "assets/icons/ic_plain.png",
                       height: 80,
                       width: 80,
-                      color: white,
                     ),
                     addSpace(10),
                     Text("Create Account", style: textStyle(true, 20, white)),

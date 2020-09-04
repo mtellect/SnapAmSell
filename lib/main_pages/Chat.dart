@@ -196,7 +196,7 @@ class _ChatState extends State<Chat> with AutomaticKeepAliveClientMixin {
       child: Container(
         decoration: BoxDecoration(
             //color: default_white.withOpacity(0.05),
-            color: default_white,
+            color: white,
             //boxShadow: [BoxShadow(color: black.withOpacity(.1), blurRadius: 5)],
             borderRadius: BorderRadius.circular(5)),
         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),

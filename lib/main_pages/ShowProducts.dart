@@ -130,7 +130,7 @@ class _ShowProductsState extends State<ShowProducts> {
                     height: 45,
                     //margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        color: default_white,
+                        color: white,
                         borderRadius: BorderRadius.circular(10),
                         border:
                             Border.all(color: black.withOpacity(.1), width: 1)),

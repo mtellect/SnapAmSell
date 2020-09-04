@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:io' as io;
 import 'dart:ui';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:location/location.dart';
 import 'package:maugost_apps/assets.dart';
@@ -473,6 +474,7 @@ class _MainAdminState extends State<MainAdmin>
 
     myLocation = geo.point(
         latitude: locationData.latitude, longitude: locationData.longitude);
+
     final placeMark = await Geolocator()
         .placemarkFromCoordinates(myLocation.latitude, myLocation.longitude);
 
@@ -1031,7 +1033,7 @@ class _MainAdminState extends State<MainAdmin>
       child: Container(
         height: 80,
         decoration: BoxDecoration(
-            color: black,
+            color: AppConfig.appColor,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         padding: EdgeInsets.all(15),
@@ -1055,7 +1057,7 @@ class _MainAdminState extends State<MainAdmin>
                   child: Center(
                     child: Icon(
                       Icons.camera_enhance_outlined,
-                      color: black,
+                      color: AppConfig.appColor,
                     ),
                   ),
                 ),
@@ -1121,7 +1123,7 @@ class _MainAdminState extends State<MainAdmin>
       children: [
         Container(
           padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: default_white_color,
+          color: white,
           child: Stack(
             children: [
               Align(
@@ -1381,8 +1383,6 @@ class _MainAdminState extends State<MainAdmin>
 
   @override
   bool get wantKeepAlive => true;
-
-
 }
 
 class UpdateLayout extends StatelessWidget {

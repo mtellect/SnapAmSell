@@ -218,7 +218,7 @@ class _ManageAdsState extends State<ManageAds> {
           width: double.infinity,
           margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
           child: Card(
-            color: default_white,
+            color: white,
             elevation: 0,
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(

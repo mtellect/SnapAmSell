@@ -1596,7 +1596,7 @@ class _ChatMainState extends State<ChatMain>
               margin: EdgeInsets.fromLTRB(60, 0, 60, 15),
               child: Card(
                 clipBehavior: Clip.antiAlias,
-                color: default_white,
+                color: white,
                 elevation: 5,
                 /*shadowColor: black.withOpacity(.3),*/
                 shape: RoundedRectangleBorder(
@@ -1659,7 +1659,7 @@ class _ChatMainState extends State<ChatMain>
             child: Column(
               children: [
                 Card(
-                  clipBehavior: Clip.antiAlias, color: default_white,
+                  clipBehavior: Clip.antiAlias, color: white,
                   elevation: 5, //shadowColor: black.withOpacity(.3),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -1857,7 +1857,7 @@ class _ChatMainState extends State<ChatMain>
                     ),
                   new Card(
                     clipBehavior: Clip.antiAlias,
-                    color: default_white,
+                    color: white,
                     elevation: 5,
                     /*shadowColor: black.withOpacity(.3),*/
                     shape: RoundedRectangleBorder(
@@ -2203,7 +2203,7 @@ class _ChatMainState extends State<ChatMain>
                   height: 200,
                   child: new Card(
                     clipBehavior: Clip.antiAlias,
-                    color: default_white,
+                    color: white,
                     elevation: 5,
                     /*shadowColor: black.withOpacity(.3),*/
                     shape: RoundedRectangleBorder(
@@ -3200,7 +3200,7 @@ class _ChatMainState extends State<ChatMain>
           width: fitScreen ? double.infinity : null,
           child: Card(
             clipBehavior: Clip.antiAlias,
-            color: default_white,
+            color: white,
             elevation: 0,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(5)),

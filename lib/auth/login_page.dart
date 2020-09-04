@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/auth/signUp_page.dart';
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext cc) {
     return Scaffold(
-        backgroundColor: black,
+        backgroundColor: AppConfig.appColor,
         key: scaffoldKey,
         resizeToAvoidBottomInset: true,
         body: Builder(builder: (c) {
@@ -86,10 +87,10 @@ class _LoginPageState extends State<LoginPage> {
                       "assets/icons/ic_plain.png",
                       height: 80,
                       width: 80,
-                      color: white,
                     ),
                     addSpace(20),
-                    Text("Login to Fetish", style: textStyle(true, 20, white)),
+                    Text("Login to SnapAmSell",
+                        style: textStyle(true, 20, white)),
 //                    Text("Login", style: textStyle(true, 14, black.withOpacity(.5))),
                     addSpace(10),
                   ],

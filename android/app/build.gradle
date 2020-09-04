@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.fetish"
+        applicationId "com.snapam"
 //        minSdkVersion 21
 //        versionCode 18
 //        versionName "2.0.13"

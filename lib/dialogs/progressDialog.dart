@@ -110,18 +110,20 @@ class _progressDialogState extends State<progressDialog> {
                 width: 120,
                 height: 120,
                 child: LoadingIndicator(
-                  indicatorType: Indicator.ballScaleMultiple,
+                  indicatorType: Indicator.cubeTransition,
                   color: white,
                 ))),
         Center(
           child: Opacity(
             opacity: 1,
-            child: Image.asset(
-              ic_plain1, color: black,
-              width: 60,
-              height: 60,
-              //color: white,
-            ),
+            child: Image.asset(ic_plain, // color: black,
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                alignment: Alignment.center
+
+                //color: white,
+                ),
           ),
         ),
         Column(

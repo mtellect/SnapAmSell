@@ -1,4 +1,4 @@
-package com.snapamsell;
+package com.snapam;
 
 import android.content.SharedPreferences;
 import android.media.Ringtone;

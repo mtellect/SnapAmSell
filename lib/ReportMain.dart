@@ -190,7 +190,7 @@ class _ReportMainState extends State<ReportMain> with TickerProviderStateMixin {
                   child: Container(
                     height: 200,
                     child: Card(
-                      color: default_white,
+                      color: white,
                       elevation: 0,
                       clipBehavior: Clip.antiAlias,
                       shape: RoundedRectangleBorder(

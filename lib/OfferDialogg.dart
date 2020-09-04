@@ -85,7 +85,7 @@ class _OfferDialoggState extends State<OfferDialogg> {
                 Flexible(
                   fit: FlexFit.loose,
                   child: Container(
-                    color: default_white,
+                    color: white,
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(15, 20, 15, 10),

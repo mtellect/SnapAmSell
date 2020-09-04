@@ -415,19 +415,22 @@ loadingLayout({bool trans = false}) {
         ),*/
         Center(
             child: Container(
-                width: 90,
-                height: 90,
+                width: 70,
+                height: 70,
                 child: LoadingIndicator(
-                  indicatorType: Indicator.ballScaleMultiple,
+                  indicatorType: Indicator.cubeTransition,
                   color: AppConfig.appColor,
                 ))),
         Center(
           child: Opacity(
             opacity: 1,
             child: Image.asset(
-              ic_plain, color: white,
-              width: 25,
-              height: 25,
+              ic_plain,
+//              color: white,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
               //color: white,
             ),
           ),
@@ -2774,7 +2777,7 @@ imageHolder(
               shape: CircleBorder(
                   side: BorderSide(color: strokeColor, width: stroke)),
               clipBehavior: Clip.antiAlias,
-              color: default_white_color,
+              color: white,
               elevation: .5,
               child: Stack(
                 children: <Widget>[
@@ -5600,35 +5603,36 @@ shopItem(BuildContext context, BaseModel model, setState,
                       ),
                     ),
                   ),
-                 if(isPromoted) Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                        color: AppConfig.appColor,
-                      ),
-                      padding: EdgeInsets.all(6),
-                      //margin: EdgeInsets.all(8),
-                      height: 35,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.public_rounded,
-                            size: 15,
+                  if (isPromoted)
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
                           ),
-                          addSpaceWidth(4),
-                          Text(
-                            "Sponsored",
-                            style: textStyle(false, 12, black),
-                          )
-                        ],
+                          color: AppConfig.appColor,
+                        ),
+                        padding: EdgeInsets.all(6),
+                        //margin: EdgeInsets.all(8),
+                        height: 35,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.public_rounded,
+                              size: 15,
+                            ),
+                            addSpaceWidth(4),
+                            Text(
+                              "Sponsored",
+                              style: textStyle(false, 12, black),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

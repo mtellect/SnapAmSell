@@ -14,6 +14,7 @@ import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:rxdart/subjects.dart';
 
+import 'AppConfig.dart';
 import 'AppEngine.dart';
 import 'app/app.dart';
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Fetish",
+        title: AppConfig.appName,
         color: white,
         theme: ThemeData(
           fontFamily: 'Averta',

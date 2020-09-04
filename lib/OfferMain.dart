@@ -423,7 +423,7 @@ class _OfferMainState extends State<OfferMain>
           },
           child: Card(
             clipBehavior: Clip.antiAlias,
-            color: default_white,
+            color: white,
             elevation: .5,
             margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: Row(
@@ -946,7 +946,7 @@ class _OfferMainState extends State<OfferMain>
             child: Column(
               children: [
                 Card(
-                  clipBehavior: Clip.antiAlias, color: default_white,
+                  clipBehavior: Clip.antiAlias, color: white,
                   elevation: 5, //shadowColor: black.withOpacity(.3),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(

@@ -1,4 +1,4 @@
-package com.snapamsell;
+package com.snapam;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -36,13 +36,13 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
-import static com.fetish.MyApplication.MAX_TIME;
-import static com.fetish.MyApplication.NORMAL_SPLIT;
-import static com.fetish.MyApplication.PACKAGE_NAME;
-import static com.fetish.MyApplication.SETTINGS_PREF;
-import static com.fetish.MyApplication.TIMETABLE_MUTED;
-import static com.fetish.MyApplication.TIMETABLE_SPLIT;
-import static com.fetish.MyApplication.TIME_SHARED;
+import static com.snapam.MyApplication.MAX_TIME;
+import static com.snapam.MyApplication.NORMAL_SPLIT;
+import static com.snapam.MyApplication.PACKAGE_NAME;
+import static com.snapam.MyApplication.SETTINGS_PREF;
+import static com.snapam.MyApplication.TIMETABLE_MUTED;
+import static com.snapam.MyApplication.TIMETABLE_SPLIT;
+import static com.snapam.MyApplication.TIME_SHARED;
 
 
 public class MainActivity extends FlutterActivity {

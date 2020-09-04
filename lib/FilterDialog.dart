@@ -3,9 +3,9 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/SearchPlace.dart';
-import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 
@@ -311,7 +311,7 @@ class _FilterDialogState extends State<FilterDialog> {
                           interestType
                         ]);
                       },
-                      color: default_white,
+                      color: white,
                       child: Text(
                         "Apply",
                         style: textStyle(true, 18, black),
