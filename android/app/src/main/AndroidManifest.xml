@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.fetish">
+    package="com.snapamsell">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -31,8 +31,8 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name=".MyApplication"
-        android:label="Fetish"
-        android:icon="@mipmap/ic_launcher1">
+        android:label="SnapAmSell"
+        android:icon="@mipmap/ic_launcher">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"

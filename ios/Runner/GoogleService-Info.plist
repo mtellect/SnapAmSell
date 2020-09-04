@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>485808555845-idjq3415sc0o6qmsniivim7q5ipmli7a.apps.googleusercontent.com</string>
+	<string>1026557853833-huj5o1ga5nf9k9v1dkkkajh2r2b28d7u.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.485808555845-idjq3415sc0o6qmsniivim7q5ipmli7a</string>
+	<string>com.googleusercontent.apps.1026557853833-huj5o1ga5nf9k9v1dkkkajh2r2b28d7u</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1026557853833-ujgdpg9oq2lt65picsf17sqjni8ck189.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBoYCeiD0Vu2okLqKJIJoCNfBs8dNfv21A</string>
+	<string>AIzaSyA769PaTGEjAFE4gY-6vTXp2_qI5H7jRv8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>485808555845</string>
+	<string>1026557853833</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.fetish.app</string>
+	<string>com.snapamsell</string>
 	<key>PROJECT_ID</key>
-	<string>fetish-e37d6</string>
+	<string>snapamsell</string>
 	<key>STORAGE_BUCKET</key>
-	<string>fetish-e37d6.appspot.com</string>
+	<string>snapamsell.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:485808555845:ios:79bbfdc2e6d0d25cfae02c</string>
+	<string>1:1026557853833:ios:3614aea77eb3e1829c0658</string>
 	<key>DATABASE_URL</key>
-	<string>https://fetish-e37d6.firebaseio.com</string>
+	<string>https://snapamsell.firebaseio.com</string>
 </dict>
 </plist>

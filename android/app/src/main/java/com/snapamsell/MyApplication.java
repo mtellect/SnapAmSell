@@ -1,4 +1,4 @@
-package com.fetish;
+package com.snapamsell;
 
 import android.content.SharedPreferences;
 import android.media.Ringtone;
