@@ -97,6 +97,7 @@ dependencies:
   latlong:
   geolocator: 5.3.2
   flare_flutter: ^2.0.6
+  country_pickers: ^1.1.0
 
 
 dependency_overrides:

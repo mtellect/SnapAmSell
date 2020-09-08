@@ -5,7 +5,7 @@ import 'package:line_icons/line_icons.dart';
 
 import 'AppConfig.dart';
 import 'AppEngine.dart';
-import 'ShowCategories.dart';
+import 'ChooseProductCategory.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 import 'main_pages/ShowDetails.dart';
@@ -187,7 +187,7 @@ class _SearchProductState extends State<SearchProduct> {
               addSpaceWidth(10),
               FlatButton(
                 onPressed: () {
-                  pushAndResult(context, ShowCategories());
+                  pushAndResult(context, ChooseProductCategory([]));
                 },
                 shape: CircleBorder(),
                 minWidth: 45,

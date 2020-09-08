@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:country_pickers/country.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -40,8 +41,10 @@ import 'package:uuid/uuid.dart';
 
 import 'AppConfig.dart';
 import 'MainAdmin.dart';
+import 'SelectCountry.dart';
 import 'SimpleVideoPlayer.dart';
 import 'dialogs/OfferDialog.dart';
+import 'main_pages/SellPage.dart';
 import 'main_pages/ShowDetails.dart';
 import 'main_pages/ShowStore.dart';
 import 'notificationService.dart';
@@ -2086,6 +2089,12 @@ sendEmail(String email) {
   openLink("mailto:$email");
 }
 
+openWhatsapp(context, String phone, {String text = ""}) async {
+  var whatsappUrl = "whatsapp://send?phone=$phone&text=$text";
+  await canLaunch(whatsappUrl)
+      ? launch(whatsappUrl)
+      : showErrorDialog(context, "Whatsapp not found");
+}
 //List<BaseModel> levelList = List();
 
 void showLevels(context, onSelected) async {
@@ -2152,6 +2161,12 @@ smallButton(icon, text, clicked) {
           ],
         )),
   );
+}
+
+pickCountry(context, onPicked(Country country)) {
+  pushAndResult(context, SelectCountry(), result: (_) {
+    onPicked(_);
+  }, opaque: false);
 }
 
 List<String> getSearchString(String text) {
@@ -4200,7 +4215,7 @@ inputTextView(String title, controller,
     String errorText,
     double corner = 5,
     bool isAmount = false,
-    var priceIcon,
+    var icon,
     focusNode,
     bool useCurrentCountry = false}) {
   return Column(
@@ -4226,41 +4241,29 @@ inputTextView(String title, controller,
                 width: errorText != null ? 1 : .5)),
         child: Row(
           children: <Widget>[
-            // if (isAmount || icon != null) addSpaceWidth(10),
-            // if (isAmount)
-            //   Container(
-            //     margin: EdgeInsets.only(top: 2),
-            //     child: CachedNetworkImage(
-            //       imageUrl: getCurrencyLogo(
-            //           useCurrentCountry ? currentCountry : defaultCountry),
-            //       width: 14,
-            //       height: 14,
-            //       fit: BoxFit.cover,
-            //       color: black.withOpacity(.3),
-            //     ),
-            //   ),
-
-            if (isAmount != null) addSpaceWidth(15),
-            if (priceIcon != null)
-              priceIcon is String
-                  ? Image.asset(
-                      priceIcon,
-                      height: 18,
-                      width: 18,
-                      color: black.withOpacity(.3),
-                    )
-                  : Icon(priceIcon, size: 18, color: black.withOpacity(.5)),
-
-            if (priceIcon != null)
-              priceIcon is String
+            if (isAmount || icon != null) addSpaceWidth(10),
+            if (isAmount)
+              Container(
+                margin: EdgeInsets.only(top: 2),
+                child: CachedNetworkImage(
+                  imageUrl: getCurrencyLogo(
+                      useCurrentCountry ? currentCountry : defaultCountry),
+                  width: 14,
+                  height: 14,
+                  fit: BoxFit.cover,
+                  //color: black.withOpacity(.3),
+                ),
+              ),
+            if (icon != null)
+              icon is String
                   ? (Image.asset(
-                      priceIcon,
+                      icon,
                       height: 14,
                       width: 14,
                       color: black.withOpacity(.3),
                     ))
                   : (Icon(
-                      priceIcon,
+                      icon,
                       size: 14,
                       color: black.withOpacity(.3),
                     )),
@@ -4274,7 +4277,7 @@ inputTextView(String title, controller,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.fromLTRB(
-                      (isAmount || priceIcon != null) ? 10 : 15, 10, 15, 10),
+                      (isAmount || icon != null) ? 10 : 15, 10, 15, 10),
                   counter: null,
                   labelText: title,
                   labelStyle: textStyle(false, 18, black.withOpacity(.3)),
@@ -4300,24 +4303,6 @@ inputTextView(String title, controller,
                 onChanged: (s) {
                   onEditted();
                 },
-                /*onChanged: (String s) {
-                  if (!isAmount) {
-                    onEditted();
-                    return;}
-                  if (checking || s.trim().length<4) {
-                    onEditted();
-                    return;}
-                  checking = true;
-                  controller.text = formatAmount(s);
-                  onEditted();
-                  Future.delayed(Duration(milliseconds: 100), () {
-                    final val =
-                    TextSelection.collapsed(offset: controller.text.length);
-                    controller.selection = val;
-                    checking = false;
-                    onEditted();
-                  });
-                },*/
               ),
             ),
           ],
@@ -4325,6 +4310,52 @@ inputTextView(String title, controller,
       ),
     ],
   );
+}
+
+String createPhoneNumer(String phonePref, String phone) {
+  phone = phone.startsWith("0") ? phone.substring(1) : phone;
+  phone = "+$phonePref$phone";
+  return phone;
+}
+
+String getCurrencyLogo(String country) {
+  String currencyLogo = "";
+  List countryList = appSettingsModel.getList(COUNTRY_LIST);
+  for (Map m in countryList) {
+    if (m[NAME] == country) {
+      currencyLogo = m[CURRENCY_LOGO];
+    }
+  }
+  return currencyLogo;
+}
+
+String getCurrencyText(String country) {
+  String currency = "";
+  List countryList = appSettingsModel.getList(COUNTRY_LIST);
+  for (Map m in countryList) {
+    if (m[NAME] == country) {
+      currency = m[CURRENCY];
+    }
+  }
+  return currency;
+}
+
+double getAmountInLocalCurrency(String country, double amount) {
+  List countryList = appSettingsModel.getList(COUNTRY_LIST);
+  double usdValue = 0;
+  double myUsdValue = 0;
+  for (Map m in countryList) {
+    if (m[NAME] == country) {
+      usdValue = m[VALUE_TO_ONE_DOLLAR];
+    }
+    if (m[NAME] == currentCountry) {
+      myUsdValue = m[VALUE_TO_ONE_DOLLAR];
+    }
+  }
+  double realValue = amount / usdValue;
+  double myValue = myUsdValue * realValue;
+
+  return myValue;
 }
 
 clickText(
@@ -4375,13 +4406,18 @@ clickText(
                         color: black.withOpacity(.5),
                       ),
                     if (icon != null) addSpaceWidth(5),
-                    Flexible(
+                    Expanded(
                       child: new Text(
                         text.isNotEmpty ? text : title,
                         style: textStyle(false, 18,
                             text.isEmpty ? black.withOpacity(.3) : black),
 //                        maxLines: 1,overflow: TextOverflow.ellipsis,
                       ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down_circle,
+                      size: 18,
+                      color: black.withOpacity(.4),
                     ),
                   ],
                 ),
@@ -5548,6 +5584,23 @@ shopItem(BuildContext context, BaseModel model, setState,
           ),
           depend: false);
     },
+    onLongPress: () {
+      showListDialog(context, ['Edit', 'Delete'], (_) {
+        if (_ == 0) {
+          pushAndResult(
+              context,
+              SellPage(
+                model: model,
+              ));
+        }
+
+        if (_ == 1) {
+          productLists.remove(model);
+          model.deleteItem();
+          setState();
+        }
+      });
+    },
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
@@ -5669,19 +5722,17 @@ shopItem(BuildContext context, BaseModel model, setState,
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (!model.myItem()) cartController.add(model);
+                      clickContact(context, model);
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: isInCart ? red : black.withOpacity(.4),
+                          color: AppConfig.appColor_dark,
                           shape: BoxShape.circle),
                       padding: EdgeInsets.all(8),
-                      child: Image.asset(
-                        ic_cart,
-                        height: 15,
-                        width: 15,
+                      child: Icon(
+                        Icons.call_outlined,
+                        size: 15,
                         color: white,
-                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -5693,6 +5744,235 @@ shopItem(BuildContext context, BaseModel model, setState,
       ),
     ),
   );
+}
+
+clickContact(context, model) {
+  List contacts = model.getList(CONTACTS);
+  if (contacts.isEmpty) {
+    showErrorDialog(context, "No contact found");
+    return;
+  }
+  showModalBottomSheet(
+      context: context,
+      builder: (
+        c,
+      ) {
+        return Container(
+          color: white,
+          child: SingleChildScrollView(
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(contacts.length, (p) {
+                  Map item = contacts[p];
+                  return Container(
+                      margin: EdgeInsets.fromLTRB(20, p == 0 ? 20 : 0, 20, 0),
+                      child: contactWidget(context, item,
+                          title: model.getString(TITLE)));
+                })),
+          ),
+        );
+      });
+}
+
+contactWidget(context, Map item, {String title = ""}) {
+  String name = item[NAME];
+  String phone = item[PHONE_NUMBER];
+  String phonePref = item[PHONE_PREF];
+  String email = item[EMAIL];
+  String whatapp = item[WHATSAPP_NUMBER];
+  String whatPref = item[WHATSAPP_PREF];
+
+  return Container(
+    margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+    padding: const EdgeInsets.fromLTRB(0, 5, 8, 5),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.person_pin,
+              size: 30,
+              color: AppConfig.appColor_dark,
+            ),
+            addSpaceWidth(5),
+            Flexible(
+              child: Text(name, style: textStyle(true, 18, black)),
+            ),
+          ],
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 14),
+          padding: EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: AppConfig.appColor_dark, width: 2))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              addSpace(5),
+              GestureDetector(
+                onTap: () {
+                  placeCall(createPhoneNumer(phonePref, phone));
+                },
+                child: Row(
+                  children: [
+                    addSpaceWidth(10),
+                    Flexible(
+                        fit: FlexFit.tight,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Phone",
+                              style: textStyle(true, 14, black),
+                            ),
+                            Text(
+                              createPhoneNumer(phonePref, phone),
+                              style:
+                                  textStyle(false, 12, black.withOpacity(.5)),
+                            ),
+                          ],
+                        )),
+                    addSpaceWidth(10),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      child: RaisedButton(
+                        onPressed: () {
+                          placeCall(createPhoneNumer(phonePref, phone));
+                        },
+                        color: blue0,
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(0),
+                        child: Icon(
+                          Icons.call, color: white, size: 18,
+//                              size: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (whatapp.isNotEmpty) addSpace(5),
+              if (whatapp.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    openWhatsapp(
+                        context,
+                        createPhoneNumer(
+                          whatPref,
+                          whatapp,
+                        ),
+                        text: title.isEmpty
+                            ? ""
+                            : "Hi, am interested in this \"$title\", it is available?");
+                  },
+                  child: Row(
+                    children: [
+                      addSpaceWidth(10),
+                      Flexible(
+                          fit: FlexFit.tight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Whatsapp",
+                                style: textStyle(true, 14, black),
+                              ),
+                              Text(
+                                createPhoneNumer(whatPref, whatapp),
+                                style:
+                                    textStyle(false, 12, black.withOpacity(.5)),
+                              ),
+                            ],
+                          )),
+                      addSpaceWidth(10),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        child: RaisedButton(
+                          onPressed: () {
+                            openWhatsapp(
+                                context,
+                                createPhoneNumer(
+                                  whatPref,
+                                  whatapp,
+                                ),
+                                text: title.isEmpty
+                                    ? ""
+                                    : "Hi, am interested in this \"$title\", it is available?");
+                            //sendEmail(email);
+                          },
+                          color: light_green3,
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(0),
+                          child: Image.asset(
+                            ic_whatsapp,
+                            color: white,
+                            width: 18,
+                            height: 18,
+                          ),
+                          // Icon(Icons.email,color: white,size: 18,),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (email.isNotEmpty) addSpace(5),
+              if (email.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    sendEmail(email);
+                  },
+                  child: Row(
+                    children: [
+                      addSpaceWidth(10),
+                      Flexible(
+                          fit: FlexFit.tight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Email",
+                                style: textStyle(true, 14, black),
+                              ),
+                              Text(
+                                email,
+                                style:
+                                    textStyle(false, 12, black.withOpacity(.5)),
+                              ),
+                            ],
+                          )),
+
+                      addSpaceWidth(10),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        child: RaisedButton(
+                          onPressed: () {
+                            sendEmail(email);
+                          },
+                          color: red0,
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(0),
+                          child: Icon(
+                            Icons.email,
+                            color: white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+//            addSpaceWidth(10),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+  ;
 }
 
 shopItemX(BuildContext context, BaseModel model, setState,

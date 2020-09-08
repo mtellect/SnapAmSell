@@ -4,12 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/CreateCategory.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/SearchProduct.dart';
-import 'package:maugost_apps/ShowCategories.dart';
 import 'package:maugost_apps/app/dotsIndicator.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
@@ -165,63 +163,7 @@ class _HomeState extends State<Home> {
     return Column(
       children: [
         //addSpace(40),
-        Container(
-          margin: EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    pushAndResult(context, SearchProduct());
-                  },
-                  child: Container(
-                    height: 45,
-                    //margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: white.withOpacity(.5),
-                        borderRadius: BorderRadius.circular(25),
-                        border:
-                            Border.all(color: AppConfig.appColor, width: 2)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        addSpaceWidth(10),
-                        Expanded(
-                          child: Text(
-                            "Search",
-                            style: textStyle(false, 16, black),
-                          ),
-                        ),
-                        Icon(
-                          Icons.search,
-                          color: black.withOpacity(.8),
-                          size: 20,
-                        ),
-                        addSpaceWidth(10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              addSpaceWidth(10),
-              InkWell(
-                onTap: () {
-                  pushAndResult(context, ShowCategories());
-                },
-                child: Container(
-                  child: Center(child: Icon(LineIcons.list_alt)),
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                      color: white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppConfig.appColor, width: 2)),
-                ),
-              )
-            ],
-          ),
-        ),
+
         refresher()
       ],
     );
@@ -374,68 +316,58 @@ class _HomeState extends State<Home> {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          childAspectRatio: 1.3),
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 1.1),
       itemBuilder: (c, p) {
         BaseModel model = appCategories[p];
         String categoryName = model.getString(TITLE);
         String image = getFirstPhoto(model.images);
 
-        return GestureDetector(
-          onTap: () {
+        return MaterialButton(
+          onPressed: () {
             pushAndResult(context, ShowProducts(model));
           },
-          child: ClipRRect(
+          onLongPress: () {
+            pushAndResult(
+                context,
+                CreateCategory(
+                  model: model,
+                ));
+          },
+          color: white,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: black.withOpacity(.09))),
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
+            //side: BorderSide(color: black.withOpacity(.1)),
+          ),
+          elevation: 1.5,
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  //color: black.withOpacity(.09),
+                  child: CachedNetworkImage(
                     imageUrl: image,
-                    height: double.infinity,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (c, s) {
-                      return Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        color: black.withOpacity(.09),
-                        child: Icon(
-                          LineIcons.image,
-                          color: white.withOpacity(.5),
-                        ),
-                      );
-                    },
+                    height: 70,
+                    width: 70,
                   ),
-                  Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    color: black.withOpacity(.4),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                      padding: EdgeInsets.all(5),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: AppConfig.appColor,
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Text(
-                        categoryName,
-                        style: textStyle(false, 12, black),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                      ),
-                    ),
-                  )
-                ],
+                ),
               ),
-            ),
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                padding: EdgeInsets.all(5),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: AppConfig.appColor,
+                    borderRadius: BorderRadius.circular(6)),
+                child: Text(
+                  categoryName,
+                  style: textStyle(false, 12, black),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+              )
+            ],
           ),
         );
       },

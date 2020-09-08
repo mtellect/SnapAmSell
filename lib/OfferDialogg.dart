@@ -99,7 +99,7 @@ class _OfferDialoggState extends State<OfferDialogg> {
                                   flex: 2,
                                   child: inputTextView(
                                       "Amount/Item", amountController,
-                                      isNum: true,  priceIcon: Icons.monetization_on),
+                                      isNum: true,  icon: Icons.monetization_on),
                                   fit: FlexFit.tight,
                                 ),
                                 addSpaceWidth(10),
@@ -108,7 +108,7 @@ class _OfferDialoggState extends State<OfferDialogg> {
                                   flex: 1,
                                   child: inputTextView(
                                       "Quantity", quantityController,
-                                      isNum: true,  priceIcon: Icons.shopping_cart),
+                                      isNum: true,  icon: Icons.shopping_cart),
                                 )
                               ],
                             ),

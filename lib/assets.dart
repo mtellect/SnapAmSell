@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maugost_apps/basemodel.dart';
 
+const String ic_whatsapp = 'assets/icons/ic_whatsapp.png';
 const String bid_hand = 'assets/icons/bid_hand.png';
 const String bid_hand1 = 'assets/icons/bid_hand1.png';
 const String ic_bid = 'assets/icons/ic_bid.png';
@@ -192,6 +193,7 @@ const Color transparent = Color(0xff00000000);
 
 const Color black_color = Color(0xff000000);
 const Color white_color = Color(0xffffffff);
+const Color default_white = Color(0xfffff3f3f3);
 //const Color default_white_color = Color(0xfffff3f3f3);
 
 const Color tang0 = Color(0xffffa500);
@@ -644,6 +646,7 @@ const String CREDITS = "credits";
 const String IN_USD = "inUsd";
 const String IN_NAIRA = "inNaira";
 const String EXTERNAL = "external";
+const String VALUE_TO_ONE_DOLLAR = "valueToOneDollar";
 
 const String PRIVATE_NOTE = "privateNote";
 const String MAP_NAME = "mapName";
@@ -698,10 +701,14 @@ const String ANSWERED_CORRECTLY = "answeredCorreclty";
 const String ANSWERED_WRONGLY = "answeredWrongly";
 const String ALL_ANSWER = "allAnswers";
 
+const String DEFAULT_COUNTRY = "defaultCountry";
+const String DEFAULT_STATE = "defaultState";
+const String DEFAULT_CITY = "defaultCity";
 const String DEFAULT_LIST = "defaultList";
 //const String SHARE_TYPE = "shareType";
 const String EXCLUDED = "excluded";
 const String CURRENCY = "currency";
+const String CURRENCY_LOGO = "currencyLogo";
 const String WHATS_NEW = "whatsNew";
 const String COST_PER_REACH = "costPerReach";
 const String MIN_BUDGET = "minBudget";
@@ -776,7 +783,10 @@ const String MILE_JOINED_GROUP_BY = "mJoinedGroupBy";
 const String MILE_BIBLE_SCHOOL = "mBibleSchool";
 const String MILE_BIBLE_SCHOOL_BY = "mBibleSchoolBy";
 
+const String WHATSAPP_NUMBER = "whatsappNumber";
+const String WHATSAPP_PREF = "whatsappPref";
 const String PHONE_NUMBER = "phoneNumber";
+const String PHONE_PREF = "phonePref";
 const String IMPRESSIONS = "impressions";
 
 const String BY = "by";
@@ -852,6 +862,7 @@ const String STUDY_ID = "studyId";
 const String STUDY = "study";
 const String LEVEL = "level";
 const String COUNTRY = "country";
+const String COUNTRY_LIST = "countryList";
 const String COUNTRY_CODE = "countryCode";
 const String NAME = "name";
 const String QUOTES = "quotes";
@@ -993,6 +1004,9 @@ const String RECEIVER_ID = "receiverId";
 const String ICONS = "icons";
 const String COLORS = "colors";
 const String ITEMS = "items";
+const String MULTIPLE = "multiple";
+const String HAS_SUB_ITEMS = "hasSubItems";
+const String ITEM_TITLE = "itemTitle";
 
 const String NEW_FEATURE = "newFeature";
 const String MUST_UPDATE = "mustUpdate";
@@ -1587,3 +1601,51 @@ const List<String> PROMOTE_TYPE = [
   "In-App Product",
   "Website",
 ];
+
+String currentCountry = "Nigeria";
+String defaultCountry = "Nigeria";
+String defaultState = "";
+String defaultCity = "";
+String FILTER_CATEGORY = "";
+String FILTER_SUB_CATEGORY = "";
+bool FILTER_SPLITTABLE = false;
+int FILTER_SORT_TYPE = 0;
+double FILTER_MIN_PRICE = 0;
+double FILTER_MAX_PRICE = 0;
+
+List topCategories = ["Livestock", "Crops", "Others"];
+
+//const List STATUS_KEYS = ["Pending Approval","Active","Paused","Stopped","Declined"];
+const List STATUS_KEYS = ["Pending", "Active", "Paused", "Stopped", "Declined"];
+
+const List STATUS_TEXT = [
+  "Your farm produce that are currently under review are shown here. Approval usually takes less than 24 hours",
+  "Your farm produce that have been approved and are active are shown here",
+  "Your farm produce that are currently not active are shown here. You can reactivate them anytime",
+  "If there is any issue with your farm, your farm produce automatically stops showing. They will reactivate when the issues are resolved",
+  "These are farm produce that have been disapproved. Click on them and find out why they were not accepted",
+];
+
+const List STATUS_ICONS = [
+  Icons.access_time,
+  Icons.check_circle_outline,
+  Icons.pause_circle_outline,
+  Icons.not_interested,
+  Icons.cancel
+];
+
+const List STATUS_COLORS = [light_green3, blue0, brown01, red6, red0];
+
+List sortOrders = ["Relevant", /*"Newest",*/ "Lowest Price", "Highest Price"];
+
+const String REVIEW_BASE = "reviewBase"; //db
+const String PLAN_BASE = "planBase"; //db
+const String COUNTRY_BASE = "countryBase"; //db
+const String COUNTER_BASE = "counterBase"; //db
+
+const String STATE = "state";
+const String CITY = "city";
+const String DISPLAY_NAME = "displayName";
+const String CATEGORY_ID = "categoryId";
+const String SPECIFICATION = "specification";
+const String CONTACTS = "contacts";

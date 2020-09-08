@@ -9,20 +9,21 @@ import 'package:maugost_apps/assets.dart';
 
 import 'basemodel.dart';
 
-class AddCategory extends StatefulWidget {
+class CreateCategory extends StatefulWidget {
   final BaseModel model;
 
-  const AddCategory({Key key, this.model}) : super(key: key);
+  const CreateCategory({Key key, this.model}) : super(key: key);
   @override
-  _AddCategoryState createState() => _AddCategoryState();
+  _CreateCategoryState createState() => _CreateCategoryState();
 }
 
-class _AddCategoryState extends State<AddCategory> {
+class _CreateCategoryState extends State<CreateCategory> {
   BaseModel model = BaseModel();
   final categoryName = TextEditingController();
-  final subCategories = TextEditingController();
+  final subController = TextEditingController();
   int selectedSize = 0;
   List<BaseModel> imagesUrl = [];
+  List<BaseModel> options = [];
 
   @override
   void initState() {
@@ -32,7 +33,14 @@ class _AddCategoryState extends State<AddCategory> {
       model = widget.model;
       imagesUrl = model.getListModel(IMAGES);
       categoryName.text = model.getString(TITLE);
-      subCategories.text = model.getString(SUB_CATEGORY);
+      subController.text = model.getString(SUB_CATEGORY);
+      final subs = model.getListModel(SUB_CATEGORY);
+      if (subs.isNotEmpty) {
+        print(subs.length);
+        List subNames = List.from(subs.map((e) => e.getString(NAME)).toList());
+        // List.generate(subs.length, (index) => subs[index].getString(NAME));
+        subController.text = convertListToString(",", subNames);
+      }
     }
   }
 
@@ -42,56 +50,71 @@ class _AddCategoryState extends State<AddCategory> {
     super.dispose();
   }
 
+  int clickBack = 0;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 30, right: 10, left: 10, bottom: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BackButton(),
-                Container(
-                  margin: EdgeInsets.only(left: 15),
-                  child: Text(
-                    widget.model != null ? "Update Category" : "New Category",
-                    style: textStyle(true, 25, black),
-                  ),
-                )
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        int now = DateTime.now().millisecondsSinceEpoch;
+        if ((now - clickBack) > 5000) {
+          clickBack = now;
+          showError("Click back again to exit");
+          return false;
+        }
+        //Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding:
+                  EdgeInsets.only(top: 30, right: 10, left: 10, bottom: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BackButton(),
+                  Container(
+                    margin: EdgeInsets.only(left: 15),
+                    child: Text(
+                      widget.model != null ? "Update Category" : "New Category",
+                      style: textStyle(true, 25, black),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            width: double.infinity,
-            height: errorText.isEmpty ? 0 : 40,
-            color: red0,
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Center(
-                child: Text(
-              errorText,
-              style: textStyle(true, 16, white),
-            )),
-          ),
-          addressPage(),
-          Container(
-            padding: EdgeInsets.all(20),
-            child: FlatButton(
-              onPressed: handleSave,
-              color: black,
-              padding: EdgeInsets.all(15),
+            AnimatedContainer(
+              duration: Duration(milliseconds: 500),
+              width: double.infinity,
+              height: errorText.isEmpty ? 0 : 40,
+              color: red0,
+              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Center(
                   child: Text(
-                widget.model != null ? "UPDATE" : "SAVE",
-                style: textStyle(false, 18, white),
+                errorText,
+                style: textStyle(true, 16, white),
               )),
             ),
-          )
-        ],
+            addressPage(),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: FlatButton(
+                onPressed: handleSave,
+                color: black,
+                padding: EdgeInsets.all(15),
+                child: Center(
+                    child: Text(
+                  widget.model != null ? "UPDATE" : "SAVE",
+                  style: textStyle(false, 18, white),
+                )),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -103,7 +126,8 @@ class _AddCategoryState extends State<AddCategory> {
           padding: EdgeInsets.all(10),
           children: [
             inputTextView("Category Name", categoryName, isNum: false),
-            inputTextView("Sub Category", subCategories, isNum: false),
+            inputTextView("Sub Category", subController,
+                isNum: false, maxLine: 10),
             addSpace(10),
             Container(
               decoration: BoxDecoration(
@@ -203,7 +227,7 @@ class _AddCategoryState extends State<AddCategory> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Category Images",
+          "Category Icons",
           style: textStyle(true, 14, black),
         ),
         addSpace(10),
@@ -266,34 +290,34 @@ class _AddCategoryState extends State<AddCategory> {
                   );
                 }),
               ),
-              if (imagesUrl.length < 1)
-                GestureDetector(
-                  onTap: () {
-                    openGallery(context, onPicked: (_) {
-                      if (null == _) return;
-                      imagesUrl.addAll(_
-                          .map((e) => BaseModel()
-                            ..put(IMAGE_PATH, e.file.path)
-                            ..put(IS_VIDEO, e.isVideo)
-                            ..items)
-                          .toList());
-                      setState(() {});
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(4),
-                    margin: EdgeInsets.all(5),
-                    height: 120,
-                    width: 100,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: black.withOpacity(0.09)),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Icon(LineIcons.plus_circle), Text("Add")],
-                    ),
+              //if (imagesUrl.length < 1)
+              GestureDetector(
+                onTap: () {
+                  openGallery(context, onPicked: (_) {
+                    if (null == _) return;
+                    imagesUrl.addAll(_
+                        .map((e) => BaseModel()
+                          ..put(IMAGE_PATH, e.file.path)
+                          ..put(IS_VIDEO, e.isVideo)
+                          ..items)
+                        .toList());
+                    setState(() {});
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.all(4),
+                  margin: EdgeInsets.all(5),
+                  height: 120,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: black.withOpacity(0.09)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [Icon(LineIcons.plus_circle), Text("Add")],
                   ),
-                )
+                ),
+              )
             ],
           ),
         )
@@ -305,23 +329,21 @@ class _AddCategoryState extends State<AddCategory> {
   showError(String text, {bool wasLoading = false}) {
     if (wasLoading) showProgress(false, context);
     errorText = text;
-    setState(() {});
+    if (mounted) setState(() {});
+
     Future.delayed(Duration(seconds: 3), () {
       errorText = "";
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
   handleSave() {
-    String title = categoryName.text;
-    String subs = subCategories.text;
+    String name = categoryName.text;
+    String subText = subController.text;
+    List subs = convertStringToList(",", subText);
 
-    if (title.isEmpty) {
+    if (name.isEmpty) {
       showError("Enter Category Name");
-      return;
-    }
-    if (subs.isEmpty) {
-      showError("Enter Sub Categories");
       return;
     }
 
@@ -330,37 +352,58 @@ class _AddCategoryState extends State<AddCategory> {
       return;
     }
 
+    String categoryId = getRandomId();
+    if (widget.model != null) categoryId = widget.model.getObjectId();
+
+    Map map = Map();
+    map[NAME] = name;
+    subs.sort((a, b) => a.compareTo(b));
+    List subList = List.generate(subs.length, (index) {
+      return {
+        NAME: subs[index],
+        CATEGORY: name,
+        CATEGORY_ID: categoryId,
+        OPTIONS: options.map((e) => e.items).toList()
+      };
+    });
+
     showProgress(true, context,
         msg: "${widget.model != null ? "Saving" : "Adding"} Category...");
     List<BaseModel> modelsUploaded = [];
     List<BaseModel> images = this.imagesUrl;
-    List categories = appSettingsModel.getList(CATEGORIES);
+    List categoryItems = appSettingsModel.getList(CATEGORIES);
 
     saveCategoryImages(images, modelsUploaded, (_) {
-      String categoryId = getRandomId();
-      if (widget.model != null) categoryId = widget.model.getObjectId();
       model.put(OBJECT_ID, categoryId);
-      model.put(TITLE, title);
-      model.put(SUB_CATEGORY, subs);
+      model.put(TITLE, name);
+      model.put(SUB_CATEGORY, subList);
       model.put(IMAGES, _.map((e) => e.items).toList());
-      if (categories.isEmpty) {
-        categories.add(model.items);
+      if (categoryItems.isEmpty) {
+        categoryItems.add(model.items);
       } else {
-        int p = categories.indexWhere((e) => e[OBJECT_ID] == categoryId);
+        int p = categoryItems.indexWhere((e) => e[OBJECT_ID] == categoryId);
         if (p != -1) {
-          categories[p] = model.items;
+          categoryItems[p] = model.items;
         } else {
-          categories.add(model.items);
+          categoryItems.add(model.items);
         }
       }
-
+      categoryItems.sort((m1, m2) => m1[TITLE].compareTo(m2[TITLE]));
       appSettingsModel
-        ..put(CATEGORIES, categories)
+        ..put(CATEGORIES, categoryItems)
         ..updateItems();
       showProgress(false, context);
+      // if (widget.model == null) {
+      //   categoryName.clear();
+      //   subController.clear();
+      //   imagesUrl.clear();
+      //   model = BaseModel();
+      // }
       categoryName.clear();
+      subController.clear();
       imagesUrl.clear();
-      setState(() {});
+      model = BaseModel();
+      if (mounted) setState(() {});
       showMessage(context, Icons.check, green_dark, "Successful",
           'Category Successfully ${widget.model != null ? "Updated" : "Added"}!',
           cancellable: true, onClicked: (_) {}, delayInMilli: 1200);

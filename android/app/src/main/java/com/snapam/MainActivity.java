@@ -17,9 +17,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.content.PermissionChecker;
 
-//import com.flutterwave.raveandroid.RaveConstants;
-//import com.flutterwave.raveandroid.RavePayActivity;
-//import com.flutterwave.raveandroid.RavePayManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,20 +27,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.GeneratedPluginRegistrant;
-
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
-import static com.snapam.MyApplication.MAX_TIME;
-import static com.snapam.MyApplication.NORMAL_SPLIT;
-import static com.snapam.MyApplication.PACKAGE_NAME;
-import static com.snapam.MyApplication.SETTINGS_PREF;
-import static com.snapam.MyApplication.TIMETABLE_MUTED;
-import static com.snapam.MyApplication.TIMETABLE_SPLIT;
-import static com.snapam.MyApplication.TIME_SHARED;
-
+import io.flutter.embedding.android.FlutterActivity;
 
 public class MainActivity extends FlutterActivity {
 
@@ -65,150 +51,32 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        GeneratedPluginRegistrant.registerWith(this);
         MyApplication myApplication = (MyApplication) getApplicationContext();
 
-        new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
-                (call, result) -> {
-                    if ("drawableToUri".equals(call.method)) {
-                        int resourceId = MainActivity.this.getResources().getIdentifier((String) call.arguments, "drawable", MainActivity.this.getPackageName());
-                        String uriString = resourceToUriString(MainActivity.this.getApplicationContext(), resourceId);
-                        result.success(uriString);
-                    }
-                    if(call.method.equals("shareApp")){
-                        String msg = call.argument("message");
-                        SharedPreferences shed = getSharedPreferences(SETTINGS_PREF,0);
-                        String packageName = shed.getString(PACKAGE_NAME,"com.fetish");
-                        Intent share = new Intent(Intent.ACTION_SEND);
-                        share.setType("text/plain");
-                        String message = msg!=null?msg:String.format("Hurry! Install Strokes. It is the perfect place to find your life partner. \n\nClick on this link to install \nhttp://play.google.com/store/apps/details?id=%s",packageName);
-                        String title = "Install Strokes App";
-                        share.putExtra(Intent.EXTRA_SUBJECT,title);
-                        share.putExtra(Intent.EXTRA_TEXT,message);
-                        startActivity(Intent.createChooser(share,"Share Via"));
-                    }
-                    if(call.method.equals("toast")){
-                        String arg = call.argument("message");
-                        Toast.makeText(this, arg, Toast.LENGTH_SHORT).show();
-                    }
-                    if(call.method.equals("openFile")){
-                        String filePath = call.argument("path");
-                        String fileType = getFileType(filePath);
-
-                        if (pathRequiresPermission(filePath)){
-                            if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                                startFileActivity(filePath,fileType);
-                            } else {
-                                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 291);
-                            }
-                        } else {
-                            startFileActivity(filePath,fileType);
-                        }
-                    }
-
-                    if(call.method.equals("updatePackage")){
-                        String packageName = call.argument("packageName");
-                        SharedPreferences shed = getSharedPreferences(SETTINGS_PREF,0);
-                        SharedPreferences.Editor se = shed.edit();
-                        se.putString(PACKAGE_NAME,packageName);
-                        se.apply();
-                    }
-
-                    if(call.method.equals("updateTime")){
-                        long maxTime = call.argument("maxTime");
-                        SharedPreferences shed = getSharedPreferences(SETTINGS_PREF,0);
-                        SharedPreferences.Editor se = shed.edit();
-                        se.putLong(MAX_TIME,maxTime);
-                        se.apply();
-                    }
-
-
-
-                    if(call.method.equals("pay")){
-                        pendingResult=result;
-//                  creditsAmount = priceModel.getInt(CREDITS);
-//                  int usd = priceModel.getInt(IN_USD);
-//                  int ngn = priceModel.getInt(IN_NAIRA);
+//        new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
+//                (call, result) -> {
+//                    if ("drawableToUri".equals(call.method)) {
+//                        int resourceId = MainActivity.this.getResources().getIdentifier((String) call.arguments, "drawable", MainActivity.this.getPackageName());
+//                        String uriString = resourceToUriString(MainActivity.this.getApplicationContext(), resourceId);
+//                        result.success(uriString);
+//                    }
 //
-//                  amountPaid = inUsd?usd:ngn;
-//                  String nara = String.format("Your payment of %s%s has been received",inUsd?"$":"N",formatNumber(amountPaid));
-
-                        int amount = call.argument("amount");
-                        String narration = call.argument("nara");
-                        String countryCode = call.argument("countryCode");
-                        String currency = call.argument("currency");
-                        String amountText = call.argument("amountText");
-                        String email = call.argument("email");
-                        String name = call.argument("name");
-                        String paymentId = call.argument("paymentId");
-                        String raveKey = call.argument("raveKey");
-
-                        String key = raveKey.split("and")[0].trim();
-                        String secret = raveKey.split("and")[1].trim();
-
-//                        new RavePayManager(this).setAmount(Double.parseDouble(String.valueOf(amount)))
-//                                .setCountry(countryCode)
-//                                .setCurrency(currency)
-//                                .setAmountText(amountText)
-//                                .setEmail(email)
-//                                .setfName(name)
-//                                .setlName("")
-//                                .setNarration(narration)
-//                                .setPublicKey(key)
-//                                .setSecretKey(secret)
-//                                .setTxRef(paymentId)
-//                                .acceptMpesaPayments(false)
-//                                .acceptAccountPayments(true)
-//                                .acceptCardPayments(true)
-//                                .acceptGHMobileMoneyPayments(false)
-//                                .onStagingEnv(false)
-//                                .initialize();
-                    }
-
-                });
+//                    if(call.method.equals("toast")){
+//                        String arg = call.argument("message");
+//                        Toast.makeText(this, arg, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                });
     }
 
     private boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(this, permission) == PermissionChecker.PERMISSION_GRANTED;
     }
 
-    private String alarmName(String name,String message,String timeText){
-        return String.format("%s%s%s%s%s",name,NORMAL_SPLIT,message,NORMAL_SPLIT,timeText);
-    }
-
-    private boolean[] getDays(int day){
-        boolean[] days = new boolean[7];
-        for(int i=0;i<7;i++){
-            days[i]= i==day;
-        }
-        return days;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        try{
-//            if (requestCode == RaveConstants.RAVE_REQUEST_CODE && data != null) {
-//                String message = data.getStringExtra("response");
-//
-//                if (message != null) {
-//                    Log.d("rave response", message);
-//                }
-//                if (resultCode == RavePayActivity.RESULT_SUCCESS) {
-//                    pendingResult.success("ok");
-//                    pendingResult=null;
-//                }
-//                else if (resultCode == RavePayActivity.RESULT_ERROR) {
-//                    pendingResult.success("failed");
-//                    pendingResult=null;
-//                }else{
-//                    pendingResult.success("failed");
-//                    pendingResult=null;
-//                }
-//
-//            }}catch (Exception e){};
     }
 
     private boolean pathRequiresPermission(String filePath) {

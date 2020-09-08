@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/SearchProduct.dart';
-import 'package:maugost_apps/ShowCategories.dart';
+import 'package:maugost_apps/ShowFilter.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -20,11 +20,17 @@ class _ShowProductsState extends State<ShowProducts> {
   bool hasSetup = false;
   final refreshController = RefreshController(initialRefresh: false);
   bool canRefresh = true;
+  String category;
+  String categoryId;
 
   @override
   initState() {
     super.initState();
-    loadProducts(false);
+    setState(() {
+      category = widget.category.getString(TITLE);
+      categoryId = widget.category.getObjectId();
+    });
+    loadProducts(true);
   }
 
   @override
@@ -49,14 +55,16 @@ class _ShowProductsState extends State<ShowProducts> {
     List local = [];
     Firestore.instance
         .collection(PRODUCT_BASE)
-        .where(CATEGORY, isEqualTo: widget.category.getString(CATEGORY))
-        .limit(30)
+        .where(CATEGORY, isEqualTo: category)
+        .limit(12)
         .orderBy(CREATED_AT, descending: !isNew)
         .startAt(startFeedAt)
         .getDocuments()
         .then((value) {
       local = value.documents;
       for (var doc in value.documents) {
+        print("oooo");
+
         BaseModel model = BaseModel(doc: doc);
         //if (userModel.isMuted(model.getObjectId())) continue;
         int p = productLists
@@ -100,76 +108,70 @@ class _ShowProductsState extends State<ShowProducts> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: EdgeInsets.only(top: 30, right: 10, left: 10, bottom: 0),
+          padding: EdgeInsets.only(top: 40, right: 10, left: 10, bottom: 10),
           child: Row(
             children: [
               BackButton(),
-              Text.rich(TextSpan(children: [
-                TextSpan(
-                  text: 'Category ',
-                  style: textStyle(false, 18, black),
-                ),
-                TextSpan(
-                  text: '~${widget.category.getString(TITLE)}~',
-                  style: textStyle(true, 18, black),
-                )
-              ])),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(10),
-          child: Row(
-            children: [
               Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    pushAndResult(context, SearchProduct());
-                  },
-                  child: Container(
-                    height: 45,
-                    //margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(10),
-                        border:
-                            Border.all(color: black.withOpacity(.1), width: 1)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        addSpaceWidth(10),
-                        Expanded(
-                          child: Text(
-                            "Search in Fetish",
-                            style: textStyle(false, 16, black.withOpacity(.6)),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            pushAndResult(context, SearchProduct());
+                          },
+                          child: Container(
+                            height: 45,
+                            //margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: white_color,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: AppConfig.appColor, width: 2)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                addSpaceWidth(10),
+                                Expanded(
+                                  child: Text(
+                                    "Search in $category",
+                                    style: textStyle(
+                                        false, 16, black.withOpacity(.6)),
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.search,
+                                  color: black.withOpacity(.8),
+                                  size: 20,
+                                ),
+                                addSpaceWidth(10),
+                              ],
+                            ),
                           ),
                         ),
-                        Icon(
-                          Icons.search,
-                          color: black.withOpacity(.8),
-                          size: 20,
+                      ),
+                      addSpaceWidth(10),
+                      InkWell(
+                        onTap: () {
+                          pushAndResult(
+                              context, ShowFilter(categoryId: categoryId));
+                        },
+                        child: Container(
+                          child: Center(child: Icon(Icons.tune_outlined)),
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: AppConfig.appColor, width: 2)),
                         ),
-                        addSpaceWidth(10),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
               ),
-              addSpaceWidth(10),
-              InkWell(
-                onTap: () {
-                  pushAndResult(context, ShowCategories());
-                },
-                child: Container(
-                  child: Center(child: Icon(LineIcons.sort_alpha_desc)),
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: black.withOpacity(.1))),
-                ),
-              )
             ],
           ),
         ),

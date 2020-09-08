@@ -6,9 +6,9 @@ import 'package:line_icons/line_icons.dart';
 import 'package:maugost_apps/AddAds.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'AddCategory.dart';
 import 'AppConfig.dart';
 import 'AppEngine.dart';
+import 'CreateCategory.dart';
 import 'assets.dart';
 import 'basemodel.dart';
 
@@ -444,7 +444,7 @@ class _ManageAdsState extends State<ManageAds> {
                 onPressed: () {
                   pushAndResult(
                       context,
-                      AddCategory(
+                      CreateCategory(
                         model: model,
                       ), result: (_) {
                     mainList = appSettingsModel.getListModel(CATEGORIES);

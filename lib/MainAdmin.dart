@@ -21,16 +21,20 @@ import 'package:synchronized/synchronized.dart';
 import 'AppConfig.dart';
 import 'AppEngine.dart';
 import 'ChatMain.dart';
+import 'ChooseOptions.dart';
+import 'ChooseSubCategory.dart';
+import 'CountryManager.dart';
+import 'CreateCategory.dart';
 import 'PreAuth.dart';
 import 'ReportMain.dart';
+import 'SearchProduct.dart';
+import 'ShowFilter.dart';
 import 'main_pages/Account.dart';
 import 'main_pages/Chat.dart';
 import 'main_pages/Home.dart';
 import 'main_pages/Notifications.dart';
 import 'main_pages/OfferPage.dart';
 import 'main_pages/SellCamera.dart';
-import 'main_pages/ShowCart.dart';
-import 'main_pages/ShowStore.dart';
 
 Map<String, List> unreadCounter = Map();
 Map otherPeronInfo = Map();
@@ -237,7 +241,7 @@ class _MainAdminState extends State<MainAdmin>
         loadMessages();
         loadBids();
         loadOrders();
-        setupPush();
+        //setupPush();
         loadBlocked();
         if (mounted) setState(() {});
         return;
@@ -274,7 +278,14 @@ class _MainAdminState extends State<MainAdmin>
       uploadingController.add(null);
     });
     BaseModel model = models[0];
-    File file = File(model.getString(IMAGE_PATH));
+    String path = model.getString(IMAGE_PATH);
+    if (path.isEmpty) {
+      modelsUploaded.add(model);
+      models.removeAt(0);
+      saveProducts(models, modelsUploaded, onCompleted);
+      return;
+    }
+    File file = File(path);
     uploadFile(file, (res, error) {
       if (error != null) {
         saveProducts(models, modelsUploaded, onCompleted);
@@ -322,11 +333,13 @@ class _MainAdminState extends State<MainAdmin>
         if (shot != null) {
           FirebaseUser user = await FirebaseAuth.instance.currentUser();
           if (user == null) return;
-
+          isLoggedIn = true;
           userModel = BaseModel(doc: shot);
           isAdmin = userModel.getBoolean(IS_ADMIN) ||
               userModel.getString(EMAIL) == "johnebere58@gmail.com" ||
               userModel.getString(EMAIL) == "ammaugost@gmail.com";
+          if (mounted) setState(() {});
+
           loadBlocked();
 
           if (!settingsLoaded) {
@@ -528,7 +541,7 @@ class _MainAdminState extends State<MainAdmin>
   }
 
   void onPause() {
-    if (userModel == null) return;
+    if (userModel == null || userModel.getUserId().isEmpty) return;
     int prevTimeOnline = userModel.getInt(TIME_ONLINE);
     int timeActive = (DateTime.now().millisecondsSinceEpoch) - timeOnline;
     int newTimeOnline = timeActive + prevTimeOnline;
@@ -539,8 +552,7 @@ class _MainAdminState extends State<MainAdmin>
   }
 
   void onResume() async {
-    if (userModel == null) return;
-
+    if (userModel == null || userModel.getUserId().isEmpty) return;
     timeOnline = DateTime.now().millisecondsSinceEpoch;
     userModel.put(IS_ONLINE, true);
     userModel.put(
@@ -1033,10 +1045,10 @@ class _MainAdminState extends State<MainAdmin>
       child: Container(
         height: 80,
         decoration: BoxDecoration(
-            color: AppConfig.appColor,
+            color: white, //AppConfig.appColor,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(10),
         child: Row(
           children: [
             bottomTabItem(0, Icons.home, "Home"),
@@ -1047,17 +1059,61 @@ class _MainAdminState extends State<MainAdmin>
                   pushAndResult(context, isLoggedIn ? SellCamera() : PreAuth(),
                       depend: false);
                 },
+                onLongPress: () {
+                  showListDialog(context, [
+                    "App Manager",
+                    "Country Manager",
+                    "Create Category",
+                    "SubCategory Manager",
+                    "Options Manager",
+                    "Plan Manager",
+                    "Subscriptions",
+                    "Reports",
+                    "Pending Main",
+                    "Logout"
+                  ], (_) {
+                    if (_ == 0) {
+                      //pushAndResult(context, AppManager());
+                    }
+                    if (_ == 1) {
+                      pushAndResult(context, CountryManager());
+                    }
+                    if (_ == 2) {
+                      pushAndResult(context, CreateCategory());
+                    }
+                    if (_ == 3) {
+                      pushAndResult(context, ChooseSubCategory([]));
+                    }
+
+                    if (_ == 4) {
+                      pushAndResult(context, ChooseOptions([]));
+                    }
+                    if (_ == 5) {
+                      //pushAndResult(context, Reports());
+                    }
+                    if (_ == 6) {
+                      //pushAndResult(context, PendingMain());
+                    }
+                    if (_ == 7) {
+                      clickLogout(context);
+                    }
+                  });
+                },
                 child: Container(
                   //key: btnKey,
+
                   margin: EdgeInsets.only(bottom: 6),
                   decoration: BoxDecoration(
-                      color: white,
+                      color: AppConfig.appColor,
+                      //color: black.withOpacity(.6),
                       shape: BoxShape.circle,
-                      border: Border.all(color: white, width: 5)),
+                      border:
+                          Border.all(color: black.withOpacity(.8), width: 1)),
+                  padding: EdgeInsets.all(10),
                   child: Center(
                     child: Icon(
                       Icons.camera_enhance_outlined,
-                      color: AppConfig.appColor,
+                      color: white,
                     ),
                   ),
                 ),
@@ -1080,7 +1136,7 @@ class _MainAdminState extends State<MainAdmin>
     bool isAsset = icon.toString().contains("asset");
     bool active = currentPage == index;
     double size = active ? 25 : 20;
-    final color = white.withOpacity(active ? 1 : (.4));
+    final color = black.withOpacity(active ? 1 : (.4));
 
     return Flexible(
       child: GestureDetector(
@@ -1122,157 +1178,200 @@ class _MainAdminState extends State<MainAdmin>
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.only(top: 50, right: 10, left: 10, bottom: 10),
-          color: white,
-          child: Stack(
+          padding: EdgeInsets.only(top: 35, right: 10, left: 10, bottom: 10),
+          decoration: BoxDecoration(
+              color: AppConfig.appColor,
+              gradient: LinearGradient(colors: [
+                AppConfig.appColor_dark,
+                AppConfig.appColor,
+              ], begin: Alignment.topCenter, end: Alignment.bottomRight)),
+          child: Column(
             children: [
-              Align(
-                child: Text(
-                  pageResource[currentPage]["title"],
-                  style: textStyle(true, 22, black),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Stack(
                 children: [
-                  // new Container(
-                  //   height: 30,
-                  //   //width: 50,
-                  //   child: new FlatButton(
-                  //       padding: EdgeInsets.all(0),
-                  //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  //       onPressed: () {
-                  //         // postChatDoc();
-                  //         pushAndResult(
-                  //           context,
-                  //           isLoggedIn ? Wallet() : PreAuth(),
-                  //         );
-                  //       },
-                  //       color: AppConfig.appColor,
-                  //       shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(15)),
-                  //       child: Center(
-                  //           child: Row(
-                  //         mainAxisSize: MainAxisSize.min,
-                  //         children: [
-                  //           Icon(
-                  //             Icons.account_balance_wallet_outlined,
-                  //             size: 16,
-                  //             color: black,
-                  //           ),
-                  //           addSpaceWidth(5),
-                  //           Text(
-                  //             "Wallet",
-                  //             style: textStyle(true, 13, black),
-                  //           )
-                  //         ],
-                  //       ))),
-                  // ),
-                  imageHolder(
-                    35,
-                    userModel.userImage,
-                    onImageTap: () {
-                      pushAndResult(
-                        context,
-                        isLoggedIn ? ShowStore(userModel) : PreAuth(),
-                      );
-                    },
-                    strokeColor: black,
-                    stroke: 2,
+                  Align(
+                    child: Text(
+                      'SnapAmSell',
+                      //pageResource[currentPage]["title"],
+                      style: textStyle(true, 22, white),
+                    ),
                   ),
-                  Spacer(),
-                  new Container(
-                    height: 30,
-                    width: 60,
-                    child: new FlatButton(
-                        padding: EdgeInsets.all(0),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {
-                          pushAndResult(
-                            context,
-                            isLoggedIn ? Notifications() : PreAuth(),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 4),
-                                  child: Icon(
-                                    Icons.notifications_active,
-                                    size: 24,
-                                    color: black,
-                                  ),
-                                )),
-                            if (unreadCount.length > 0)
-                              Container(
-                                // height: 10,
-                                // width: 10,
-                                padding: EdgeInsets.only(
-                                    left: 6, right: 6, top: 3, bottom: 3),
-                                margin: EdgeInsets.only(left: 6),
-                                child: Text(
-                                  unreadCount.length.toString(),
-                                  style: textStyle(false, 11, white),
-                                ),
-                                decoration: BoxDecoration(
-                                    color: red,
-                                    borderRadius: BorderRadius.circular(5)
-                                    //shape: BoxShape.circle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          ic_launcher,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
+                      Spacer(),
+                      new Container(
+                        height: 30,
+                        width: 60,
+                        child: new FlatButton(
+                            padding: EdgeInsets.all(0),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            onPressed: () {
+                              pushAndResult(
+                                context,
+                                isLoggedIn ? Notifications() : PreAuth(),
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Align(
+                                    alignment: Alignment.center,
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 4),
+                                      child: Icon(
+                                        Icons.notifications_active,
+                                        size: 24,
+                                        color: black,
+                                      ),
+                                    )),
+                                if (unreadCount.length > 0)
+                                  Container(
+                                    // height: 10,
+                                    // width: 10,
+                                    padding: EdgeInsets.only(
+                                        left: 6, right: 6, top: 3, bottom: 3),
+                                    margin: EdgeInsets.only(left: 6),
+                                    child: Text(
+                                      unreadCount.length.toString(),
+                                      style: textStyle(false, 11, white),
                                     ),
-                              )
-                          ],
-                        )),
-                  ),
-                  new Container(
-                    height: 30,
-                    width: 60,
-                    child: new FlatButton(
-                        padding: EdgeInsets.all(0),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onPressed: () {
-                          pushAndResult(
-                            context,
-                            isLoggedIn ? ShowCart() : PreAuth(),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 4),
-                                  child: Image.asset(
-                                    ic_cart,
-                                    height: 20,
-                                    width: 20,
-                                    color: black,
-                                  ),
-                                )),
-                            if (cartLists.length > 0)
-                              Container(
-                                // height: 10,
-                                // width: 10,
-                                padding: EdgeInsets.only(
-                                    left: 6, right: 6, top: 3, bottom: 3),
-                                margin: EdgeInsets.only(left: 6),
-                                child: Text(
-                                  cartLists.length.toString(),
-                                  style: textStyle(false, 11, white),
-                                ),
-                                decoration: BoxDecoration(
-                                    color: red,
-                                    borderRadius: BorderRadius.circular(5)
-                                    //shape: BoxShape.circle
-                                    ),
-                              )
-                          ],
-                        )),
-                  ),
-                  //if (isLoggedIn)
+                                    decoration: BoxDecoration(
+                                        color: red,
+                                        borderRadius: BorderRadius.circular(5)
+                                        //shape: BoxShape.circle
+                                        ),
+                                  )
+                              ],
+                            )),
+                      ),
+                      // new Container(
+                      //   height: 30,
+                      //   width: 60,
+                      //   child: new FlatButton(
+                      //       padding: EdgeInsets.all(0),
+                      //       materialTapTargetSize:
+                      //           MaterialTapTargetSize.shrinkWrap,
+                      //       onPressed: () {
+                      //         pushAndResult(
+                      //           context,
+                      //           isLoggedIn ? ShowCart() : PreAuth(),
+                      //         );
+                      //       },
+                      //       child: Stack(
+                      //         children: [
+                      //           Align(
+                      //               alignment: Alignment.center,
+                      //               child: Container(
+                      //                 margin: EdgeInsets.only(left: 4),
+                      //                 child: Image.asset(
+                      //                   ic_cart,
+                      //                   height: 20,
+                      //                   width: 20,
+                      //                   color: black,
+                      //                 ),
+                      //               )),
+                      //           if (cartLists.length > 0)
+                      //             Container(
+                      //               // height: 10,
+                      //               // width: 10,
+                      //               padding: EdgeInsets.only(
+                      //                   left: 6, right: 6, top: 3, bottom: 3),
+                      //               margin: EdgeInsets.only(left: 6),
+                      //               child: Text(
+                      //                 cartLists.length.toString(),
+                      //                 style: textStyle(false, 11, white),
+                      //               ),
+                      //               decoration: BoxDecoration(
+                      //                   color: red,
+                      //                   borderRadius: BorderRadius.circular(5)
+                      //                   //shape: BoxShape.circle
+                      //                   ),
+                      //             )
+                      //         ],
+                      //       )),
+                      // ),
+                      //if (isLoggedIn)
+                    ],
+                  )
                 ],
-              )
+              ),
+              if (currentPage == 0)
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            print("okkkkk");
+                            pushAndResult(context, SearchProduct());
+                          },
+                          child: Container(
+                            height: 45,
+                            //margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: black.withOpacity(.09), width: .5)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                addSpaceWidth(10),
+                                Expanded(
+                                  child: Text(
+                                    "What are you looking for?",
+                                    style: textStyle(
+                                        false, 16, black.withOpacity(.5)),
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.search,
+                                  color: black.withOpacity(.8),
+                                  size: 20,
+                                ),
+                                addSpaceWidth(10),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      addSpaceWidth(10),
+                      InkWell(
+                        onTap: () {
+                          pushAndResult(context, ShowFilter());
+                        },
+                        child: Container(
+                          child: Center(
+                              child: Icon(
+                            Icons.tune_outlined,
+                            color: black.withOpacity(.5),
+                          )),
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                              color: white,
+                              //shape: BoxShape.circle,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: black.withOpacity(.09), width: .5)),
+                        ),
+                      )
+                    ],
+                  ),
+                )
             ],
           ),
         ),
@@ -1301,11 +1400,11 @@ class _MainAdminState extends State<MainAdmin>
           AnimatedContainer(
             duration: Duration(milliseconds: 500),
             height: 2,
-            color: AppConfig.appColor,
+            color: AppConfig.appColor_dark,
             child: LinearProgressIndicator(
               value: progress == 0 ? null : progress,
               backgroundColor: AppConfig.appColor,
-              valueColor: AlwaysStoppedAnimation(white),
+              valueColor: AlwaysStoppedAnimation(blue),
             ),
           ),
         AnimatedContainer(

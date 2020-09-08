@@ -89,7 +89,7 @@ class _AddProductState extends State<AddProduct> {
           children: [
             inputTextView("Product Name", productName, isNum: false),
             inputTextView("Product Price", productPrice,
-                isNum: true, priceIcon: LineIcons.money),
+                isNum: true, icon: LineIcons.money),
             sizesView(),
             imagesView(),
             addSpace(10),

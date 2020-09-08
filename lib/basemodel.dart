@@ -508,6 +508,7 @@ class BaseModel {
 
   void addMyDetails(bool addMyInfo) {
     items[USER_ID] = userModel.getUserId();
+    items[CONTACTS] = userModel.getList(CONTACTS);
     items[USER_IMAGE] = userModel.userImage;
     items[NAME] = userModel.getString(NAME);
     items[BY_ADMIN] = userModel.isAdminItem();

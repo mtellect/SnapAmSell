@@ -132,7 +132,7 @@ class _AddMainPSLState extends State<AddMainPSL> {
         children: [
           inputTextView("Product Name", productName, isNum: false),
           inputTextView("Product Price", productPrice,
-              isNum: true, priceIcon: LineIcons.money),
+              isNum: true, icon: LineIcons.money),
           sizesView(),
           imagesView(),
           addSpace(10),

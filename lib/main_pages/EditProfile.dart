@@ -4,12 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:masked_controller/mask.dart';
 import 'package:masked_controller/masked_controller.dart';
+import 'package:maugost_apps/AddContact.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
 import 'package:maugost_apps/SearchPlace.dart';
 import 'package:maugost_apps/app/app.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
+import 'package:maugost_apps/dialogs/listDialog.dart';
 import 'package:photo/photo.dart';
 
 class EditProfile extends StatefulWidget {
@@ -35,6 +37,7 @@ class _EditProfileState extends State<EditProfile> {
   BaseModel placeModel;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  List contacts = [];
 
   @override
   void initState() {
@@ -47,6 +50,7 @@ class _EditProfileState extends State<EditProfile> {
     placeModel = userModel.getModel(DELIVERY_LOCATION);
     selectedAddress = placeModel.getString(PLACE_NAME);
     profilePhoto = userModel.userImage;
+    contacts = userModel.getList(CONTACTS);
   }
 
   @override
@@ -69,7 +73,7 @@ class _EditProfileState extends State<EditProfile> {
                 color: black,
               ),
               Text(
-                "${widget.modeEdit ? "Edit" : "Create"} Profile",
+                "My Profile",
                 style: textStyle(true, 20, black),
               ),
               Spacer(),
@@ -78,7 +82,7 @@ class _EditProfileState extends State<EditProfile> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25)),
                 child: Text(
-                  "SAVE",
+                  widget.modeEdit ? "UPDATE" : "CREATE",
                   style: textStyle(true, 16, black),
                 ),
                 onPressed: saveProfile,
@@ -99,191 +103,312 @@ class _EditProfileState extends State<EditProfile> {
           )),
         ),
         Flexible(
-            child: ListView(
-          padding: EdgeInsets.all(0),
-          children: [
-            GestureDetector(
-              onTap: pickAssets,
-              child: Container(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                child: CachedNetworkImage(
-                  height: 250,
-                  width: double.infinity,
-                  imageUrl: profilePhoto,
-                  placeholder: (c, s) {
-                    return Container(
-                      height: 250,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        //shape: BoxShape.circle,
-
-                        color: black.withOpacity(.05),
+            child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: pickAssets,
+                child: Container(
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            width: 4, color: AppConfig.appColor_dark)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(75),
+                      child: CachedNetworkImage(
+                        height: 150,
+                        width: 150,
+                        imageUrl: profilePhoto,
+                        fit: BoxFit.cover,
+                        placeholder: (c, s) {
+                          return Container(
+                            height: 150,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: black.withOpacity(.04),
+                            ),
+                            child: Icon(
+                              Icons.person,
+                              size: 60,
+                              color: black.withOpacity(.3),
+                            ),
+                          );
+                        },
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.person,
-                            size: 100,
-                            color: black.withOpacity(.3),
-                          ),
-                          Text(
-                            "Add Image",
-                            style: textStyle(false, 16, black),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-            ),
-            Container(
-              //color: black.withOpacity(.05),
-              padding: EdgeInsets.all(15),
-              margin: EdgeInsets.only(top: 10, bottom: 10),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: AppConfig.appColor,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+              Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Row(
+                      children: <Widget>[
                         Icon(
                           Icons.person_outline_outlined,
-                          size: 15,
                         ),
                         addSpaceWidth(10),
-                        Text(
-                          "Account Information",
-                          style: textStyle(true, 13, black.withOpacity(.9)),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: Text(
+                            "Account Information",
+                            style: textStyle(true, 22, black),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  addSpace(10),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        textField(
-                          fullName,
-                          "First Name",
-                        ),
-                        addSpace(10),
-                        textField(number, "Mobile Number", isNum: true)
-                      ],
+                    addSpace(20),
+                    inputTextView(
+                      "First Name",
+                      fullName,
+                      isNum: false,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              //color: black.withOpacity(.05),
-              padding: EdgeInsets.all(15),
-              margin: EdgeInsets.only(top: 10, bottom: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: AppConfig.appColor,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+                    addSpace(10),
+                    inputTextView(
+                      "Mobile Number",
+                      number,
+                      isNum: true,
+                    ),
+                    addSpace(10),
+                    Row(
+                      children: <Widget>[
                         Icon(
-                          Icons.location_city,
-                          size: 15,
+                          Icons.location_city_outlined,
                         ),
                         addSpaceWidth(10),
-                        Text(
-                          "Delivery Information",
-                          style: textStyle(true, 13, black.withOpacity(.9)),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: Text(
+                            "Delivery Information",
+                            style: textStyle(true, 22, black),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  addSpace(10),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        selectorField(
-                            selectedAddress.isEmpty ? null : selectedAddress,
-                            "Search Address", () {
-                          pushAndResult(context, SearchPlace(), result: (_) {
-                            placeModel = _;
-                            selectedAddress = placeModel.getString(PLACE_NAME);
-                            setState(() {});
-                          }, depend: false);
-                        }),
-                        addSpace(10),
-                        textField(address, "Residential Address"),
-                        addSpace(10),
-                        textField(landMark, "LandMark Description", max: 4)
+                    addSpace(20),
+                    clickText("Search Address", selectedAddress, () {
+                      pushAndResult(context, SearchPlace(), result: (_) {
+                        placeModel = _;
+                        selectedAddress = placeModel.getString(PLACE_NAME);
+                        setState(() {});
+                      }, depend: false);
+                    }),
+                    addSpace(10),
+                    inputTextView(
+                      "Residential Address",
+                      address,
+                      isNum: false,
+                    ),
+                    addSpace(10),
+                    inputTextView("LandMark Description", landMark,
+                        isNum: false, maxLine: 4),
+                    addSpace(20),
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.contact_page_outlined,
+                        ),
+                        addSpaceWidth(10),
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: Text(
+                            "Contact Information",
+                            style: textStyle(true, 22, black),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    addSpace(10),
+                    if (contacts.isNotEmpty)
+                      Column(
+                        children: List.generate(contacts.length, (p) {
+                          Map item = contacts[p];
+                          String name = item[NAME];
+                          String phone = item[PHONE_NUMBER];
+                          String phonePref = item[PHONE_PREF];
+                          String email = item[EMAIL];
+                          String whatapp = item[WHATSAPP_NUMBER];
+                          String whatPref = item[WHATSAPP_PREF];
+                          return GestureDetector(
+                            onTap: () {
+                              pushAndResult(
+                                  context, listDialog(["Edit", "Delete"]),
+                                  result: (_) {});
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: blue09,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+//                                        border: Border.all(
+//                                        color: black.withOpacity(.1),
+//                                            width: .5
+//                                    ),
+//                                        color: blue09
+                              ),
+                              margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                children: <Widget>[
+                                  addSpaceWidth(5),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          name,
+                                          style: textStyle(false, 20, black),
+                                        ),
+                                        addSpace(5),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.phone,
+                                              color: black.withOpacity(.5),
+                                              size: 12,
+                                            ),
+                                            addSpaceWidth(5),
+                                            Text(
+                                              createPhoneNumer(
+                                                  phonePref, phone),
+                                              style:
+                                                  textStyle(false, 14, black),
+                                            ),
+                                          ],
+                                        ),
+                                        if (whatapp.isNotEmpty) addSpace(5),
+                                        if (whatapp.isNotEmpty)
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                ic_whatsapp,
+                                                color: black.withOpacity(.5),
+                                                width: 12,
+                                                height: 12,
+                                              ),
+                                              addSpaceWidth(5),
+                                              Text(
+                                                createPhoneNumer(
+                                                    whatPref, whatapp),
+                                                style:
+                                                    textStyle(false, 14, black),
+                                              ),
+                                            ],
+                                          ),
+                                        if (email.isNotEmpty) addSpace(5),
+                                        if (email.isNotEmpty)
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.email,
+                                                color: black.withOpacity(.5),
+                                                size: 12,
+                                              ),
+                                              addSpaceWidth(5),
+                                              Text(
+                                                email,
+                                                style:
+                                                    textStyle(false, 14, black),
+                                              ),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
+                                    flex: 1,
+                                    fit: FlexFit.tight,
+                                  ),
+                                  addSpaceWidth(10),
+                                  Container(
+                                    width: 30,
+                                    height: 30,
+                                    child: FlatButton(
+                                      onPressed: () {
+                                        pushAndResult(
+                                            context,
+                                            AddContact(
+                                              item: item,
+                                            ), result: (_) {
+                                          contacts[p] = _;
+                                          setState(() {});
+                                        });
+                                      },
+                                      color: black.withOpacity(.4),
+                                      shape: CircleBorder(),
+                                      padding: EdgeInsets.all(0),
+                                      child: Icon(
+                                        Icons.edit,
+                                        color: white,
+                                        size: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  addSpaceWidth(10),
+                                  Container(
+                                    width: 30,
+                                    height: 30,
+                                    child: FlatButton(
+                                      onPressed: () {
+                                        contacts.removeAt(p);
+                                        setState(() {});
+                                      },
+                                      color: red0,
+                                      shape: CircleBorder(),
+                                      padding: EdgeInsets.all(0),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: white,
+                                      ),
+                                    ),
+                                  ),
+                                  addSpaceWidth(10),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    if (contacts.length < 3)
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: FlatButton(
+                          onPressed: () {
+                            pushAndResult(context, AddContact(), result: (_) {
+                              contacts.add(_);
+                              setState(() {});
+                            });
+                          },
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add, size: 25, color: orange0),
+                                addSpaceWidth(5),
+                                Text(
+                                  "Add Contact",
+                                  style: textStyle(true, 18, orange0),
+                                ),
+                                addSpaceWidth(5),
+                              ],
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(25)),
+                              side: BorderSide(color: orange0, width: 2)),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         )),
       ],
-    );
-  }
-
-  textField(controller, hint, {int max, bool isNum = false}) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: black.withOpacity(.05))),
-      child: TextField(
-        controller: controller,
-        maxLines: max,
-        keyboardType: isNum ? TextInputType.number : null,
-        decoration: InputDecoration(
-            labelText: hint,
-            labelStyle: textStyle(true, 12, black),
-            border: InputBorder.none,
-            fillColor: black.withOpacity(.05),
-            filled: true),
-      ),
-    );
-  }
-
-  selectorField(value, hint, onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(20),
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-            color: black.withOpacity(.05),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: black.withOpacity(.05))),
-        child: Row(
-          children: [
-            Flexible(
-              fit: FlexFit.tight,
-              child: Text(
-                value ?? hint,
-                style: textStyle(
-                    true, value == null ? 12 : 14, black.withOpacity(1)),
-              ),
-            ),
-            Icon(Icons.search)
-          ],
-        ),
-      ),
     );
   }
 
@@ -330,18 +455,18 @@ class _EditProfileState extends State<EditProfile> {
       ..put(ADDRESS, cAddress)
       ..put(LANDMARK, landM)
       ..put(SIGNUP_COMPLETED, true)
+      ..put(CONTACTS, contacts)
       ..updateItems();
-    Future.delayed(Duration(milliseconds: 10), () {
-      showError("Profile Updated!");
-    });
+    showMessage(context, Icons.check, green_dark, "Updated",
+        "Profile Successfully Updated!");
   }
 
   void pickAssets() async {
     openGallery(context, singleMode: true, type: PickType.onlyImage,
         onPicked: (_) async {
       if (_ == null) return;
-      String path = (_[0].file).path;
-      uploadFile(File(path), (res, e) {
+      profilePhoto = (_[0].file).path;
+      uploadFile(File(profilePhoto), (res, e) {
         if (null != e) {
           return;
         }

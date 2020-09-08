@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:maugost_apps/AppEngine.dart';
-import 'package:maugost_apps/ShowCategories.dart';
+import 'package:maugost_apps/ChooseProductCategory.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/dialogs/inputDialog.dart';
@@ -130,12 +130,27 @@ class _AppAdminState extends State<AppAdmin> {
             onTap: () {
               pushAndResult(
                   context,
-                  ShowCategories(
+                  ChooseProductCategory(
+                    [],
                     popResult: false,
                     showSub: true,
                   ));
             },
-            title: Text("Product Categories"),
+            title: Text("Product Manager"),
+            subtitle: Text("Add and Update Product Categories"),
+            trailing: Icon(Icons.navigate_next),
+          ),
+          ListTile(
+            onTap: () {
+              pushAndResult(
+                  context,
+                  ChooseProductCategory(
+                    [],
+                    popResult: false,
+                    showSub: true,
+                  ));
+            },
+            title: Text("Country Manager"),
             subtitle: Text("Add and Update Product Categories"),
             trailing: Icon(Icons.navigate_next),
           ),

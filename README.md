@@ -1,4 +1,4 @@
-# Fetish E-commerce App
+# SnapAm E-commerce App
 
 A new Flutter application.
 

@@ -100,7 +100,7 @@ class _WithdrawDialogState extends State<WithdrawDialog> {
                                   child: inputTextView(
                                       "Amount to Withdraw", amountController,
                                       isNum: true,
-                                      priceIcon: Icons.monetization_on),
+                                      icon: Icons.monetization_on),
                                   fit: FlexFit.tight,
                                 ),
 //                                addSpaceWidth(10),

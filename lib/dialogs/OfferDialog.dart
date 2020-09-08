@@ -99,7 +99,7 @@ class _AmountDialogState extends State<AmountDialog> {
                                   child: inputTextView(
                                       "Enter Amount", amountController,
                                       isNum: true,
-                                      priceIcon: Icons.monetization_on),
+                                      icon: Icons.monetization_on),
                                   fit: FlexFit.tight,
                                 ),
 //                                addSpaceWidth(10),

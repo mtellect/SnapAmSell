@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:maugost_apps/AppConfig.dart';
 import 'package:maugost_apps/AppEngine.dart';
+import 'package:maugost_apps/ChooseProductCategory.dart';
 import 'package:maugost_apps/MainAdmin.dart';
-import 'package:maugost_apps/ShowCategories.dart';
+import 'package:maugost_apps/SelectRegion.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
 import 'package:maugost_apps/main_pages/SellCamera.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SellPage extends StatefulWidget {
   final List<BaseModel> photos;
@@ -21,12 +24,21 @@ class SellPage extends StatefulWidget {
 
 class _SellPageState extends State<SellPage> {
   BaseModel model = BaseModel();
+  String objectId = getRandomId();
   List<BaseModel> photos = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final titleController = TextEditingController();
-  final priceController = TextEditingController();
+  final priceController = new MoneyMaskedTextController(
+      decimalSeparator: ".", thousandSeparator: ",");
+
   final descController = TextEditingController();
   String selectedCategory;
+
+  String state = '';
+  String city = '';
+  String category = '';
+  String subCategory = '';
+  Map<String, String> specifications = {};
 
   @override
   void initState() {
@@ -34,11 +46,17 @@ class _SellPageState extends State<SellPage> {
     super.initState();
     if (widget.model != null) {
       model = widget.model;
+      objectId = model.getObjectId();
       photos = widget.model.getListModel(IMAGES);
       titleController.text = model.getString(TITLE);
-      priceController.text = model.getDouble(PRICE).toString();
+      priceController.updateValue(model.getDouble(PRICE));
       descController.text = model.getString(DESCRIPTION);
       selectedCategory = model.getString(CATEGORY);
+      category = model.getString(CATEGORY);
+      subCategory = model.getString(SUB_CATEGORY);
+      state = model.getString(STATE);
+      city = model.getString(CITY);
+      specifications = Map<String, String>.from(model.getMap(SPECIFICATION));
     } else {
       photos = widget.photos;
       model.put(IMAGES, widget.photos.map((e) => e.items).toList());
@@ -54,6 +72,36 @@ class _SellPageState extends State<SellPage> {
     );
   }
 
+  List get categoryOptions {
+    List catItems = appSettingsModel.getList(CATEGORIES);
+    int catIndex = catItems.indexWhere((e) => e[TITLE] == category);
+    List options = catItems[catIndex][OPTIONS];
+
+    return options ?? [];
+  }
+
+  List get subCategoryOptions {
+    if (subCategory.isEmpty && category.isEmpty) return [];
+    List catItems = appSettingsModel.getList(CATEGORIES);
+    int catIndex = catItems.indexWhere((e) => e[TITLE] == category);
+    List subCatItems = catItems[catIndex][SUB_CATEGORY];
+    int subCatIndex = subCatItems.indexWhere((e) => e[NAME] == subCategory);
+    List options = subCatItems[subCatIndex][OPTIONS];
+    return options ?? [];
+  }
+
+  List requiredOptions(String sortName) {
+    List itemOption = [];
+    List optionItems = appSettingsModel.getList(OPTIONS);
+    for (var item in optionItems) {
+      String name = item[NAME];
+      if (name != sortName) continue;
+      List items = item[ITEMS];
+      itemOption = items.map((e) => e[NAME]).toList();
+    }
+    return itemOption;
+  }
+
   page() {
     return Column(
       children: [
@@ -65,7 +113,7 @@ class _SellPageState extends State<SellPage> {
                 color: black,
               ),
               Text(
-                widget.model != null ? "Edit Product" : "Sell Product",
+                "Sell Item",
                 style: textStyle(true, 25, black),
               ),
               Spacer(),
@@ -74,7 +122,7 @@ class _SellPageState extends State<SellPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25)),
                 child: Text(
-                  "Publish",
+                  widget.model != null ? "Update" : "Publish",
                   style: textStyle(true, 16, black),
                 ),
                 onPressed: validateFields,
@@ -102,15 +150,87 @@ class _SellPageState extends State<SellPage> {
                 photos.removeAt(p);
                 setState(() {});
               }),
-              categoryBox("Choose Category", selectedCategory, (s) {
-                selectedCategory = s;
-                setState(() {});
-              }),
-              textFieldBox(titleController, "Product Title", (v) => null),
-              textFieldBox(priceController, "Product Price", (v) => null,
-                  number: true),
-              textFieldBox(descController, "Product Description", (v) => null,
-                  maxLines: 4),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    clickText(
+                        "Choose Region",
+                        defaultCity.isEmpty && defaultState.isEmpty
+                            ? ""
+                            : defaultCity.isEmpty
+                                ? ""
+                                : "${defaultCity.isEmpty ? "" : "$defaultCity in"} $defaultState",
+                        () {
+                      pushAndResult(
+                          context,
+                          SelectRegion(
+                            selectedRegion: defaultCity,
+                            selectedState: defaultState,
+                            canSelectOnlyState: true,
+                          ), result: (_) async {
+                        defaultState = _[0];
+                        defaultCity = _[1];
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        pref.setString(DEFAULT_STATE, defaultState);
+                        pref.setString(DEFAULT_CITY, defaultCity);
+                        setState(() {});
+                      });
+                    }),
+                    clickText(
+                        "Choose Category",
+                        subCategory.isEmpty && category.isEmpty
+                            ? ""
+                            : subCategory.isEmpty
+                                ? ""
+                                : "${category.isEmpty ? "" : "$subCategory in"} $category",
+                        () {
+                      pushAndResult(
+                        context,
+                        ChooseProductCategory(
+                          [],
+                          singleMode: true,
+                          onlyMain: true,
+                          popResult: true,
+                          category: category,
+                          subCategory: subCategory,
+                        ),
+                        result: (List item) {
+                          category = item[0] ?? "";
+                          subCategory = item[1] ?? "";
+                          setState(() {});
+                        },
+                      );
+                    }),
+                    ...List.generate(
+                      subCategoryOptions.length,
+                      (index) {
+                        String name = subCategoryOptions[index];
+
+                        List options = requiredOptions(name);
+
+                        return clickText("$name", specifications[name] ?? '',
+                            () {
+                          showListDialog(context, options, (_) {
+                            specifications[name] = options[_];
+                            setState(() {});
+                          }, title: name);
+                        });
+                      },
+                    ),
+                    inputTextView(
+                      "Product Title",
+                      titleController,
+                      isNum: false,
+                    ),
+                    inputTextView("Product Price", priceController,
+                        isNum: true, isAmount: true),
+                    inputTextView("Product Description", descController,
+                        isNum: false, maxLine: 5),
+                  ],
+                ),
+              ),
               Container(
                 decoration: BoxDecoration(
                     color: red, borderRadius: BorderRadius.circular(8)),
@@ -136,77 +256,6 @@ class _SellPageState extends State<SellPage> {
           ),
         )
       ],
-    );
-  }
-
-  textFieldBox(
-      TextEditingController controller, String hint, setState(String v),
-      {focusNode, int maxLength, int maxLines, bool number = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: TextFormField(
-        focusNode: focusNode,
-        maxLength: maxLength,
-        maxLines: maxLines,
-        //maxLengthEnforced: false,
-        controller: controller,
-        cursorColor: black,
-        style: textStyle(false, 16, black),
-        decoration: InputDecoration(
-            fillColor: black.withOpacity(.05),
-            filled: true,
-            labelText: hint,
-            labelStyle: textStyle(false, 16, black.withOpacity(.4)),
-            counter: Container(),
-            border: InputBorder.none),
-        onChanged: setState,
-        keyboardType: number ? TextInputType.number : null,
-      ),
-    );
-  }
-
-  categoryBox(String hint, String value, setState) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              pushAndResult(context, ShowCategories(), result: (List _) {
-                if (null == _) return;
-                //BaseModel bm = _[0];
-                String cateory = _[0];
-                String subCategory = _[1];
-                //setState(_.getString(TITLE));
-                setState("$cateory");
-               if(subCategory.isNotEmpty) setState("$subCategory in $cateory");
-              });
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                    color: black.withOpacity(.05),
-                    border: Border.all(color: black.withOpacity(.05)),
-                    borderRadius: BorderRadius.circular(5)),
-                padding: EdgeInsets.all(16),
-                alignment: Alignment.centerRight,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        value ?? hint,
-                        style: textStyle(false, 20,
-                            black.withOpacity(value == null ? 0.6 : 1)),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down_circle,
-                      color: black.withOpacity(0.5),
-                    )
-                  ],
-                )),
-          ),
-        ],
-      ),
     );
   }
 
@@ -349,7 +398,7 @@ class _SellPageState extends State<SellPage> {
 
   validateFields() async {
     String title = titleController.text;
-    String price = priceController.text;
+    double price = priceController.numberValue;
     String description = descController.text;
 
     if (photos.isEmpty) {
@@ -357,15 +406,32 @@ class _SellPageState extends State<SellPage> {
       return;
     }
 
-    if (null == selectedCategory) {
+    if (defaultCity.isEmpty || defaultState.isEmpty) {
+      showError("Choose Ad Region!");
+      return;
+    }
+
+    if (category.isEmpty || subCategory.isEmpty) {
       showError("Choose a category!");
       return;
     }
+
+    if (specifications.length != subCategoryOptions.length) {
+      for (var v in subCategoryOptions) {
+        if (specifications[v] == null) {
+          showError("Choose $v!");
+          break;
+        }
+      }
+
+      return;
+    }
+
     if (title.isEmpty) {
       showError("Add Title!");
       return;
     }
-    if (price.isEmpty) {
+    if (price == 0) {
       showError("Add Price!");
       return;
     }
@@ -374,20 +440,22 @@ class _SellPageState extends State<SellPage> {
       return;
     }
 
-    String id = getRandomId();
-
     final search = getSearchString('$title $selectedCategory');
     model
-      ..put(OBJECT_ID, id)
+      ..put(OBJECT_ID, objectId)
       ..put(STATUS, PENDING)
       ..put(IMAGES, photos.map((e) => e.items).toList())
-      ..put(CATEGORY, selectedCategory)
+      ..put(CATEGORY, category)
+      ..put(SUB_CATEGORY, subCategory)
       ..put(TITLE, title)
-      ..put(PRICE, double.parse(price))
+      ..put(PRICE, price)
       ..put(DESCRIPTION, description)
       ..put(SEARCH, search)
-      ..saveItem(PRODUCT_BASE, true, document: id);
-    int p = productLists.indexWhere((e) => e.getObjectId() == id);
+      ..put(DEFAULT_STATE, defaultState)
+      ..put(DEFAULT_CITY, defaultCity)
+      ..put(SPECIFICATION, specifications)
+      ..saveItem(PRODUCT_BASE, true, document: objectId);
+    int p = productLists.indexWhere((e) => e.getObjectId() == objectId);
     if (p != -1) {
       productLists[p] = model;
     } else {

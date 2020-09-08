@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -12,38 +9,36 @@ import 'package:maugost_apps/MainAdmin.dart';
 import 'package:maugost_apps/app/navigation.dart';
 import 'package:maugost_apps/assets.dart';
 import 'package:maugost_apps/basemodel.dart';
-import 'package:rxdart/subjects.dart';
 
 import 'AppConfig.dart';
 import 'AppEngine.dart';
+import 'MainAdminWeb.dart';
 import 'app/app.dart';
 
-RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
-final BehaviorSubject<String> selectNotificationSubject =
-    BehaviorSubject<String>();
-
-final galleryController = StreamController<List<String>>.broadcast();
-final galleryResultController = StreamController<List<dynamic>>.broadcast();
-
 void main() async {
-//  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   WidgetsFlutterBinding.ensureInitialized();
-  // NOTE: if you want to find out if the app was launched via notification then you could use the following call and then do something like
-  // change the default route of the app
-  // var notificationAppLaunchDetails =
-  //     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  try {
-    WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
+
+  if (kIsWeb) {
+    // ui.platformViewRegistry.registerViewFactory(
+    //     'hello-world-html',
+    //     (int viewId) => IFrameElement()
+    //       ..width = '640'
+    //       ..height = '360'
+    //       ..src = 'https://www.youtube.com/embed/IyFZznAk69U'
+    //       ..style.border = 'none');
+  } else {
+    try {
+      cameras = await availableCameras();
+    } on CameraException catch (e) {
 //    logError(e.code, e.description);
+    }
   }
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  FirebaseAnalytics analytics = FirebaseAnalytics();
+  //FirebaseAnalytics analytics = FirebaseAnalytics();
   @override
   Widget build(BuildContext c) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -61,11 +56,8 @@ class MyApp extends StatelessWidget {
             },
           ),
         ),
-        navigatorObservers: [
-          routeObserver,
-          FirebaseAnalyticsObserver(analytics: analytics)
-        ],
-        home: MainHome());
+        navigatorObservers: [],
+        home: kIsWeb ? MainAdminWeb() : MainAdmin());
   }
 
   PageTransitionsBuilder createTransition() {
