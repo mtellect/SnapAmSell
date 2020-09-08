@@ -9,7 +9,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:country_pickers/country.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -5631,28 +5630,16 @@ shopItem(BuildContext context, BaseModel model, setState,
                         setState();
                       },
                       child: Container(
-                        decoration:
-                            BoxDecoration(color: white, shape: BoxShape.circle),
-                        padding: EdgeInsets.all(12),
-                        margin: EdgeInsets.all(8),
-                        height: 35,
-                        width: 35,
-                        alignment: Alignment.center,
-                        /* child: Center(
-                    child: Icon(
-                      Icons.favorite,
-                      size: 15,
-                      color: isFavorite ? green_dark : black.withOpacity(.7),
-                    ),
-                  ),*/
-                        child: FlareActor("assets/icons/Favorite.flr",
-                            shouldClip: false,
-                            color: isFavorite ? red : black.withOpacity(0.5),
-                            fit: BoxFit.cover,
-                            animation: isFavorite
-                                ? "Favorite"
-                                : "Unfavorite" //_animationName
-                            ),
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: black.withOpacity(.2),
+                        ),
+                        child: Icon(
+                          isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                          size: 15,
+                          color: isFavorite ? dark_green0 : white,
+                        ),
                       ),
                     ),
                   ),
@@ -5726,8 +5713,7 @@ shopItem(BuildContext context, BaseModel model, setState,
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: AppConfig.appColor_dark,
-                          shape: BoxShape.circle),
+                          color: dark_green0, shape: BoxShape.circle),
                       padding: EdgeInsets.all(8),
                       child: Icon(
                         Icons.call_outlined,
@@ -5793,7 +5779,7 @@ contactWidget(context, Map item, {String title = ""}) {
             Icon(
               Icons.person_pin,
               size: 30,
-              color: AppConfig.appColor_dark,
+              color: dark_green0,
             ),
             addSpaceWidth(5),
             Flexible(
@@ -5805,7 +5791,7 @@ contactWidget(context, Map item, {String title = ""}) {
           margin: EdgeInsets.only(left: 14),
           padding: EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: AppConfig.appColor_dark, width: 2))),
+              border: Border(left: BorderSide(color: dark_green0, width: 2))),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

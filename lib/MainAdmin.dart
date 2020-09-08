@@ -391,8 +391,6 @@ class _MainAdminState extends State<MainAdmin>
           //loadItems();
           loadNotification();
           loadMessages();
-//          loadCarts();
-//          loadProducts();
           loadBids();
           loadOrders();
           setupPush();

@@ -21,6 +21,9 @@ class MainAdminWeb extends StatefulWidget {
 }
 
 class _MainAdminWebState extends State<MainAdminWeb> {
+  List<BaseModel> productLists = [];
+  bool productSetup = false;
+
   List<StreamSubscription> subs = List();
   int timeOnline = 0;
   String noInternetText = "";
@@ -148,6 +151,7 @@ class _MainAdminWebState extends State<MainAdminWeb> {
 //           chkUpdate();
 //           setUpLocation();
 //           loadAds();
+          loadProducts(true);
         }
       }
     });
@@ -164,39 +168,91 @@ class _MainAdminWebState extends State<MainAdminWeb> {
     return size;
   }
 
+  loadProducts(bool isNew) async {
+    final startFeedAt = [
+      !isNew
+          ? (productLists.isEmpty
+              ? DateTime.now().millisecondsSinceEpoch
+              : productLists[productLists.length - 1].createdAt)
+          : (productLists.isEmpty ? 0 : productLists[0].createdAt)
+    ];
+
+    List local = [];
+    Firestore.instance
+        .collection(PRODUCT_BASE)
+        //.where(PARTIES, arrayContains: userModel.getUserId())
+        .limit(16)
+        .orderBy(CREATED_AT, descending: !isNew)
+        .startAt(startFeedAt)
+        .getDocuments()
+        .then((value) {
+      local = value.documents;
+      for (var doc in value.documents) {
+        BaseModel model = BaseModel(doc: doc);
+        //if (userModel.isMuted(model.getObjectId())) continue;
+        int p = productLists
+            .indexWhere((e) => e.getObjectId() == model.getObjectId());
+        if (p != -1) {
+          productLists[p] = model;
+        } else {
+          productLists.add(model);
+        }
+      }
+
+      if (isNew) {
+        //refreshController.refreshCompleted();
+      } else {
+        /*int oldLength = productLists.length;
+        int newLength = local.length;
+        if (newLength <= oldLength) {
+          refreshController.loadNoData();
+          canRefresh = false;
+        } else {
+          refreshController.loadComplete();
+        }*/
+        //refreshController.loadComplete();
+      }
+      productSetup = true;
+      if (mounted)
+        setState(() {
+          //myNotifications.sort((a, b) => b.time.compareTo(a.time));
+        });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        backgroundColor: white,
+        //backgroundColor: white_color,
         body: LayoutBuilder(
-          builder: (c, con) {
-            return Column(
-              children: [
-                buildAppBar(con),
-                Flexible(
-                  child: RawKeyboardListener(
-                    focusNode: focusNode,
-                    onKey: (e) {
-                      print("Key Pressed ${e.data}");
-                    },
-                    autofocus: true,
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        children: [
-                          buildSearchBar(con),
-                          buildCategories(con),
-                          buildTrending(con)
-                        ],
-                      ),
-                    ),
+      builder: (c, con) {
+        return Column(
+          children: [
+            buildAppBar(con),
+            Flexible(
+              child: RawKeyboardListener(
+                focusNode: focusNode,
+                onKey: (e) {
+                  print("Key Pressed ${e.data}");
+                },
+                autofocus: true,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    children: [
+                      buildSearchBar(con),
+                      buildCategories(con),
+                      buildTrending(con)
+                    ],
                   ),
                 ),
-              ],
-            );
-          },
-        ));
+              ),
+            ),
+          ],
+        );
+      },
+    ));
   }
 
   buildAppBar(BoxConstraints con) {
@@ -404,7 +460,6 @@ class _MainAdminWebState extends State<MainAdminWeb> {
 
     double scaleFactor = (con.maxWidth / 1000).clamp(0.5, 1);
     double aspectRatio = 1 * scaleFactor;
-    print("Maxw $maxWidth");
     double padding = scaleSize(con, 100);
 
     if (maxWidth > 500 && maxWidth < 800) {
@@ -494,10 +549,78 @@ class _MainAdminWebState extends State<MainAdminWeb> {
   }
 
   buildTrending(BoxConstraints con) {
-    return Container(
-      height: 150,
-      alignment: Alignment.center,
-      child: loadingLayout(),
+    int crossSize = 2;
+    double maxWidth = con.maxWidth;
+
+    double scaleFactor = (con.maxWidth / 1000).clamp(0.5, 1);
+    double aspectRatio = 1 * scaleFactor;
+    print("Maxw $maxWidth");
+    double padding = scaleSize(con, 100);
+
+    if (maxWidth > 500 && maxWidth < 800) {
+      //crossSize = 4;
+      padding = scaleSize(con, 80);
+    }
+
+    if (maxWidth > 700 && maxWidth < 800) {
+      crossSize = 4;
+    }
+
+    if (maxWidth > 800) {
+      crossSize = 4;
+    }
+
+    if (maxWidth > 1200) {
+      crossSize = 6;
+    }
+
+    if (!productSetup)
+      return Container(
+        height: 150,
+        alignment: Alignment.center,
+        child: loadingLayout(),
+      );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.only(
+              top: 20, bottom: 10, left: padding, right: padding),
+
+          child: Text(
+            'Trending Ads',
+            style: textStyle(true, 18, black),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossSize,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15,
+              childAspectRatio: 0.65),
+          padding: EdgeInsets.only(
+              top: 20, bottom: 10, left: padding, right: padding),
+          itemBuilder: (c, p) {
+            BaseModel model = productLists[p];
+            List likes = model.getList(LIKES);
+            bool isFavorite = likes.contains(userModel.getUserId());
+            //print('favorite $isFavorite');
+            return shopItem(
+              context,
+              model,
+              () {
+                setState(() {});
+              },
+              isFavorite: isFavorite,
+            );
+          },
+          itemCount: productLists.length,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+        ),
+      ],
     );
   }
 }
